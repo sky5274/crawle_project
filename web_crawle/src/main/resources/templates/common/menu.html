@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<div th:fragment="menu">
+		<ul class="list-group" id="menu-group-list">
+			<li th:attr="class=list-group-item">主目录</li>
+			<li th:each="item,stats:${menu}" th:attr="class=|list-group-item menu-item|">
+				<a th:attr="url=@{${item.url}},class=|primary clearfix|,code=${item.code}">
+				<i class="glyphicon glyphicon-plus pull-left" th:if="${not #lists.isEmpty(item.child)}"></i><span class="pull-left" th:text="${item.name}"></span><span class="glyphicon glyphicon-chevron-right pull-right" th:if="${not #lists.isEmpty(item.child)}"></span>
+				</a>
+				<ul class="list-group hidden" th:if="${not #lists.isEmpty(item.child)}" th:include="common/menu::menu_item(${item.child})"></ul>
+			</li>
+		</ul>
+	</div>
+	<ul  class="list-group" th:fragment="menu_item(temp)">
+		<li th:each="item,stats:${temp}" th:attr="class=|list-group-item menu-item|">
+			<a th:attr="url=@{${item.url}},class=|primary clearfix|,code=${item.code}"><i class="glyphicon glyphicon-plus pull-left" th:if="${not #lists.isEmpty(item.child)}"></i><span class="pull-left" th:text="${item.name}"></span><span class="glyphicon glyphicon-chevron-right pull-right" th:if="${not #lists.isEmpty(item.child)}"></span></a>
+			<ul class="list-group hidden" th:if="${not #lists.isEmpty(item.child)}" th:include="::menu_item(${item.child})"></ul>
+		</li>
+	</ul>
+</body>
+</html>

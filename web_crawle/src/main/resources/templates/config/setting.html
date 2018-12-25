@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('设置','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js')"></head>
+<style type="text/css">
+.need_inp{border: 1px solid red;}
+#menu-add span{width:10%;padding: 0 1%}
+#menu-add input{width:90%;padding: 0 1%}
+</style>
+<script type="text/javascript">
+	$(function(){
+		$("#menu-submit").on("click",function(){
+			var obj=$.valid({ele:"#menu-add"})
+			if(obj){
+				$.doAjax({
+					url:API.page.menu.add,
+					data:obj,
+					success:function(res,status){
+						if(res.success){
+							$.alert({content:"菜单添加成功"})
+							$("#menu-submit").parents(".panel").fadeOut().addClass("hide");
+							$("#btn_menu_add").parents(".panel").removeClass("hide").fadeIn()
+						}
+					}
+				})
+			}
+		});
+		$("#menu-table").jTable({
+			url:API.page.menu.page,
+			uniqueId:'id',
+			columns :[
+				{field: 'radio', radio: true}, 
+				{
+					field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+					formatter: function (value,row,index){return index+1; }
+				},
+				{ field : "id", title : "id"},
+				{ field : "name", title : "名称"},
+				{ field : "code", title : "编码"},
+				{ field : "url", title : "路径"},
+				{ field : "ts", title : "时间"},
+				{ field:'id', title: '操作', width: 120,align: 'center',valign: 'middle',formatter: actionFormatter}
+			]
+		})
+		$("#menu-table").on("click",".tab-index",function(e){
+			var row=$("#menu-table").bootstrapTable("getRowByUniqueId",$(this).attr("index"))
+			if($(this).attr("type")=="mod"){
+				modMneuDiaLog("修改菜单",row)
+			}else if($(this).attr("type")=="del"){
+				$.diaLog({con:"是否删除菜单",func:function(type){
+					if(type=="sure"){
+						console.log(row)
+					}
+				}})
+			}
+			
+		})
+		$("#btn_menu_add").on("click",function(){
+			$(this).parents(".panel").fadeOut().addClass("hide");
+			$("#btn_menu_add_can").parents(".panel").removeClass("hide").fadeIn()
+		})
+		$("#btn_menu_add_can").on("click",function(){
+			$(this).parents(".panel").fadeOut().addClass("hide");
+			$("#btn_menu_add").parents(".panel").removeClass("hide").fadeIn()
+		})
+	})
+	
+	function modMneuDiaLog(title,row){
+		var content='<div>'+
+					'<input type="hidden" value="'+row.id+'" name="id"/>'+
+					'<div class="clearfix"><span class="pull-left wd_20">编码</span>	<input  type="text" name="code" value="'+(row.code? row.code:'')+'" class="form-control pull-right wd_80" placeholder="编码"/></div>'+
+					'<div class="clearfix"><span class="pull-left wd_20">菜单名称</span>	<input  type="text" name="name" value="'+(row.name? row.name:'')+'" class="form-control pull-right wd_80" placeholder="菜单名称"/></div>'+
+					'<div class="clearfix"><span class="pull-left wd_20">路径</span>	<input type="text" name="url" value="'+(row.url? row.url:'')+'" class="form-control pull-right wd_80" placeholder="路径"/></div>'+
+					'<div class="clearfix"><span class="pull-left wd_20">上级菜单</span><input type="text" name="pid" value="'+(row.pid !=undefined ? row.pid:'')+'" class="form-control pull-right wd_80" placeholder="上级id"/></div>'+
+					'</div>'
+		$.diaLog({
+			title:title,
+			type:"confrim",
+			con:content,
+			init:function(dialog){
+				$(dialog).find("input[name=pid]").on("click",function(){
+					console.log($(this))
+				})
+			},
+			func:function(type,panel){
+				if(type=="sure"){
+					var obj=$.valid({ele:panel.children()})
+					console.log(obj)
+					if(obj==undefined){
+						return false;
+					}
+				}
+			}
+		})
+	}
+	
+	
+	function actionFormatter(value, row, index, field){
+		return [
+			'<a class="tab-index" type="mod" index="'+value+'">修改</a>',
+			'<a class="tab-index" type="del" index="'+value+'">删除</a>',
+		].join("")
+	}
+</script>
+<body>
+	<div class="panel panel-default fade in">
+		<div class="panel-heading clearfix">
+			<h4 class="pull-left">菜单</h4>
+			<div class="page-tool pull-right">
+					<button class="btn-primary" id="btn_menu_add">添加</button>
+			</div> 
+		</div>
+		<div id="page-contain" class="panel-body">
+			<div class="page-table">
+				<table id="menu-table"></table>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-default hide fade in">
+		<div class="panel-heading clearfix">
+			<h4 class="pull-left">菜单添加</h4>
+			<div class="page-tool pull-right">
+					<button class="btn-primary" id="btn_menu_add_can">取消</button>
+			</div> 
+		</div>
+		<div id="page-contain" class="panel-body">
+			<div id="menu-add">
+				<div class="clearfix"><span class="pull-left">编码</span>	<input  type="text" name="code" class="form-control pull-left" placeholder="编码"/></div>
+				<div class="clearfix"><span class="pull-left">菜单名称</span>	<input  type="text" name="name" class="form-control pull-left" placeholder="菜单名称"/></div>
+				<div class="clearfix"><span class="pull-left">路径</span>	<input type="text" name="url" class="form-control pull-left" placeholder="路径"/></div>
+				<div class="clearfix"><span class="pull-left">上级菜单</span><input type="text" name="pid" class="form-control pull-right wd_80" placeholder="上级id"/></div>
+				<div class="clearfix"><button class="btn-primary" id="menu-submit">提交</button></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

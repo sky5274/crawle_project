@@ -1,0 +1,20 @@
+.wd-20{width: 20%}
+.wd_80{width: 80%}
+.lay {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: -1;
+	background-color: #000;
+	opacity: 0.5;
+	transition: opacity 0.5s;
+}
+.loading {
+	width: 150px;
+	height: 150px;
+	margin: 30px auto;
+	background: #fff;
+	border-radius: 10px;
+}
