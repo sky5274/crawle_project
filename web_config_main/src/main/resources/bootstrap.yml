@@ -1,0 +1,13 @@
+server:
+  port: 8910
+eureka:
+   instance:
+      hostname: 127.0.0.1
+   client:
+      register-with-eureka: false   #注册中心不需要注册自己
+      fetch-registry: false   #注册中心不需要去发现服务
+      serviceUrl:
+         defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka #设置服务注册中心的URL
+
+
+  
