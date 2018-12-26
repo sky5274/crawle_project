@@ -1,0 +1,21 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8910/eureka
+      
+server:
+  port: 8990
+
+spring:
+  cloud:
+    config:
+       profile: dev
+       discovery:
+        enabled: true
+        service-id: config-server
+       label: master
+  application:
+    name: crawle_config
+  profiles:
+    active: dev
+
