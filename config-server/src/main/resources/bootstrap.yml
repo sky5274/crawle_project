@@ -18,7 +18,7 @@ spring:
           username: tianlianyouren@163.com
           password: wangfan5274
       label: master
-      profile: dev
+      profile: dev,test,beta
  
 
   

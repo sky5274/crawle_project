@@ -9,7 +9,7 @@ server:
 spring:
   cloud:
     config:
-       profile: dev
+       profile: dev,test
        discovery:
         enabled: true
         service-id: config-server
