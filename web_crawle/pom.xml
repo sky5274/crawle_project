@@ -21,7 +21,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.sky.base</groupId>
-			<artifactId>pub</artifactId>
+			<artifactId>core_pub</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
