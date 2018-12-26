@@ -1,21 +1,25 @@
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8910/eureka
-      
 server:
   port: 8990
-
+  
 spring:
-  cloud:
-    config:
-       profile: dev,test
-       discovery:
-        enabled: true
-        service-id: config-server
-       label: master
   application:
-    name: crawle_config
-  profiles:
-    active: dev
-
+    name: crawle-config
+  thymeleaf:
+    cache: false 
+    mode: HTML5  
+    encoding: UTF-8
+    content-type: text/html; charset=utf-8
+    prefix: classpath:/templates/
+    suffix: .html 
+  datasource:
+    name: test
+    url: jdbc:mysql://localhost:3306/crawle?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false
+    username: sky_
+    password: fengy4n
+    driver-class-name: com.mysql.jdbc.Driver
+mybatis:
+  mapper-locations: classpath:com/cRawl/data/*/mapper/*.xml
+  
+logging:
+  level:   
+     com.crawl.data: debug
