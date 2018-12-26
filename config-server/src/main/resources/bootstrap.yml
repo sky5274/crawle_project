@@ -1,0 +1,24 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8910/eureka
+      
+server:
+  port: 8920
+
+spring:
+  application:
+     name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/sky5274/crawle_project.git
+          search-paths:  config-center/**/
+          username: tianlianyouren@163.com
+          password: wangfan5274
+      label: master
+      profile: dev
+ 
+
+  
