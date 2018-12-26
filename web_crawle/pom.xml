@@ -6,16 +6,18 @@
 		<groupId>com.sky</groupId>
 		<artifactId>client_parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath/>
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>web_crawle</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
 	<name>web_crawle</name>
-	<description>Demo project for Spring Boot</description>
+	<description>crawle config project for Spring Boot</description>
 
 	<properties>
 		<java.version>1.8</java.version>
+		<mysql.version>8.0.13</mysql.version>
+		<druid.spring.version>1.1.10</druid.spring.version>
+		<druid.version>1.1.10</druid.version>
 	</properties>
 
 	<dependencies>
