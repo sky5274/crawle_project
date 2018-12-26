@@ -15,8 +15,8 @@ spring:
         git:
           uri: https://github.com/sky5274/crawle_project.git
           search-paths:  config-center/**/
-          username: tianlianyouren@163.com
-          password: wangfan5274
+          username: ""
+          password: ""
       label: master
       profile: dev,test,beta
  
