@@ -6,7 +6,6 @@
 		<groupId>com.sky</groupId>
 		<artifactId>client_parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath/>
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>web_crawle</artifactId>
