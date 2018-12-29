@@ -2,6 +2,8 @@ package com.crawl.data.config.dao.entity;
 
 import java.util.List;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.sky.pub.BasePageRequest;
 
 /**
@@ -17,7 +19,8 @@ public class ConfigTableEntity extends BasePageRequest{
 
 
     private String name;
-
+    
+    @NotBlank(message="表名称不能为空")
     private String tableCode;
 
     private String group;

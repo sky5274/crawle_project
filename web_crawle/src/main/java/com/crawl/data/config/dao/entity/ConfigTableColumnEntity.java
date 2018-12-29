@@ -14,7 +14,9 @@ public class ConfigTableColumnEntity extends BaseTableEntity{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	private Integer tableId;
+	/**表编码（表名）*/
+	private String tableCode;
 	private String column;
 
     private String desc;
@@ -45,4 +47,20 @@ public class ConfigTableColumnEntity extends BaseTableEntity{
     public void setType(String type) {
         this.type = type == null ? null : type.trim();
     }
+
+	public String getTableCode() {
+		return tableCode;
+	}
+
+	public void setTableCode(String tableCode) {
+		this.tableCode = tableCode;
+	}
+
+	public Integer getTableId() {
+		return tableId;
+	}
+
+	public void setTableId(Integer tableId) {
+		this.tableId = tableId;
+	}
 }

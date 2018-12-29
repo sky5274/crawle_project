@@ -8,14 +8,15 @@ import com.crawl.data.config.dao.entity.MenuEntity;
 import com.crawl.data.config.dao.entity.MenuNode;
 import com.sky.pub.BasePageRequest;
 import com.sky.pub.Page;
+import com.sky.pub.common.exception.ResultException;
 
 @Service
 public interface MenuService {
 	
 	public List<MenuEntity> getMenuList();
-	public Boolean saveMenu(MenuEntity menu);
-	public Boolean updateMenu(MenuEntity menu);
-	public Boolean delMneu(MenuEntity menu);
+	public MenuEntity saveMenu(MenuEntity menu) throws ResultException;
+	public Boolean updateMenu(MenuEntity menu) throws ResultException;
+	public Boolean delMneu(MenuEntity menu) throws ResultException;
 	/**
 	 * 分页查询菜单
 	 * @param page

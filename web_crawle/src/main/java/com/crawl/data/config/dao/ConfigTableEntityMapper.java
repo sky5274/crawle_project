@@ -24,7 +24,7 @@ public interface ConfigTableEntityMapper {
      * @author 王帆
      * @date 2018年12月25日 上午9:46:17
      */
-    List<ConfigTableEntity> queryByParam(ConfigTableEntity record);
+    List<ConfigTableEntity> queryListByParam(ConfigTableEntity record);
     
     /**
      *	统计数据数量 
@@ -42,5 +42,14 @@ public interface ConfigTableEntityMapper {
      * @author 王帆
      * @date 2018年12月25日 上午9:47:45
      */
-    List<ConfigTableEntity> queryTable(ConfigTableEntity record);
+    List<ConfigTableEntity> queryTableList(ConfigTableEntity record);
+    
+    /**
+     * 根据主键可查询表与属性数据
+     * @param id
+     * @return
+     * @author 王帆
+     * @date 2018年12月26日 下午4:40:10
+     */
+    ConfigTableEntity queryTableByID(Integer id);
 }
