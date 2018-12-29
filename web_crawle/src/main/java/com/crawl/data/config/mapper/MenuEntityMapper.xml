@@ -8,10 +8,11 @@
     <result column="pid" property="pid" jdbcType="INTEGER" />
     <result column="createId" property="createid" jdbcType="INTEGER" />
     <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="version"  property="version" jdbcType="INTEGER"/>
     <result column="ts" property="ts" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id,code, name, pid, createId, url, ts
+    id,code, name, pid, createId, url,version, ts
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -24,6 +25,24 @@
     <include refid="Base_Column_List" />
     from menu
   </select>
+  
+  <sql id="base_entity_condtion">
+  	<trim suffixOverrides="and">
+  		<if test="id !=null"> 		id=#{id} and		</if>
+  		<if test="code !=null"> 	code=#{code} and	</if>
+  		<if test="name !=null"> 	name=#{name} and	</if>
+  		<if test="pid !=null"> 		pid=#{pid} and		</if>
+  		<if test="ts !=null"> 		ts=#{ts} and		</if>
+  	</trim>
+  </sql>
+  
+  <!-- 根据条件查询数据 -->
+  <select id="queryByEntity" resultMap="BaseResultMap" parameterType="com.crawl.data.config.dao.entity.MenuEntity">
+    select 
+    <include refid="Base_Column_List" />
+    from menu
+    <trim prefix="where "> <include refid="base_entity_condtion"></include> </trim>
+  </select>
   <select id="accountQuery" resultType="java.lang.Integer">
     select     count(1)    from menu
   </select>
@@ -33,18 +52,17 @@
     from menu
     limit #{current},#{pageSize}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+  <delete id="deleteByPrimaryKey" parameterType="com.sky.pub.BasePageRequest" >
     delete from menu
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
   </delete>
-  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.MenuEntity" >
-    insert into menu (id,code, name, pid, createId, url, ts
-      )
+  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.MenuEntity" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into menu (id,code, name, pid, createId, url,version, ts)
     values (#{id,jdbcType=INTEGER},#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, IFNULL(#{pid,jdbcType=INTEGER},0), 
-      #{createid,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, now()
+      #{createid,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR},#{version} now()
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.MenuEntity" >
+  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.MenuEntity" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into menu
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -65,9 +83,10 @@
       <if test="url != null" >
         url,
       </if>
-      <if test="ts != null" >
-        ts,
+      <if test="version != null" >
+        version,
       </if>
+        ts
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -88,16 +107,17 @@
       <if test="url != null" >
         #{url,jdbcType=VARCHAR},
       </if>
-      <if test="ts != null" >
-        now(),
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
       </if>
+        now()
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.crawl.data.config.dao.entity.MenuEntity" >
     update menu
     <set >
       <if test="code != null" >
-         #{code,jdbcType=VARCHAR},
+       code=  #{code,jdbcType=VARCHAR},
       </if>
       <if test="name != null" >
         name = #{name,jdbcType=VARCHAR},
@@ -111,20 +131,20 @@
       <if test="url != null" >
         url = #{url,jdbcType=VARCHAR},
       </if>
-      <if test="ts != null" >
+      version=version+1,
         ts =now()
-      </if>
     </set>
-    where id = #{id,jdbcType=INTEGER} and ts=#{ts}
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.MenuEntity" >
     update menu
     set name = #{name,jdbcType=VARCHAR},
-    code = #{code,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
       pid = IFNULL(#{pid,jdbcType=INTEGER},0),
       createId = #{createid,jdbcType=INTEGER},
       url = #{url,jdbcType=VARCHAR},
+      version=version+1,
       ts = now()
-    where id = #{id,jdbcType=INTEGER} and ts=#{ts}
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
   </update>
 </mapper>

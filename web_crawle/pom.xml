@@ -11,13 +11,29 @@
 	<artifactId>web_crawle</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
 	<name>web_crawle</name>
-	<description>Demo project for Spring Boot</description>
+	<description>crawle config project for Spring Boot</description>
 
 	<properties>
 		<java.version>1.8</java.version>
+		<mysql.version>8.0.13</mysql.version>
+		<druid.spring.version>1.1.10</druid.spring.version>
+		<druid.version>1.1.10</druid.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.sky.base</groupId>
 			<artifactId>core_pub</artifactId>

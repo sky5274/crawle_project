@@ -7,10 +7,11 @@
     <result column="desc" jdbcType="VARCHAR" property="desc" />
     <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="createId" jdbcType="INTEGER" property="createid" />
+    <result column="version" jdbcType="INTEGER" property="version" />
     <result column="ts" jdbcType="TIMESTAMP" property="ts" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, name, desc, type, createId, ts
+    id, name, desc, type, createId,version, ts
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -18,19 +19,19 @@
     from config
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+  <delete id="deleteByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.ConfigEntity">
     delete from config
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
   </delete>
-  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.ConfigEntity">
+  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.ConfigEntity" useGeneratedKeys="true" keyColumn="id">
     insert into config (id, name, desc, 
-      type, createId, ts
+      type, createId,version, ts
       )
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
-      #{type,jdbcType=VARCHAR}, #{createid,jdbcType=INTEGER}, #{ts,jdbcType=TIMESTAMP}
+      #{type,jdbcType=VARCHAR}, #{createid,jdbcType=INTEGER},#{version}, #{ts,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.ConfigEntity">
+  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.ConfigEntity" useGeneratedKeys="true" keyColumn="id">
     insert into config
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -48,9 +49,10 @@
       <if test="createid != null">
         createId,
       </if>
-      <if test="ts != null">
-        ts,
+      <if test="version != null">
+        version,
       </if>
+        ts
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -68,9 +70,10 @@
       <if test="createid != null">
         #{createid,jdbcType=INTEGER},
       </if>
-      <if test="ts != null">
-        #{ts,jdbcType=TIMESTAMP},
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
       </if>
+        now()
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.crawl.data.config.dao.entity.ConfigEntity">
@@ -88,11 +91,10 @@
       <if test="createid != null">
         createId = #{createid,jdbcType=INTEGER},
       </if>
-      <if test="ts != null">
+      	version=version+1,
         ts = now()
-      </if>
     </set>
-    where id = #{id,jdbcType=INTEGER} and ts=#{ts}
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.ConfigEntity">
     update config
@@ -100,7 +102,8 @@
       desc = #{desc,jdbcType=VARCHAR},
       type = #{type,jdbcType=VARCHAR},
       createId = #{createid,jdbcType=INTEGER},
+      version=version+1,
       ts = now()
-    where id = #{id,jdbcType=INTEGER} and ts=#{ts}
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
   </update>
 </mapper>

@@ -11,6 +11,7 @@ public class Page <T>{
 	private List<T> list;
 	private int total;
 	
+	public Page() {}
 	public Page(List<T> list,int total) {
 		this.setList(list);
 		this.setTotal(total);

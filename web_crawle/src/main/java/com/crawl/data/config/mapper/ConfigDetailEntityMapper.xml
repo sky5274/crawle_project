@@ -24,7 +24,7 @@
     delete from config_detail
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.ConfigDetailEntity">
+  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.ConfigDetailEntity" useGeneratedKeys="true" keyColumn="id">
     insert into config_detail (id, pid, key, 
       value, desc, type, 
       createid, ts)
@@ -32,7 +32,7 @@
       #{value,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{createid,jdbcType=INTEGER}, #{ts,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.ConfigDetailEntity">
+  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.ConfigDetailEntity" useGeneratedKeys="true" keyColumn="id">
     insert into config_detail
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">

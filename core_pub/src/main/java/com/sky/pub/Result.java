@@ -6,6 +6,7 @@ public class Result<T> {
 	private boolean success=false;
 	private T data;
 	
+	public Result() {}
 	public Result(ResultCode code) {
 		this.setCode(code.getCode());
 		this.setMessage(code.getMsg());

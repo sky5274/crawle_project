@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +16,7 @@ import com.sky.pub.Page;
 import com.sky.pub.Result;
 import com.sky.pub.ResultCode;
 import com.sky.pub.ResultUtil;
+import com.sky.pub.common.exception.ResultException;
 
 /**
  * 菜单 控制器
@@ -40,15 +42,16 @@ public class MenuController {
 		return ResultUtil.getOk(ResultCode.OK, menuSerive.getMenuNode());
 	}
 	@RequestMapping("add")
-	public Result<Boolean> addMneu(MenuEntity menu){
+	public Result<MenuEntity> addMenu(MenuEntity menu) throws ResultException{
 		return ResultUtil.getOk(ResultCode.OK, menuSerive.saveMenu(menu));
 	}
 	@RequestMapping("update")
-	public Result<Boolean> updateMenu(MenuEntity menu){
+	public Result<Boolean> updateMenu(MenuEntity menu,BindingResult result) throws ResultException{
+		System.err.println(result.getAllErrors());
 		return ResultUtil.getOk(ResultCode.OK, menuSerive.updateMenu(menu));
 	}
 	@RequestMapping("del")
-	public Result<Boolean> delMenu(MenuEntity menu){
+	public Result<Boolean> delMenu(MenuEntity menu) throws ResultException{
 		return ResultUtil.getOk(ResultCode.OK, menuSerive.delMneu(menu));
 	}
 	

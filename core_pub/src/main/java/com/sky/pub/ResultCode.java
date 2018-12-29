@@ -3,7 +3,9 @@ package com.sky.pub;
 public enum ResultCode {
 	
 	OK("0","OK"),
-	FAILED("-1","FAILED");
+	FAILED("-1","FAILED"),
+	DATA_OPT_FAIL("100","数据操作失败"),
+	VALID("V_-1","校验异常");
 	private String code;
 	private String msg;
 	ResultCode(String code,String msg) {

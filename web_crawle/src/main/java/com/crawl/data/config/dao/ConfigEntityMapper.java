@@ -6,7 +6,7 @@ import com.crawl.data.config.dao.entity.ConfigEntity;
 
 @Mapper
 public interface ConfigEntityMapper {
-    int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(ConfigEntity record);
 
     int insert(ConfigEntity record);
 
