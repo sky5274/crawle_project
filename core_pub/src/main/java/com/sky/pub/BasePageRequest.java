@@ -12,6 +12,14 @@ public class BasePageRequest extends BaseTableEntity{
 	private static final long serialVersionUID = 1L;
 	private Integer current;
 	private Integer pageSize;
+	private boolean isInit=false;
+	public BasePageRequest() {}
+	public BasePageRequest(int current,int pageSize) {
+		super();
+		this.current=current;
+		this.pageSize=pageSize;
+	}
+	
 	public Integer getCurrent() {
 		return current;
 	}
@@ -25,20 +33,27 @@ public class BasePageRequest extends BaseTableEntity{
 		this.pageSize = pageSize;
 	}
 	
-	public void initPage() {
-		if(isPage()) {
-			if(current<1) {
-				current=0;
-			}
-			if(pageSize<0) {
-				pageSize=10;
-			}
-			if(current>0) {
-				current=(current-1)*pageSize;
+	public BasePageRequest initPage() {
+		if(!isInit) {
+			if(isPage()) {
+				if(current<1) {
+					current=0;
+				}
+				if(pageSize<0) {
+					pageSize=10;
+				}
+				if(current>0) {
+					current=(current-1)*pageSize;
+				}
+				isInit=true;
 			}
 		}
+		return this;
 	}
 	
+	public void setInit(boolean flag) {
+		this.isInit=flag;
+	}
 	public Boolean isPage() {
 		return current !=null && pageSize !=null;
 	}
