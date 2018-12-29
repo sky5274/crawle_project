@@ -19,8 +19,8 @@ spring:
   datasource:
     name: test
     url: jdbc:mysql://localhost:3306/crawle?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
-    username: sky_
-    password: fengy4n
+    username: temp
+    password: 123456
     driver-class-name: com.mysql.jdbc.Driver
 mybatis:
   mapper-locations: classpath:com/cRawl/data/*/mapper/*.xml
@@ -28,3 +28,4 @@ mybatis:
 logging:
   level:   
      com.crawl.data: debug
+     com.sky: debug
