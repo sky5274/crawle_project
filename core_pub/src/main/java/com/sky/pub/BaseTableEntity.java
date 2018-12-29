@@ -1,7 +1,8 @@
 package com.sky.pub;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
+
 
 public class BaseTableEntity implements Serializable{
 
@@ -10,9 +11,11 @@ public class BaseTableEntity implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	private Integer id;
+	private Integer version;
 	private Integer createid;
-	private Integer createName;
-	private Date ts;
+	private String createName;
+//	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+	private Timestamp  ts;
 	public Integer getId() {
 		return id;
 	}
@@ -20,21 +23,30 @@ public class BaseTableEntity implements Serializable{
 		this.id = id;
 	}
 	public Integer getCreateid() {
-		return createid;
+		return createid==null?-1:createid;
 	}
 	public void setCreateid(Integer createid) {
 		this.createid = createid;
 	}
-	public Integer getCreateName() {
-		return createName;
+	public String getCreateName() {
+		return createName==null? ((createid==null|| createid!=-1)? "管理员":null):createName;
 	}
-	public void setCreateName(Integer createName) {
+	public void setCreateName(String createName) {
 		this.createName = createName;
 	}
-	public Date getTs() {
+	public Timestamp getTs() {
 		return ts;
 	}
-	public void setTs(Date ts) {
+	public void setTs(Timestamp ts) {
 		this.ts = ts;
+	}
+	public void setTs(Long ts) {
+		this.ts = new Timestamp(ts);
+	}
+	public Integer getVersion() {
+		return version;
+	}
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
 }
