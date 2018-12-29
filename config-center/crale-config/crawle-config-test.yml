@@ -18,7 +18,7 @@ spring:
     suffix: .html 
   datasource:
     name: test
-    url: jdbc:mysql://localhost:3306/crawle?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
+    url: jdbc:mysql://localhost:3306/crawle?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true
     username: temp
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver

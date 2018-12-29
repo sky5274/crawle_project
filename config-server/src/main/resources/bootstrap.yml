@@ -15,8 +15,6 @@ spring:
         git:
           uri: https://github.com/sky5274/crawle_project.git
           search-paths:  config-center/**/
-          username: ""
-          password: ""
       label: master
       profile: dev,test,beta
  
