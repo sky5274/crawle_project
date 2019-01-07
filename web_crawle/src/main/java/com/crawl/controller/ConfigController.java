@@ -1,7 +1,11 @@
 package com.crawl.controller;
 
 
+import java.util.Enumeration;
+
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +32,12 @@ public class ConfigController {
 	}
 	
 	@RequestMapping("/page/{path}/{html}")
-	public String goConfigPagePath(@PathVariable("path") String path,@PathVariable("html")String html) {
+	public String goConfigPagePath(@PathVariable("path") String path,@PathVariable("html")String html,HttpServletRequest req,Model mod) {
+		Enumeration<String> params = req.getParameterNames();
+		while(params.hasMoreElements()) {
+			String key=params.nextElement();
+			mod.addAttribute(key, req.getParameter(key));
+		}
 		return "/config/"+path+"/"+html;
 	}
 }
