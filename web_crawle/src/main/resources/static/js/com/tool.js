@@ -20,13 +20,13 @@
 				if(option.beforeSend){
 					option.beforeSend();
 				}
-				$.loading().show()
+				$.loading(obj.loadtarget).show()
 			}
 			obj.complete=function(){
 				if(option.complete){
 					option.complete();
 				}
-				$.loading().close()
+				$.loading(obj.loadtarget).close()
 			}
 		}
 		var url;
