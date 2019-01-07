@@ -23,9 +23,9 @@ public class ConfigTableEntity extends BasePageRequest{
     @NotBlank(message="表名称不能为空")
     private String tableCode;
 
-    private String group;
+    private String groupName;
 
-    private String desc;
+    private String remark;
 
     private List<ConfigTableColumnEntity> columns;
 
@@ -46,27 +46,27 @@ public class ConfigTableEntity extends BasePageRequest{
         this.tableCode = tableCode == null ? null : tableCode.trim();
     }
 
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group == null ? null : group.trim();
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc == null ? null : desc.trim();
-    }
-
 	public List<ConfigTableColumnEntity> getColumns() {
 		return columns;
 	}
 
 	public void setColumns(List<ConfigTableColumnEntity> columns) {
 		this.columns = columns;
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 }
