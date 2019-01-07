@@ -2,6 +2,7 @@
 	var Message=function(cond,parent){
 		this.parent=parent!=undefined ?$(parent):$("body",window.top.document)
 		this.settings={
+				src:'',
 				type:"alert",
 				title:"提示",
 				enSure:'确认',
@@ -23,18 +24,7 @@
 		case "alert":
 			var _this=this;
 			var dialog=$(this.getModal(id));
-			this.parent.append(dialog);
-			//页面初始化事件
-			this.settings.init();
-			this.parent.find("#"+id).modal('toggle')
-			$(dialog).find(".modal-content").css("margin-top",_this.settings.top+"%")
-			$(dialog).find("button[type=button]").click(function(){
-				_this.settings.func($(this).data("type"))
-				$(dialog).modal('toggle')
-			})
-			$(dialog).on('hide.bs.modal',function(){
-				$(this).remove()
-			})
+			this.initModalEvent(dialog)
 			if(this.settings.closed){
 				window.setTimeout(function(){
 					$(dialog).modal('hide')
@@ -42,48 +32,59 @@
 			}
 			break;
 		case "confrim":
-			var dialog=$(this.getModal(id,1));
-			this.parent.append(dialog);
-			
-			//页面初始化事件
-			this.settings.init(dialog);
-			this.parent.find("#"+id).modal('toggle')
-			var _this=this;
-			$(dialog).find("button[type=button]").click(function(){
-				var flag
-				try {
-					flag=_this.settings.func($(this).data("type"),dialog)
-				} catch (e) {
-					console.error(e)
-					throw 'dialog err'
-				}
-				flag=flag==undefined?true:flag
-						if(flag){
-							$(dialog).modal('toggle')
-						}
-			})
-			$(dialog).find(".modal-content").resize(function(){
-				var H=$("body").height()
-				var h=$(this).height()
-				$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
-			})
-			$(dialog).on('hide.bs.modal',function(){
-				$(this).remove()
-			})
-			var H=this.parent.height()
-			var h=$(dialog).children().height()
-			$(dialog).find(".modal-content").css("margin-top",_this.settings.top+"%")
+			var dialog=this.getModal(id,1);
+			this.initModalEvent(dialog)
 			break;
 		default:
 			break;
 		}
 	}
 	Message.prototype={
+			initModalEvent:function(dialog){
+				var _this=this;
+				$(dialog).find("button[type=button]").click(function(){
+					var flag
+					try {
+						flag=_this.settings.func($(this).data("type"),dialog)
+					} catch (e) {
+						console.error(e)
+						throw 'dialog err'
+					}
+					flag=flag==undefined?true:flag
+							if(flag){
+								$(dialog).modal('toggle')
+							}
+				})
+				$(dialog).find(".modal-content").resize(function(){
+					var H=$("body").height()
+					var h=$(this).height()
+					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
+				})
+				$(dialog).on('hide.bs.modal',function(){
+					$(this).remove()
+				})
+				if(this.settings.drag){
+					$(dialog).draggable();//为模态对话框添加拖拽
+					$(dialog).css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
+				}
+			},
+			initModalEvn:function(dialog,id){
+				//页面初始化事件
+				this.settings.init(dialog);
+				this.parent.find("#"+id).modal('toggle')
+				window.setTimeout(function(){
+					$("body").children(".modal-backdrop").remove();
+				},200)
+				var H=this.parent.height()
+				var h=$(dialog).children().height()
+				$(dialog).find(".modal-content").css("margin-top",this.settings.top+"%")
+			},
 			stop:function(){
 				this.settings.flag=false;
 			},
 			getModal:function(id,i){
 				var con='<div class="modal fade" id="'+id+'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="'+this.settings.hidden+'" >'+
+				'<div class="modal-backdrop" style="opacity:0.5;z-index:-1"></div>'+
 				'<div class="modal-dialog">'+
 				' <div class="modal-content">'+
 				' <div class="modal-header">'+
@@ -100,7 +101,20 @@
 				' </div>'+
 				'</div>'+
 				'</div>'
-				return con;
+				var dialog=$(con)
+				var _this=this;
+				this.parent.append(dialog);
+					if(this.settings.src.lenght>0){
+						$.loading().show()
+						dialog.find(".modal-body").load(this.settings.url,"",function(){
+							$.loading().close();
+							_this.modal.show();
+							_this.initModalEvn(dialog,id);
+						})
+					}else{
+						this.initModalEvn(dialog,id)
+					}
+				return dialog;
 			},
 			start:function(){
 				this.settings.flag=true;
