@@ -1,5 +1,8 @@
+html,body{width: 100%;height: 100%;}
+iframe{height: 100%;height: 100%;overflow:hidden; }
 .wd-20{width: 20%}
 .wd_80{width: 80%}
+.pos_relative{position: relative;}
 .lay {
 	width: 100%;
 	height: 100%;
