@@ -40,7 +40,7 @@ public class ConfigTableServiceImpl implements ConfigTableService{
 	@Override
 	public Page<ConfigTableEntity> getConfigTablePage(ConfigTableEntity table) {
 		int total=configTableMapper.accountData(table);
-		return new Page<>(configTableMapper.queryTableList(table),total);
+		return new Page<>(configTableMapper.queryTableByPage(table),total);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class ConfigTableServiceImpl implements ConfigTableService{
 		ResultAssert.isBlank(table.getTableCode(), "表编码不允许为空");
 		int size=configTableMapper.insertSelective(table);
 		List<ConfigTableColumnEntity> list = table.getColumns();
-		if(list!=null && list.isEmpty()) {
+		if(list!=null && !list.isEmpty()) {
 			for(ConfigTableColumnEntity col:list) {
 				col.setCreateid(table.getCreateid());
 				col.setTableId(table.getId());

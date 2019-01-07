@@ -36,13 +36,22 @@ public interface ConfigTableEntityMapper {
     int accountData(ConfigTableEntity record);
     
     /**
-     * 根据条件查询表及其属性
+     * 	根据条件查询表及其属性
      * @param record
      * @return
      * @author 王帆
      * @date 2018年12月25日 上午9:47:45
      */
     List<ConfigTableEntity> queryTableList(ConfigTableEntity record);
+    
+    /**
+     *	 根据条件查询表 分页数据及其属性
+     * @param record
+     * @return
+     * @author 王帆
+     * @date 2018年12月29日 下午1:27:17
+     */
+    List<ConfigTableEntity> queryTableByPage(ConfigTableEntity record);
     
     /**
      * 根据主键可查询表与属性数据
