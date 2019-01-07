@@ -12,10 +12,10 @@
 			var obj=$.valid({ele:"#menu-add"})
 			if(obj){
 				$.doAjax({
-					url:API.page.menu.add,
+					url:"/menu/add",
 					data:obj,
 					success:function(res,status){
-						if(res.success && res.data){
+						if(res.success){
 							$.alert({content:"菜单添加成功"})
 							$("#menu-submit").parents(".panel").fadeOut().addClass("hide");
 							$("#btn_menu_add").parents(".panel").removeClass("hide").fadeIn()
@@ -25,7 +25,7 @@
 			}
 		});
 		$("#menu-table").jTable({
-			url:API.page.menu.page,
+			url:"/menu/page",
 			uniqueId:'id',
 			columns :[
 				{field: 'radio', radio: true}, 
