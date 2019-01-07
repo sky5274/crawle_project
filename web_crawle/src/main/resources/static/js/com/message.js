@@ -368,7 +368,7 @@
 		},
 		loading:function(tar){
 			var parent;
-			var body= tar==undefined || tar.length==0 ?'body':tar
+			var body= tar==undefined || $(tar).length==0 ?'body':$(tar)
 			if(tar==undefined || self!=top){
 				parent=$(body,window.top.document)
 			}else{
