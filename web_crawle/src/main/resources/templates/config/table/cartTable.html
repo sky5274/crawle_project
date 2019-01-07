@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="common/header::head('表配置卡片页','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js')"></head>
+<head th:replace="common/header::head('表配置卡片页','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/com/sql-formatter.min.js')"></head>
 <script type="text/javascript">
 	$(function(){
 		$("#btn_table_mod").on("click",function(){
 			var path='/config/table/mod/page?type=1&id;'+$(this).attr("tabeleId");
 			$.cartPage({parent:$("#page-panel",window.parent.document),src:path});
 		})
+		$("#sql-preview textarea").html(sqlFormatter.format($("#sql-preview").text()))
 	})
 </script>
 <body>
@@ -26,19 +27,29 @@
 					<div class="input-group"><label  >描述</label><textarea   name="remark" th:value="${table.remark}"></textarea></div>
 				</div>
 				<div class="panel">
-					<div class="title-header clearfix">
-						<h4 class="pull-left">属性</h4><span class="glyphicon glyphicon-plus pull-right" id="btn-table-attr-add"></span>
+					<div class="clearfix table-titile">
+						<ul id="myTab" class="nav nav-tabs">
+						    <li class="active">
+						        <a href="#table-attr-content" data-toggle="tab">属性   </a>
+						    </li>
+						    <li><a href="#sql-preview" data-toggle="tab">sql预览</a></li>
+						</ul>
 					</div>
-					<div id="table-attr-content">
-						<div class="clearfix table-titile">
-							<label class="pull-left">列名</label><label class="pull-left">类型</label><label class="pull-left">是否为空</label><label class="pull-left">是否为主键</label><label class="pull-left">描述</label>
+					<div class="tab-content">
+						<div id="table-attr-content" class="tab-pane fade in active">
+							<div class="clearfix table-titile">
+								<label class="pull-left">列名</label><label class="pull-left">类型</label><label class="pull-left">是否为空</label><label class="pull-left">是否为主键</label><label class="pull-left">描述</label>
+							</div>
+							<div class="clearfix table-attr-column" th:each="item,stats:${table.columns}">
+								<div class="pull-left"><input name="attr" type="text" th:value="${item.attr}" placeholder="列名"/></div>
+								<div class="pull-left"><select name="type" th:value="${item.type}" ><option value="varchart">字符串</option><option value="int">整数</option><option value="timetemp">时间戳</option></select></div>
+								<div class="pull-left"><input name="isNull" type="checkbox"  th:checked="${item.isNull==1}"/></div>
+								<div class="pull-left"><input name="isPrimary" th:checked="${item.isPrimary==1}"  type="checkbox"/></div>
+								<div class="pull-left"><input name="remark" th:value="${item.remark}"  placeholder="描述"/></div>
+							</div>
 						</div>
-						<div class="clearfix table-attr-column" th:each="item,stats:${table.columns}">
-							<div class="pull-left"><input name="attr" type="text" th:value="${item.attr}" placeholder="列名"/></div>
-							<div class="pull-left"><select name="type" th:value="${item.type}" ><option value="varchart">字符串</option><option value="int">整数</option><option value="timetemp">时间戳</option></select></div>
-							<div class="pull-left"><input name="isNull" type="checkbox"  th:checked="${item.isNull==1}"/></div>
-							<div class="pull-left"><input name="isPrimary" th:checked="${item.isPrimary==1}"  type="checkbox"/></div>
-							<div class="pull-left"><input name="remark" th:value="${item.remark}"  placeholder="描述"/></div>
+						<div id="sql-preview" class="tab-pane fade in">
+							<textarea style="width:100%;height:200px;" th:text="${sql}" th:if="${sql} !=''"></textarea>
 						</div>
 					</div>
 				</div>
