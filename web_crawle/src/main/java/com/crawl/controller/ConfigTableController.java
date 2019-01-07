@@ -47,6 +47,16 @@ public class ConfigTableController {
 		return ResultUtil.getOk(ResultCode.OK, configTableService.delConfigTable(table));
 	}
 	
+	@RequestMapping(value="/sql/createtable")
+	public Result<String> createTableSql(ConfigTableEntity table) throws ResultException{
+		return ResultUtil.getOk(ResultCode.OK, configTableService.getConfigTableCreateSql(table));
+	}
+	
+	@RequestMapping(value="/sql/temp/createtable")
+	public Result<String> createTempTableSql(@RequestBody ConfigTableEntity table) throws ResultException{
+		return ResultUtil.getOk(ResultCode.OK, configTableService.getTableCreateConfigSqlString(table));
+	}
+	
 	@RequestMapping("/mod/page")
 	public ModelAndView getModifyPage(Integer type,HttpServletRequest req) {
 		ModelAndView  view=new ModelAndView("/config/table/addTable");
@@ -61,7 +71,13 @@ public class ConfigTableController {
 	@RequestMapping("/cart/page")
 	public ModelAndView getCartPage(Integer id) {
 		ModelAndView  view=new ModelAndView("/config/table/cartTable");
-		view.addObject("table",configTableService.getConfigTableById(id));
+		ConfigTableEntity table = configTableService.getConfigTableById(id);
+		view.addObject("table",table);
+		try {
+			view.addObject("sql", configTableService.getTableCreateConfigSqlString(table));
+		} catch (ResultException e) {
+			e.printStackTrace();
+		}
 		return view;
 	}
 }
