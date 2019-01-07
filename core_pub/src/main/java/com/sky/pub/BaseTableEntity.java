@@ -40,7 +40,7 @@ public class BaseTableEntity implements Serializable{
 	public void setTs(Timestamp ts) {
 		this.ts = ts;
 	}
-	public void setTs(Long ts) {
+	public void setLongTs(Long ts) {
 		this.ts = new Timestamp(ts);
 	}
 	public Integer getVersion() {
