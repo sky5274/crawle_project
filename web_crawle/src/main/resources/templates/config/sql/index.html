@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('sql测试','','/js/com/sql-formatter.min.js')"></head>
+<script type="text/javascript">
+	$(function(){
+		$("#sql-format").on("click",function(){
+			var text=$("#page-contain textarea");
+			text.val(sqlFormatter.format(text.val()))
+		})
+		$("#sql-excute").on("click",function(){
+			var stats=$("#page-contain textarea").val();
+			if(stats.length==0){
+				$.alert({type:"warn",content:"请提交sql"})
+				return ;
+			}
+			$.doJsonAjax({
+				url:"/config/sql/excute",
+				data:{query:stats},
+				loadding:true,
+				success:function(res){
+					if(res.success){
+						showSqlResult(res.data)
+					}
+				}
+			})
+		})
+		$("#page-result-contain").on("click",".tab-close",function(){
+			$(this).parent().remove()
+		})
+	})
+	
+	function showSqlResult(data){
+		var contain=$("#page-result-contain");
+		contain.html("")
+		var con=$('<div class="pos_relative"></div>');
+		con.append('<i class="tab-close" style="position: absolute; top: 0; right: 0; font-size: 25px;" data-toggle="tooltip" title="closed">&times;</i> ')
+		if(data.exception){
+			showExceptionSqlResult(con,data)
+		}
+		if(data.results){
+			showDefinedSqlResult(con,data)
+		}
+		contain.append(con)
+	}
+	/**显示错误日志*/
+	function showExceptionSqlResult(ele,data){
+		ele.append("<div ><span>执行异常：</span>"+data.exception+"</div><div><span>错误信息：</span>"+data.errMsg+"</div>")
+	}
+	/**显示结果*/
+	function showDefinedSqlResult(ele,data){
+		var result_t=$('<ul class="nav nav-tabs"></ul>')
+		var result_c=$('<div class="tab-content"></div>')
+		$.each(data.results,function(i,res){
+			var panel=$('<div class="tab-pane fade in"></div>')
+			var title=$('<li><a href="#">result'+i+'</a></li>')
+			if(i==0){
+				panel.addClass("active")
+				title.addClass("active")
+			}
+			panel.append(getResults(res))
+			result_t.append(title)
+			result_c.append(panel)
+		})
+		ele.append(result_t).append(result_c)
+	}
+	
+	function getResults(res){
+		var str="";
+		if(res.excute_size){
+			str+="<div><span>执行条数：</span><span>"+res.excute_size+"</span></div>"
+		}
+		if(res.results){
+			str+='<table style="width:100%"><tr>';
+			var keys=[]
+			for(var key in res.results[0]){
+				str+='<th>'+key+'</th>';
+				keys.push(key)
+			}
+			str+='</tr>';
+			$.each(res.results,function(i,e){
+				str+='<tr>'
+				for(var k in keys){
+					str+='<td>'+e[keys[k]]+'</td>';
+				}
+				str+='</tr>'
+			})
+			str+='</table>';
+		}
+		return str;
+	}
+</script>
+<body>
+	<div id="page-panel" class="panel panel-default fade in">
+		<div class="panel-heading clearfix">
+			<h4 class="pull-left">sql测试</h4>
+		</div>
+		<div id="page-contain" class="panel-body">
+			<textarea style="width: 100%;height: 300px"></textarea>
+			<button class="btn btn-primary" id="sql-format">格式化</button>
+			<button class="btn btn-primary" id="sql-excute">执行</button>
+		</div>
+		<div id="page-result-contain" class="panel-body">
+		</div>
+	</div>
+</body>
+</html>
