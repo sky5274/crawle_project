@@ -4,6 +4,7 @@ public enum ResultCode {
 	
 	OK("0","OK"),
 	FAILED("-1","FAILED"),
+	PARAM_VALID("P_1","参数校验异常"),
 	DATA_OPT_FAIL("100","数据操作失败"),
 	VALID("V_-1","校验异常");
 	private String code;
