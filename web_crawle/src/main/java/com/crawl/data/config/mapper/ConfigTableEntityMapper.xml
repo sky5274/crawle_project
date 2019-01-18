@@ -132,7 +132,7 @@
   	<trim prefix="where " suffixOverrides="and">
   		 <if test="name != null" > 							tab.name =concat('%',#{name,jdbcType=VARCHAR},'%')  and	      	</if>
 	     <if test="tableCode != null" >	        			tab.table_code = #{tableCode,jdbcType=VARCHAR} and     			</if>
-	     <if test="groupName != null" >	        				tab.group_name = #{groupName,jdbcType=VARCHAR}          and				</if>
+	     <if test="groupName != null" >	        			tab.group_name = #{groupName,jdbcType=VARCHAR}   and			</if>
 	     <if test="createid != null and createid !=-1" >	tab.createId = #{createid,jdbcType=INTEGER}    and     			</if>
   	</trim>
   </sql>
@@ -173,10 +173,18 @@
   
   <!-- 根据条件查询表 分页数据及其属性 -->
   <select id="queryTableByPage" resultMap="BaseResultMap" parameterType="com.crawl.data.config.dao.entity.ConfigTableEntity" >
-    <include refid="table-columns-sql"></include>
-   	<include refid="base-query-condtion"></include>
-   	<if test="current !=null and pageSize !=null">
-   		limit #{current} ,#{pageSize}
-   	</if>
+     select 
+  	  temp.id, temp.name, temp.table_code, temp.group_name, temp.remark, temp.createId,temp.version, temp.ts,
+  	  col.id as cid, col.tableid,col.attr, col.remark as cremark, col.type as ctype, col.createId as ccreateId, col.ts as cts,
+  	  col.is_null,col.is_primary
+  	 from (
+  	 	select  <include refid="Base_Column_List" />
+  	 	from config_table tab
+  	 	<include refid="base-query-condtion"></include>
+	   	<if test="current !=null and pageSize !=null">
+	   		limit #{current} ,#{pageSize}
+	   	</if>
+  	 )temp
+  	 left join config_table_column col on col.tableid=temp.id
   </select>
 </mapper>
