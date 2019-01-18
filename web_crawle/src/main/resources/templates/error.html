@@ -16,6 +16,7 @@
                 <div>错误编码：	<span  th:text="${error}"></span></div>
                 <div>信息	：	 <span th:text="${message}"></span></div>
                 <div th:if="${exception}">异常：	 <span th:text="${exception}"></span></div>
+                <div th:if="${strace}">：	 <p th:text="${strace}"></p></div>
             </div>
         </div>
     </div>
