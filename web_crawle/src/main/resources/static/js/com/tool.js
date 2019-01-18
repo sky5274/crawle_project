@@ -31,7 +31,11 @@
 		}
 		var url;
 		if(obj.url.indexOf("://")<0){
-			url=API.config.baseUrl+obj.url
+			try {
+				url=API.config.baseUrl+obj.url
+			} catch (e) {
+				url=obj.url
+			}
 		}else{
 			url=obj.url
 		}
