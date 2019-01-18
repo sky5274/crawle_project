@@ -37,7 +37,22 @@
 			<property name="enableSubPackages" value="true" />
 		</javaClientGenerator>
 
-		<table schema="crawl" tableName="config_table_column" domainObjectName="ConfigTableColumnEntity"
+		<table schema="crawl" tableName="crawler_config" domainObjectName="CrawlerConfigEntity"
+			enableCountByExample="false" enableUpdateByExample="false"
+			enableDeleteByExample="false" enableSelectByExample="false"
+			selectByExampleQueryId="false">
+		</table>
+		<table schema="crawl" tableName="crawler_config_filter" domainObjectName="CrawlerConfigFilterEntity"
+			enableCountByExample="false" enableUpdateByExample="false"
+			enableDeleteByExample="false" enableSelectByExample="false"
+			selectByExampleQueryId="false">
+		</table>
+		<table schema="crawl" tableName="crawler_config_url" domainObjectName="CrawlerConfigUrlEntity"
+			enableCountByExample="false" enableUpdateByExample="false"
+			enableDeleteByExample="false" enableSelectByExample="false"
+			selectByExampleQueryId="false">
+		</table>
+	<!-- 	<table schema="crawl" tableName="config_table_column" domainObjectName="ConfigTableColumnEntity"
 			enableCountByExample="false" enableUpdateByExample="false"
 			enableDeleteByExample="false" enableSelectByExample="false"
 			selectByExampleQueryId="false">
@@ -47,7 +62,7 @@
 			enableDeleteByExample="false" enableSelectByExample="false"
 			selectByExampleQueryId="false">
 		</table>
-		<!-- <table schema="crawl" tableName="menu" domainObjectName="MenuEntity"
+		<table schema="crawl" tableName="menu" domainObjectName="MenuEntity"
 			enableCountByExample="false" enableUpdateByExample="false"
 			enableDeleteByExample="false" enableSelectByExample="false"
 			selectByExampleQueryId="false">
