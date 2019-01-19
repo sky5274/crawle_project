@@ -242,7 +242,6 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 */
 	private String getExceptionStrace(Exception ex) {
 		StringBuilder str=new StringBuilder();
-		ex.printStackTrace();
 		for(StackTraceElement strace:ex.getStackTrace()) {
 			str.append(strace+"\n");
 		}
