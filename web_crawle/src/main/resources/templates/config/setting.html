@@ -14,11 +14,11 @@
 				$.doAjax({
 					url:"/menu/add",
 					data:obj,
+					loadding:true,
 					success:function(res,status){
 						if(res.success){
 							$.alert({content:"菜单添加成功"})
-							$("#menu-submit").parents(".panel").fadeOut().addClass("hide");
-							$("#btn_menu_add").parents(".panel").removeClass("hide").fadeIn()
+							$("#btn_menu_add_can").clcik()
 						}
 					}
 				})
