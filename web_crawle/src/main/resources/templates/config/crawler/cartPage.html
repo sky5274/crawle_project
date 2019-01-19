@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="common/header::head('表配置新增','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/com/sql-formatter.min.js')"></head>
+<head th:replace="common/header::head('爬虫配置','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/com/sql-formatter.min.js')"></head>
 <script type="text/javascript">
 	$(function(){
 		var actionType=['/config/table/add','/config/table/modfiy']
@@ -108,10 +108,9 @@
 <body>
 	<div id="page-panel" class="panel panel-default fade in">
 		<div class="panel-heading clearfix">
-			<h4 class="pull-left" th:if="${type==null}" th:attr="flag=${type}">表配置新增</h4>
-			<h4 class="pull-left" th:if="${type==1}" th:attr="flag=${type}">表配置编辑</h4>
+			<h4 class="pull-left" >爬虫配置</h4>
 			<div class="page-tool pull-right">
-					<button class="btn btn-primary" id="btn_table_add_submit">提交</button>
+					<button class="btn btn-primary" id="btn_crawle_add_excute">执行</button>
 			</div> 
 		</div>
 		<div id="page-contain" class="panel-body">
