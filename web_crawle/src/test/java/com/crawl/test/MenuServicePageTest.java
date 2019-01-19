@@ -96,7 +96,11 @@ public class MenuServicePageTest extends RestTemplateUtil{
 		assertNotNull("更新的菜单不能为空", menu);
 		if(!flag) {
 			menu.setVersion(menu.getVersion()-1);
+<<<<<<< HEAD
 			menu.setTs(System.currentTimeMillis());
+=======
+			menu.setLongTs(System.currentTimeMillis());
+>>>>>>> refs/remotes/origin/base_dev_boot
 		}
 		Result<Boolean> result = testGetMenuNodeBYPageParam(restTemplate,path,menu,Result.class);
 		log.info("path: {}, action, predict:{} reponse data:{}",path,flag,JSON.toJSONString(result));

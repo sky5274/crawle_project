@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="common/header::head('表配置主页','','')"></head>
-<script type="text/javascript">
-	
-	</script>
+<head th:replace="common/header::head('表配置主页','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/config/table.index.js')"></head>
 <body>
-	<div id="page-panel">
+	<div id="page-panel" class="panel panel-default fade in">
+		<div class="panel-heading clearfix">
+			<h4 class="pull-left">表配置</h4>
+			<div class="page-tool pull-right">
+					<button class="btn btn-primary" id="btn_tab_add">添加</button>
+			</div> 
+		</div>
+		<div id="page-contain" class="panel-body">
+			<div class="page-table">
+				<table id="sql-table"></table>
+			</div>
+			<div class="page-table">
+				<table id="sql-detail-table"></table>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

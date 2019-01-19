@@ -17,29 +17,15 @@ public class ConfigTableColumnEntity extends BaseTableEntity{
 	private Integer tableId;
 	/**表编码（表名）*/
 	private String tableCode;
-	private String column;
 
-    private String desc;
+	private String attr;
+
+    private String remark;
 
     private String type;
 
-
-    public String getColumn() {
-        return column;
-    }
-
-    public void setColumn(String column) {
-        this.column = column == null ? null : column.trim();
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc == null ? null : desc.trim();
-    }
-
+    private Integer isNull;
+    private Integer isPrimary;
     public String getType() {
         return type;
     }
@@ -62,5 +48,37 @@ public class ConfigTableColumnEntity extends BaseTableEntity{
 
 	public void setTableId(Integer tableId) {
 		this.tableId = tableId;
+	}
+
+	public String getAttr() {
+		return attr;
+	}
+
+	public void setAttr(String attr) {
+		this.attr = attr;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public Integer getIsNull() {
+		return isNull;
+	}
+
+	public void setIsNull(Integer isNull) {
+		this.isNull = isNull;
+	}
+
+	public Integer getIsPrimary() {
+		return isPrimary;
+	}
+
+	public void setIsPrimary(Integer isPrimary) {
+		this.isPrimary = isPrimary;
 	}
 }

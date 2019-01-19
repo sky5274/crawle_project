@@ -17,10 +17,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -43,6 +44,9 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 
 	private static Log logger = LogFactory.getLog(SpringHandlerExceptionResolver.class);
 	private String errorUrl="/error";
+	private String definedType="dev";
+	@Value("${Monitor.type}")
+	public String monitorType="beta";
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,Object handlerMethod, Exception ex) {
@@ -60,7 +64,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 				}
 				Object bean = handler.getBean();
 				if(bean!=null){
-					if(bean.getClass().getAnnotation(RestController.class)!=null){
+					if(bean.getClass().getAnnotation(RestController.class)!=null && method.getReturnType().getName().equals(Model.class.getName())){
 						isRespondBody=true;
 					}
 				}
@@ -73,11 +77,10 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 			if (ex instanceof ResultException) {
 				ResultException resex = (ResultException)ex;
 				logger.warn("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+resex.getMsg());
-				resex.printStackTrace();
-				mv = errorResult(resex.getCode(),resex.getMsg(),request.getPathInfo(),resex.getClass(), request,isRespondBody);
+				mv = errorResult(resex.getCode(),resex.getMsg(),request.getPathInfo(),resex, request,isRespondBody);
 			}else{
 				logger.error(ex.getMessage(),ex);
-				mv = errorResult(500+"",message, request.getPathInfo(), ex.getClass(),request,isRespondBody);
+				mv = errorResult(500+"",message, request.getPathInfo(), ex,request,isRespondBody);
 			}
 		}
 		return mv;
@@ -95,43 +98,43 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 		try {
 			if (ex instanceof NoSuchRequestHandlingMethodException 
 					|| ex instanceof NoHandlerFoundException) {
-				return result(HttpExceptionEnum.NOT_FOUND_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.NOT_FOUND_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof HttpRequestMethodNotSupportedException) {
-				return result(HttpExceptionEnum.NOT_SUPPORTED_METHOD_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.NOT_SUPPORTED_METHOD_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof HttpMediaTypeNotSupportedException) {
-				return result(HttpExceptionEnum.NOT_SUPPORTED_MEDIA_TYPE_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.NOT_SUPPORTED_MEDIA_TYPE_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof HttpMediaTypeNotAcceptableException) {
-				return result(HttpExceptionEnum.NOT_ACCEPTABLE_MEDIA_TYPE_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.NOT_ACCEPTABLE_MEDIA_TYPE_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof MissingServletRequestParameterException) {
-				return result(HttpExceptionEnum.MISSING_REQUEST_PARAMETER_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.MISSING_REQUEST_PARAMETER_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof ServletRequestBindingException) {
-				return result(HttpExceptionEnum.REQUEST_BINDING_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.REQUEST_BINDING_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof ConversionNotSupportedException) {
-				return result(HttpExceptionEnum.NOT_SUPPORTED_CONVERSION_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.NOT_SUPPORTED_CONVERSION_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof TypeMismatchException) {
-				return result(HttpExceptionEnum.TYPE_MISMATCH_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.TYPE_MISMATCH_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof HttpMessageNotReadableException) {
-				return result(HttpExceptionEnum.MESSAGE_NOT_READABLE_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.MESSAGE_NOT_READABLE_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof HttpMessageNotWritableException) {
-				return result(HttpExceptionEnum.MESSAGE_NOT_WRITABLE_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.MESSAGE_NOT_WRITABLE_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof MethodArgumentNotValidException) {
-				return result(HttpExceptionEnum.NOT_VALID_METHOD_ARGUMENT_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.NOT_VALID_METHOD_ARGUMENT_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof MissingServletRequestPartException) {
-				return result(HttpExceptionEnum.MISSING_REQUEST_PART_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.MISSING_REQUEST_PART_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof BindException) {
-				return result(HttpExceptionEnum.BIND_EXCEPTION, request,ex.getClass());
+				return result(HttpExceptionEnum.BIND_EXCEPTION, request,ex);
 			}
 		} catch (Exception handlerException) {
 			logger.warn("Handling of [" + ex.getClass().getName() + "] resulted in Exception", handlerException);
@@ -168,11 +171,11 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @param isRespondBody 
 	 * @return 模型视图对象
 	 */
-	private ModelAndView errorResult(String code,String message, String url,Class<? extends Exception> exClass, HttpServletRequest request, boolean isRespondBody) {
+	private ModelAndView errorResult(String code,String message, String url,Exception ex, HttpServletRequest request, boolean isRespondBody) {
 		if (isRespondBody || isAjax(request) || isJson(request)) {
-			return jsonResult(code, message);
+			return jsonResult(code, message,ex);
 		} else {
-			return normalResult(code,message, url,exClass);
+			return normalResult(code,message, url,ex);
 		}
 	}
 
@@ -183,12 +186,12 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @param request 请求对象
 	 * @return 模型视图对象
 	 */
-	private ModelAndView result(HttpExceptionEnum httpException, HttpServletRequest request,Class<? extends Exception> exClass) {
+	private ModelAndView result(HttpExceptionEnum httpException, HttpServletRequest request,Exception ex) {
 		logger.warn("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ httpException.getMessage());
 		if (isAjax(request)) {
-			return jsonResult(httpException.getCode(), httpException.getMessage());
+			return jsonResult(httpException.getCode(), httpException.getMessage(),ex);
 		} else {
-			return normalResult(httpException.getCode(),httpException.getMessage(), request.getPathInfo(),exClass);
+			return normalResult(httpException.getCode(),httpException.getMessage(), request.getPathInfo(),ex);
 		}
 	}
 
@@ -200,13 +203,14 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @param url2 
 	 * @return 模型视图对象
 	 */
-	private ModelAndView normalResult(String code,String message, String url,Class<? extends Exception> exclazz) {
+	private ModelAndView normalResult(String code,String message, String url,Exception ex) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("timestamp", new Date());
 		model.put("status", 500);
 		model.put("error", code);
 		model.put("path", url);
-		model.put("exception", exclazz.getName());
+		model.put("strace", definedType.equals(monitorType)?getExceptionStrace(ex):null);
+		model.put("exception", ex.getClass().getName());
 		model.put("message", message);
 		return new ModelAndView(errorUrl, model);
 	}
@@ -215,14 +219,30 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * 返回错误数据
 	 *
 	 * @param message 错误信息
+	 * @param ex 
 	 * @return 模型视图对象
 	 */
-	private ModelAndView jsonResult(String code, String message) {
+	private ModelAndView jsonResult(String code, String message, Exception ex) {
 		ModelAndView mv = new ModelAndView();
 		FastJsonJsonView view = new FastJsonJsonView();
 		view.setFastJsonConfig(new FastJsonConfig());
-		view.setAttributesMap((JSONObject) JSON.toJSON(new Result<>(code, message,false)));
+		view.setAttributesMap((JSONObject) JSON.toJSON(new Result<>(code, message,definedType.equals(monitorType)?getExceptionStrace(ex):null,false)));
 		mv.setView(view);
 		return mv;
+	}
+	
+	/**
+	 * 获取异常 栈
+	 * @param ex
+	 * @return
+	 * @author 王帆
+	 * @date 2019年1月17日 下午2:37:59
+	 */
+	private String getExceptionStrace(Exception ex) {
+		StringBuilder str=new StringBuilder();
+		for(StackTraceElement strace:ex.getStackTrace()) {
+			str.append(strace+"\n");
+		}
+		return str.toString();
 	}
 }

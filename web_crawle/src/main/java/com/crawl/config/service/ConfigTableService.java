@@ -83,4 +83,14 @@ public interface ConfigTableService {
 	 * @date 2018年12月25日 上午9:39:22
 	 */
 	public String getConfigTableCreateSql(ConfigTableEntity table) throws ResultException;
+
+	/**
+	 * 	根据表配置数据获取创建表的定义sql
+	 * @param tempTable
+	 * @return
+	 * @throws ResultException
+	 * @author 王帆
+	 * @date 2019年1月7日 下午2:35:34
+	 */
+	public String getTableCreateConfigSqlString(ConfigTableEntity tempTable) throws ResultException;
 }

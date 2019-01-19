@@ -7,12 +7,16 @@
     <result column="table_code" property="tableCode" jdbcType="VARCHAR" />
     <result column="column" property="column" jdbcType="VARCHAR" />
     <result column="desc" property="desc" jdbcType="VARCHAR" />
+    <result column="attr" property="attr" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="is_null" property="isNull" jdbcType="INTEGER" />
+    <result column="is_primary" property="isPrimary" jdbcType="INTEGER" />
     <result column="createId" property="createid" jdbcType="INTEGER" />
     <result column="ts" property="ts" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, tableid,column, desc, type, createId, ts
+    id, tableid,attr, remark, type,is_null,is_primary, createId, ts
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -25,15 +29,15 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.crawl.data.config.dao.entity.ConfigTableColumnEntity" useGeneratedKeys="true" keyColumn="id">
-    insert into config_table_column (id, column, desc, tableid,     type, createId, ts      )
-    values (#{id,jdbcType=INTEGER}, #{column,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, #{tableId,jdbcType=INTEGER},
-      #{type,jdbcType=VARCHAR}, #{createid,jdbcType=INTEGER}, now()
+    insert into config_table_column (id, attr, remark, tableid,     type,is_null,is_primary, createId, ts      )
+    values (#{id,jdbcType=INTEGER}, #{attr,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{tableId,jdbcType=INTEGER},
+      #{type,jdbcType=VARCHAR},#{isNull},#{isPrimary}, #{createid,jdbcType=INTEGER}, now()
       )
   </insert>
   <insert id="insetBatch" parameterType="java.util.List" >
-    insert into config_table_column ( column, desc, tableid, type, createId, ts )
-    <foreach collection="list" item="it" open="values (" close=")" separator=",">
-    	#{it.column,jdbcType=VARCHAR}, #{it.desc,jdbcType=VARCHAR}, #{it.tableId,jdbcType=INTEGER},#{it.type,jdbcType=VARCHAR}, #{it.createid,jdbcType=INTEGER}, now()
+    insert into config_table_column ( attr, remark, tableid, type,is_null,is_primary, createId, ts )
+    <foreach collection="list" item="it" open="values "  separator=",">
+    	(#{it.attr,jdbcType=VARCHAR}, #{it.remark,jdbcType=VARCHAR}, #{it.tableId,jdbcType=INTEGER},#{it.type,jdbcType=VARCHAR},#{it.isNull},#{it.isPrimary}, #{it.createid,jdbcType=INTEGER}, now())
     </foreach>
   </insert>
   <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.ConfigTableColumnEntity" useGeneratedKeys="true" keyColumn="id">
@@ -48,11 +52,20 @@
       <if test="column != null" >
         column,
       </if>
-      <if test="desc != null" >
-        desc,
+      <if test="attr != null" >
+        attr,
+      </if>
+      <if test="remark != null" >
+        remark,
       </if>
       <if test="type != null" >
         type,
+      </if>
+      <if test="isNull != null" >
+        is_null,
+      </if>
+      <if test="isPrimary != null" >
+        is_primary,
       </if>
       <if test="createid != null" >
         createId,
@@ -69,11 +82,20 @@
       <if test="column != null" >
         #{column,jdbcType=VARCHAR},
       </if>
-      <if test="desc != null" >
-        #{desc,jdbcType=VARCHAR},
+      <if test="attr != null" >
+        #{attr,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
       </if>
       <if test="type != null" >
         #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="isNull != null" >
+        #{isNull},
+      </if>
+      <if test="isPrimary != null" >
+        #{isPrimary},
       </if>
       <if test="createid != null" >
         #{createid,jdbcType=INTEGER},
@@ -90,11 +112,20 @@
       <if test="column != null" >
         column = #{column,jdbcType=VARCHAR},
       </if>
-      <if test="desc != null" >
-        desc = #{desc,jdbcType=VARCHAR},
+      <if test="attr != null" >
+        attr = #{attr,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
       </if>
       <if test="type != null" >
         type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="isNull != null" >
+        is_null=#{isNull},
+      </if>
+      <if test="isPrimary != null" >
+        is_primary =#{isPrimary},
       </if>
       <if test="createid != null" >
         createId = #{createid,jdbcType=INTEGER},
@@ -105,16 +136,18 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
     update config_table_column
-    set column = #{column,jdbcType=VARCHAR},
-     tableid= #{tableId,jdbcType=INTEGER},
-      desc = #{desc,jdbcType=VARCHAR},
-      type = #{type,jdbcType=VARCHAR},
-      createId = #{createid,jdbcType=INTEGER},
-      ts = now()
+    set attr = #{attr,jdbcType=VARCHAR},
+        is_null=#{isNull},
+        is_primary =#{isPrimary},
+     	tableid= #{tableId,jdbcType=INTEGER},
+      	remark = #{remark,jdbcType=VARCHAR},
+      	type = #{type,jdbcType=VARCHAR},
+      	createId = #{createid,jdbcType=INTEGER},
+     	 ts = now()
     where id = #{id,jdbcType=INTEGER} and ts=#{ts}
   </update>
   <sql id="table_Column_sql" >
-  	select    col.id, col.tableid,col.column, col.desc, col.type, col.createId, col.ts,tab.table_code
+  	select    col.id, col.tableid,col.attr, col.remark, col.type, col.createId, COL.is_null,col.primary,col.ts,tab.table_code
   	from config_table_column col
   	left join config_table tab on tab.id=col.tableid
   </sql>

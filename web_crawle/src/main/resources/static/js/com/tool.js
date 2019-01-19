@@ -20,18 +20,22 @@
 				if(option.beforeSend){
 					option.beforeSend();
 				}
-				$.loading().show()
+				$.loading(obj.loadtarget).show()
 			}
 			obj.complete=function(){
 				if(option.complete){
 					option.complete();
 				}
-				$.loading().close()
+				$.loading(obj.loadtarget).close()
 			}
 		}
 		var url;
 		if(obj.url.indexOf("://")<0){
-			url=API.config.baseUrl+obj.url
+			try {
+				url=API.config.baseUrl+obj.url
+			} catch (e) {
+				url=obj.url
+			}
 		}else{
 			url=obj.url
 		}
@@ -50,17 +54,17 @@
 				}
 			},
 			success:function(data,textStatus){
-				if(data==null || data.code==undefined || data.code==0|| data.code==-1 || obj.ignore==true){
+				if(data==null || data.code==undefined || data.code=="0"|| data.code=="-1" || obj.ignore==true || data.success){
 						if(obj.success){
 								obj.success(data,textStatus)
 						}
-				}else if(data.code==-2){
+				}else if(data.code=="-2"){
 					getInitParent(parent).location.href=basePath+"/login";
 				}else{
 					if(obj.alert){
 						$.diaLog({con: obj.alert,closed:true})
 					}else{
-						$.diaLog({con:obj.url+'>>>'+data.msg,closed:true})
+						$.diaLog({con:obj.url+'>>>'+data.message,closed:true})
 					}
 				}
 			},
@@ -121,6 +125,10 @@
 		obj.dataType='json'
 			doAjax(obj)
 	}
+	function doPostJsonAjax(obj){
+		obj.contentType='application/json'
+		doJsonAjax(obj)
+	}
 	function jTable(tar,obj){
 		var param ={
 				method: 'get',
@@ -143,14 +151,14 @@
 					if(res.success && res.data){
 						return res.data;
 					}else{
-						$.alert({type:"warn",content:"请求数据返回错误"})
+						$.alert({type:"warn",content:"请求数据错误,错误编码："+res.code+" 信息："+res.message})
 					}
 				},
 				pageSize: 10,
 				pageList: [10, 25, 50, 100, 200],
 				search: false,
-				showColumns: true,
-				showRefresh: true,
+				showColumns: false,
+				showRefresh: false,
 				minimumCountColumns: 2,
 				clickToSelect: true,
 				onLoadError:function(){
@@ -164,6 +172,52 @@
 		param=$.extend(param,obj)
 		$(tar).bootstrapTable(param)
 	}
+	var cartPage=function(param){
+		if(param){
+			this.getCartPage(param);
+		}
+	}
+	cartPage.prototype={
+		getCartPage:function(obj){
+			var back_name=obj.back?obj.back:'返回';
+			$(obj.parent).fadeOut();
+			this.parent=$(obj.parent).parents("body");
+			this.cart_panel=this.parent.find(".cart-panel")
+			var _this=this;
+			if(this.cart_panel.length==0){
+				this.cart_panel=$('<div class="cart-panel panel panel-default fade in pos_relative">'+
+							'<a class="cart-back"><span class="glyphicon glyphicon-chevron-left"></span><span>'+back_name+'</span></a>'+
+							'<iframe frameborder="no" border="0" scrolling="no" id="cart-panle"></iframe>'+
+						'</div>')
+				this.parent.append(this.cart_panel);
+				this.parent.data("cart-page",obj);
+				$(this.cart_panel).css({"width":"100%","height":"100%"})
+				$(this.cart_panel).find(".cart-back").css({"height":"30px","width":"100%"})
+				$(this.cart_panel).find("iframe").css({"height":"calc( 100% - 30px )","width":"100%"})
+				$(this.cart_panel).find(".cart-back").on('click',function(){
+					$(_this.cart_panel).fadeOut();
+					$(obj.parent).fadeIn();
+				})
+			}
+			this.cart_panel.find("iframe").attr("src",obj.src)
+			this.cart_panel.fadeIn();
+		},
+		showPanel:function(){
+			var cart_panel=$(".cart-panel");
+			cart_panel.find(".cart-back").trigger("click")
+		},
+		back:function(func){
+			var cart_panel=$(".cart-panel", window.parent.document);
+			if(!cart_panel.is(':hidden')){
+				top.cartBack();
+				if(func){
+					func()
+				}
+			}
+		}
+	}
+	
+	
 	$.fn.extend({
 		jTable:function(param){
 			return new jTable($(this),param)
@@ -173,8 +227,12 @@
 		},
 	})
 	$.extend({
+		cartPage:function(param){
+			return new cartPage(param);
+		},
 		doAjax:doAjax,
 		doJsonAjax:doJsonAjax,
+		doPostJsonAjax:doPostJsonAjax,
 		updateFile:updateFile,
 		doUpdateFileAjax:doUpdateFileAjax
 	})
@@ -198,4 +256,8 @@ function initPageEvent(){
 	window.onbeforeunload = function(event) {
 		 $.loading().show();
 	};
+}
+
+function cartBack(){
+	$.cartPage().showPanel()
 }

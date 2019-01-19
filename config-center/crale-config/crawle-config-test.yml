@@ -1,11 +1,6 @@
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8900/config-server/
-      
 server:
   port: 8990
-  
+
 spring:
   application:
     name: crawle-config
@@ -18,14 +13,16 @@ spring:
     suffix: .html 
   datasource:
     name: test
-    url: jdbc:mysql://localhost:3306/crawle?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
+    url: jdbc:mysql://localhost:3306/crawle?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
     username: temp
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver
 mybatis:
-  mapper-locations: classpath:com/cRawl/data/*/mapper/*.xml
-  
+  mapper-locations: classpath:com/crawl/data/*/mapper/*.xml
+Monitor:
+   type: dev
+
 logging:
   level:   
-     com.crawl.data: debug
+     com.crawl: debug
      com.sky: debug

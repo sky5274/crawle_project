@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('爬虫配置','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js')"></head>
+<script type="text/javascript">
+	$(function(){
+		$("#crawler-table").jTable({
+			url:"/crawle/config/page",
+			uniqueId:'id',
+			height:"300",
+			showColumns: true,
+			showRefresh: true,
+			columns :[
+				{field: 'radio', radio: true}, 
+				{
+					field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+					formatter: function (value,row,index){return index+1; }
+				},
+				{ field : "id", title : "id"},
+				{ field : "tableCode", title : "编码"},
+				{ field : "name", title : "名称"},
+				{ field : "groupName", title : "分组"},
+				{ field : "remark", title : "描述"},
+				{ field : "columns", visible: false},
+			],
+			onClickRow:function(row,ele){
+				$("#sql-detail-table").jmTable("load",row.columns)
+			},
+			onDblClickRow:function(row,ele){
+				$.cartPage({parent:"#page-panel",src:'/config/table/cart/page?id='+row.id})
+			}
+		});
+		
+		$("#crawler-add").click(function(){
+			$.cartPage({parent:"#page-panel",src:'/crawle/config/page/mod'})
+		})
+	})
+</script>
+<body>
+	<div id="page-panel" class="panel panel-default fade in">
+		<div class="panel-heading clearfix">
+			<h4 class="pull-left">爬到配置</h4>
+			<button class="btn btn-primary pull-right" id="crawler-add">新增</button>
+		</div>
+		<div id="page-contain" class="panel-body">
+			<table id="crawler-table"></table>
+		</div>
+	</div>
+</body>
+</html>

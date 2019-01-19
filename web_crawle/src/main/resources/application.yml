@@ -18,4 +18,3 @@ spring:
     name: crawle_config
   profiles:
     active: dev
-

@@ -5,7 +5,7 @@ function addModel(ele,tar){
 		var tabId="tab_"+code;
 		var tab=$(tar.tab).find("#"+tabId)
 		if(tab.length==0){
-			tab=$('<li class="tab-item"><a href="#con_'+code+'" data-toggle="tab" id="'+tabId+'">'+$(ele).text()+'</a><i onClick="delTab(this)" class="tab-close">&times;</i> </li>');
+			tab=$('<li class="tab-item"><a href="#con_'+code+'" data-toggle="tab" id="'+tabId+'">'+$(ele).text()+'</a><i onClick="delTab(this)" class="tab-close" data-toggle="tooltip" title="closed">&times;</i> </li>');
 			$(tar.tab).append(tab);
 			var tab_con=$('<div class="tab-pane fade in" id="con_'+code+'"><iframe frameborder="no" border="0" src="'+$(ele).attr("url")+'" id="iframe_'+code+'"></iframe></div>')
 			$(tar.content).append(tab_con);

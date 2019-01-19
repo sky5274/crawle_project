@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('爬虫配置','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/com/sql-formatter.min.js')"></head>
+<script type="text/javascript">
+	$(function(){
+		var actionType=['/config/table/add','/config/table/modfiy']
+		$("#btn_table_add_submit").click(function(){
+			var flag=$(this).parents(".panel-heading").children("h4").attr("flag")
+			if(flag==undefined){
+				flag=0;
+			}
+			var data={}
+			var isValid=true;
+			$(".table-defined").find("input,select,textarea").each(function(){
+				if($(this).attr("require")=="true"){
+					if($(this).val()==""){
+						isValid=false;
+						$.alert({type:"warn",content:$(this).parent().text()+"不能为空"})
+					}
+				}
+				data[$(this).attr("name")]=$(this).val();
+			})
+			if(isValid){
+				var attrs=[]
+				$("#table-attr-content").find(".table-attr-column").each(function(){
+					var attr={}
+					$(this).find("input,select").each(function(){
+						if($(this).attr("type")=="checkbox"){
+							attr[$(this).attr("name")]=$(this).prop("checked")?"1":"0"
+						}else{
+							attr[$(this).attr("name")]=$(this).val();
+						}
+					})
+					attrs.push(attr)
+				})
+				data.columns=attrs
+				$.doPostJsonAjax({
+					url:actionType[flag],
+					data:JSON.stringify(data),
+					type:"post",
+					success:function(res){
+						if(res.success){
+							$.cartPage().back();
+							$.alert({type:"success",content:"操作成功"});
+						}
+					}
+				})
+			}
+		})
+		
+		$("#btn-table-attr-add").on("click",function(){
+			$("#table-attr-content").append(addTableAttrPanel())
+		})
+		$("#tab_sql_title").on("click",function(){
+			$("#sql-preview").html("")
+			$.doPostJsonAjax({
+				url:'/config/table/sql/temp/createtable',
+				data:JSON.stringify(getTableConfig()),
+				type:"post",
+				loadding:true,
+				loadtarget:"#sql-preview",
+				success:function(res){
+					if(res.success){
+						$("#sql-preview").html('<textarea style="width:100%;height:200px;">'+sqlFormatter.format(res.data)+'</textarea>')
+					}
+				}
+			})
+		})
+		
+		$("body").on("click",".table-attr-column-minus",function(){
+			$(this).parents(".table-attr-column").remove()
+		})
+	})
+	
+	function getTableConfig(){
+		var data={}
+		var isValid=true;
+		$(".table-defined").find("input,select,textarea").each(function(){
+			data[$(this).attr("name")]=$(this).val();
+		})
+		var attrs=[]
+		$("#table-attr-content").find(".table-attr-column").each(function(){
+			var attr={}
+			$(this).find("input,select").each(function(){
+				if($(this).attr("type")=="checkbox"){
+					attr[$(this).attr("name")]=$(this).prop("checked")?"1":"0"
+				}else{
+					attr[$(this).attr("name")]=$(this).val();
+				}
+			})
+			attrs.push(attr)
+		})
+		data.columns=attrs
+		return data;
+	}
+	
+	function addTableAttrPanel(){
+		return $("#table-attr-content .table-attr-column-clone").clone().removeClass("table-attr-column-clone").removeClass("hidden").addClass("table-attr-column")
+	}
+</script>
+<style type="text/css">
+	.table-titile>label {width: 19%;text-align: center; height: 20px; line-height: 20px}
+	.table-attr-column{padding: 2px 0px}
+	.table-attr-column >.pull-left{width: 19%; text-align: center;height: 20px;line-height: 20px;}
+	.table-attr-column input,select {width: 98%;padding: 0 1%;}
+	#btn-table-attr-add{position: absolute; top: calc(50% - 10px); right: 5px}
+</style>
+<body>
+	<div id="page-panel" class="panel panel-default fade in">
+		<div class="panel-heading clearfix">
+			<h4 class="pull-left" >爬虫配置</h4>
+			<div class="page-tool pull-right">
+					<button class="btn btn-primary" id="btn_crawle_add_excute">执行</button>
+			</div> 
+		</div>
+		<div id="page-contain" class="panel-body">
+			<div class="panel panel-default">
+				<div class="panel table-defined">
+					<div class="input-group"><label  class="input-group-addon">表名称</label><input class="form-control" placeholder="表名称"  name="name" th:value="${table==null}?'':${table.name}" type="text" require="true" /></div>
+					<div class="input-group"><label  class="input-group-addon">表编码</label><input class="form-control" placeholder="表编码"  name="tableCode" th:value="${table==null}?'':${table.tableCode}" type="text" require="true"/></div>
+					<div class="input-group"><label  class="input-group-addon">分组</label><input class="form-control" placeholder="分组"  name="groupName" th:value="${table==null}?'':${table.groupName}" type="text"/></div>
+					<div class="input-group"><label  >描述</label><textarea   name="remark" th:text="${table==null}?'':${table.remark}"></textarea></div>
+				</div>
+				<div class="panel">
+					<div class="title-header clearfix pos_relative">
+						<div class="clearfix table-titile ">
+							<ul id="myTab" class="nav nav-tabs">
+							    <li class="active">
+							        <a href="#table-attr-content" data-toggle="tab">属性   </a>
+							    </li>
+							    <li id="tab_sql_title"><a href="#sql-preview" data-toggle="tab">sql预览</a></li>
+							</ul>
+						</div>
+						<span class="glyphicon glyphicon-plus" id="btn-table-attr-add"></span>
+					</div>
+					<div class="tab-content">
+						<div id="table-attr-content" class="tab-pane fade in active">
+							<div class="clearfix table-titile">
+								<label class="pull-left">列名</label><label class="pull-left">类型</label><label class="pull-left">是否为空</label><label class="pull-left">是否为主键</label><label class="pull-left">描述</label>
+							</div>
+							<div class="clearfix table-attr-column-clone hidden">
+								<div class="pull-left"><input name="attr" type="text" placeholder="列名"/></div>
+								<div class="pull-left"><select name="type"><option value="varchart">字符串</option><option value="int">整数</option><option value="timetemp">时间戳</option></select></div>
+								<div class="pull-left"><input name="isNull" type="checkbox"/></div>
+								<div class="pull-left"><input name="isPrimary" type="checkbox"/></div>
+								<div class="pull-left"><input name="remark" placeholder="描述"/></div>
+								<div class="pull-right"><span class="glyphicon glyphicon-minus table-attr-column-minus"></span></div>
+							</div>
+							<div class="clearfix table-attr-column" th:each="item,stats:${table==null}?null:${table.columns}">
+								<div class="pull-left"><input name="attr" type="text" th:value="${item.attr}" placeholder="列名"/></div>
+								<div class="pull-left"><select name="type" th:value="${item.type}" ><option value="varchart">字符串</option><option value="int">整数</option><option value="timetemp">时间戳</option></select></div>
+								<div class="pull-left"><input name="isNull" type="checkbox"  th:checked="${item.isNull==1}"/></div>
+								<div class="pull-left"><input name="isPrimary" th:checked="${item.isPrimary==1}"  type="checkbox"/></div>
+								<div class="pull-left"><input name="remark" th:value="${item.remark}"  placeholder="描述"/></div>
+								<div class="pull-right"><span class="glyphicon glyphicon-minus table-attr-column-minus"></span></div>
+							</div>
+						</div>
+						<div id="sql-preview"  class="tab-pane fade in"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
