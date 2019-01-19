@@ -19,8 +19,10 @@ public class SessionInterceptor implements HandlerInterceptor {
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 			String url=request.getRequestURL().toString();
-			request.getSession().setAttribute("contextPath",url.substring(0,url.indexOf(request.getServletPath())));
-
+			try {
+				request.getSession().setAttribute("contextPath",url.substring(0,url.indexOf(request.getServletPath())));
+			} catch (Exception e) {
+			}
 	}
 
 	@Override
