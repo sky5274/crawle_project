@@ -24,7 +24,9 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
 mybatis:
   mapper-locations: classpath:com/crawl/data/*/mapper/*.xml
-  
+Monitor:
+   type: dev
+
 logging:
   level:   
      com.crawl: debug
