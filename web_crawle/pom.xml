@@ -39,5 +39,10 @@
 			<artifactId>core_pub</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sky</groupId>
+			<artifactId>crawle-service</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
