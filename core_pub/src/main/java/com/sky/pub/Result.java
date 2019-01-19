@@ -1,6 +1,12 @@
 package com.sky.pub;
 
-public class Result<T> {
+import java.io.Serializable;
+
+public class Result<T> implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String code;
 	private String message;
 	private boolean success=false;
