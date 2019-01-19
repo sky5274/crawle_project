@@ -303,7 +303,7 @@
 		}else{
 			var flag=this.settings.content.indexOf('<')>-1
 			var con=flag?this.settings.content:('<strong>'+(this.settings.title==undefined?t_p.title:this.settings.title)+'</strong>'+this.settings.content)
-			var html=$('<div class="alert-item alert '+t_p.type+'"><a href="#" class="close" data-dismiss="alert">&times;</a>'+con+'</div>');
+			var html=$('<div class="alert-item alert '+t_p.type+'" style="margin-bottom:0px"><a href="#" class="close" data-dismiss="alert">&times;</a>'+con+'</div>');
 			var group=this.parent.find("div.alert-group")
 			if(group.length==0){
 				group=$("<div class='alert-group'></div>")
