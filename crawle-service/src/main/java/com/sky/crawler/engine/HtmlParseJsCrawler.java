@@ -1,10 +1,9 @@
 package com.sky.crawler.engine;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
-
+import java.util.concurrent.TimeUnit;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -16,6 +15,9 @@ import com.sky.pub.common.exception.ResultException;
 import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
 import cn.edu.hfut.dmic.webcollector.model.Page;
 import cn.edu.hfut.dmic.webcollector.plugin.berkeley.BreadthCrawler;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * html页面爬虫
@@ -27,6 +29,8 @@ public class HtmlParseJsCrawler extends BreadthCrawler{
 	private String jsContents=null;
 	private ScriptEngine engine;
 	private Writer writer;
+	private String urlRegex=" /^((ht|f)tps?):\\/\\/([\\w\\-]+(\\.[\\w\\-]+)*\\/)*[\\w\\-]+(\\.[\\w\\-]+)*\\/?(\\?([\\w\\-\\.,@?^=%&:\\/~\\+#]*)+)?/";
+	
 	
 	public HtmlParseJsCrawler(String crawlPath, boolean autoParse) throws ResultException  {
 		super(crawlPath, autoParse);
@@ -56,16 +60,42 @@ public class HtmlParseJsCrawler extends BreadthCrawler{
 	public void loadJsFile(String path) throws ResultException {
 		if(engine==null) {
 			engine = new ScriptEngineManager().getEngineByName("javascript");
+			engine.setContext(getJsContext());
 		}
 		try {
-			engine.setContext(getJsContext());
-			engine.eval(new FileReader(getClass().getResource(path).getFile()));
-		} catch (FileNotFoundException | ScriptException e) {
+			if(path.matches(urlRegex)) {
+				engine.eval(loadRemoteFile(path));
+			}else {
+				engine.eval(new FileReader(getClass().getResource(path).getFile()));
+			}
+		} catch ( ScriptException | IOException e) {
 			engine=null;
 			throw new ResultException(ResultCode.FAILED,"初始化js引擎失败",e);
 		}
 	}
 
+	/**
+	 * 	获取远程文件内容
+	 * @param path
+	 * @return
+	 * @author 王帆
+	 * @throws IOException 
+	 * @date 2019年1月20日 下午10:15:11
+	 */
+	private String loadRemoteFile(String path) throws IOException {
+		OkHttpClient client = new OkHttpClient.Builder()
+			    .connectTimeout(60, TimeUnit.SECONDS)
+			    .readTimeout(60, TimeUnit.SECONDS)
+			    .writeTimeout(60, TimeUnit.SECONDS)
+			    .retryOnConnectionFailure(true)
+			    .build();
+		Request request = new Request.Builder()
+			    .url(path)
+			    .build();
+		Response response = client.newCall(request).execute();
+		return response.body().string();
+	}
+	
 	public void loadjs(String jsContents ) throws ResultException {
 		this.jsContents=jsContents;
 	}
