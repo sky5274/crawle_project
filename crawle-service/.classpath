@@ -28,6 +28,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/mvm/repository/com/sleepycat/je/5.0.73/je-5.0.73.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
