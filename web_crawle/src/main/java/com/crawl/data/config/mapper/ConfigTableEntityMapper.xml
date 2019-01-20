@@ -127,21 +127,6 @@
       ts = now()
     where id = #{id,jdbcType=INTEGER} and and version=#{version}
   </update>
-  <sql id="base-query-condtion">
-  	<trim suffixOverrides="and">
-  		 <if test="name != null" > 				tab.name =concat('%',#{name,jdbcType=VARCHAR},'%')  and	      	</if>
-	     <if test="tableCode != null" >	        tab.table_code = #{tableCode,jdbcType=VARCHAR} and     			</if>
-	     <if test="group != null" >	        	tab.group = #{group,jdbcType=VARCHAR}          and				</if>
-	     <if test="createid != null" >	        tab.createId = #{createid,jdbcType=INTEGER}    and     			</if>
-  	</trim>
-  </sql>
-  <sql id="table-columns-sql">
-  	 select 
-  	  tab.id, tab.name, tab.table_code, tab.group, tab.desc, tab.createId,tab.version, tab.ts,
-  	  col.id as cid, col.tableid,col.column, col.desc as cdesc, col.type as ctype, col.createId as ccreateId, col.ts as cts
-  	 from config_table tab
-  	 left join config_table_column col.tableid=tab.id
-  </sql>
   
   <sql id="base-query-condtion">
   	<trim prefix="where " suffixOverrides="and">
@@ -172,15 +157,6 @@
   <select id="queryTableByID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     <include refid="table-columns-sql"></include>
     where tab.id==#{id}
-  </select>
-  
-   <!-- 根据条件查询表与其属性的数据 -->
-  <select id="queryTableList" resultMap="BaseResultMap" parameterType="com.crawl.data.config.dao.entity.ConfigTableEntity" >
-    <include refid="table-columns-sql"></include>
-    <trim prefix="where ">
-    	<include refid="base-query-condtion"></include>
-    </trim>
-    where tab.id=#{id}
   </select>
   
    <!-- 根据条件查询表与其属性的数据 -->
