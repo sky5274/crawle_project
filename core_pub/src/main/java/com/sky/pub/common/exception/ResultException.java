@@ -21,8 +21,12 @@ public class ResultException extends Exception{
 	private LogLevel level=LogLevel.INFO;
 	private String code;
 	private String msg;
+	private Object data;
 	public ResultException(ResultCode code) {
 		this(code.getCode(),code.getMsg());
+	}
+	public ResultException(ResultCode code,Object data) {
+		this(code.getCode(),code.getMsg(),LogLevel.INFO,data);
 	}
 	public ResultException(ResultCode code,LogLevel level) {
 		this(code.getCode(),code.getMsg(),level);
@@ -33,8 +37,14 @@ public class ResultException extends Exception{
 	public ResultException(ResultCode code,String message) {
 		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message);
 	}
+	public ResultException(ResultCode code,String message,Object data) {
+		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message,LogLevel.INFO,data);
+	}
 	public ResultException(ResultCode code,String message,LogLevel level) {
 		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message,level);
+	}
+	public ResultException(ResultCode code,String message,Object data,Exception e) {
+		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message,LogLevel.INFO,data,e);
 	}
 	public ResultException(ResultCode code,String message,Exception e) {
 		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message,e);
@@ -49,12 +59,20 @@ public class ResultException extends Exception{
 		this(code,message,LogLevel.INFO,e);
 	}
 	public ResultException(String code,String message,LogLevel level) {
+		this(code,message,level,null);
+	}
+	public ResultException(String code,String message,LogLevel level,Exception e) {
+		this(code,message,level,null,e);
+	}
+	public ResultException(String code,String message,LogLevel level,Object data) {
 		super(message);
+		this.setData(data);
 		this.setCode(code);
 		this.setMsg(message);
 	}
-	public ResultException(String code,String message,LogLevel level,Exception e) {
+	public ResultException(String code,String message,LogLevel level,Object data,Exception e) {
 		super(e);
+		this.setData(data);
 		this.setCode(code);
 		this.setMsg(message);
 	}
@@ -90,6 +108,12 @@ public class ResultException extends Exception{
 		this.msg = msg;
 	}
 	
+	public LogLevel getLevel() {
+		return level;
+	}
+	public void setLevel(LogLevel level) {
+		this.level = level;
+	}
 	@Override
 	public void printStackTrace() {
 		switch (level) {
@@ -112,5 +136,11 @@ public class ResultException extends Exception{
 		default:
 			break;
 		}
+	}
+	public Object getData() {
+		return data;
+	}
+	public void setData(Object data) {
+		this.data = data;
 	}
 }

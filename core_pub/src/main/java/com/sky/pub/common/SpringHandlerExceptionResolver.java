@@ -76,7 +76,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 			//BaseSystemException是我自定义的异常基类，继承自RuntimeException
 			if (ex instanceof ResultException) {
 				ResultException resex = (ResultException)ex;
-				logger.warn("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+resex.getMsg());
+				showLog(request,resex);
 				mv = errorResult(resex.getCode(),resex.getMsg(),request.getPathInfo(),resex, request,isRespondBody);
 			}else{
 				logger.error(ex.getMessage(),ex);
@@ -85,7 +85,30 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 		}
 		return mv;
 	}
+	
+	private void showLog(HttpServletRequest request, ResultException resex) {
+		switch (resex.getLevel()) {
+		case TRACE:
+			logger.trace("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+resex.getMsg());
+			break;
+		case DEBUG:
+			logger.debug("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+resex.getMsg());
+			break;
+		case INFO:
+			logger.info("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+resex.getMsg());
+			break;
+		case WARN:
+			logger.warn("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+resex.getMsg(),resex);
+			break;
+		case ERROR:
+			logger.warn("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+resex.getMsg(),resex);
+			break;
 
+		default:
+			break;
+		}
+	}
+	
 	/**
 	 * 这个方法是拷贝 {@link org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver#doResolveException},
 	 * 加入自定义处理，实现对400， 404， 405， 406， 415， 500(参数问题导致)， 503的处理
@@ -187,7 +210,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @return 模型视图对象
 	 */
 	private ModelAndView result(HttpExceptionEnum httpException, HttpServletRequest request,Exception ex) {
-		logger.warn("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ httpException.getMessage());
+		logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ httpException.getMessage(),ex);
 		if (isAjax(request)) {
 			return jsonResult(httpException.getCode(), httpException.getMessage(),ex);
 		} else {
@@ -226,7 +249,13 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 		ModelAndView mv = new ModelAndView();
 		FastJsonJsonView view = new FastJsonJsonView();
 		view.setFastJsonConfig(new FastJsonConfig());
-		view.setAttributesMap((JSONObject) JSON.toJSON(new Result<>(code, message,definedType.equals(monitorType)?getExceptionStrace(ex):null,false)));
+		if(ex instanceof ResultException) {
+			ResultException resex = (ResultException)ex;
+			view.setAttributesMap((JSONObject) JSON.toJSON(new Result<>(code, message,resex.getData()==null?(definedType.equals(monitorType)?getExceptionStrace(ex):null):resex.getData(),false)));
+		}else {
+			view.setAttributesMap((JSONObject) JSON.toJSON(new Result<>(code, message,definedType.equals(monitorType)?getExceptionStrace(ex):null,false)));
+		}
+		
 		mv.setView(view);
 		return mv;
 	}
