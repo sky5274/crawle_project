@@ -13,8 +13,15 @@
 				panel:"#table-content"
 			}
 		$("#btn_crawl_add_submit").click(function(){
+			if($("#jsContent:visible").prop("readonly")){
+				if($("#jsContent").val()==''){
+					$.alert({type:"warn",content:"请提交修改后的js内容"})
+					return false;
+				}
+			}
 			var data=getConfigData(defiend_page)
 			if(data){
+				data.jsPath=$("#js_path").val()
 				var flag=$(this).parents(".panel-heading").children("h4").attr("flag")
 				if(flag==undefined){
 					flag=0;
@@ -93,9 +100,13 @@
 				loadding:true,
 				success:function(res){
 					if(res.success){
-						$("#js_path").val(res.data[0])
-						$.alert({content:"其选择上传的js文件"})
-						updateJsContent(res.data[0])
+						if(res.data[0]!="error"){
+							$("#js_path").val(res.data[0])
+							$.alert({content:"上传js文件成功"})
+							updateJsContent(res.data[0])
+						}else{
+							$.alert({type:"warn",content:"文件上传失败"})
+						}
 					}
 				}
 			})
@@ -150,6 +161,7 @@
 	}
 </script>
 <style type="text/css">
+	#page-panel{overflow-y: auto;}
 	.tab-three .pull-left{width: 32%}
 	.tab-second .pull-left{width: 49%}
 	.table-titile>label {text-align: center; height: 20px; line-height: 20px}
@@ -202,10 +214,10 @@
 							</div>
 							<button class="btn btn-primary" id="js_update" >js上传</button>
 						</div>
-						<input type="hidden" name="js_path" id="js_path"/>
+						<input type="hidden" name="jsPath" id="js_path"/>
 						<textarea id="jsContent" name="jsContent" style="width: 100%; height: 200px" class="form-control" readonly="readonly"></textarea>
 					</div>
-					<div id="class-content" class="input-group fade in hidden" style="width: 100%;"><label class="input-group-addon">className</label><input name="className" type="text" placeholder="className" th:value="${config==null}?'':${config.className}" ></input></div>
+					<div id="class-content" class="input-group fade in hidden" style="width: 100%;"><label class="input-group-addon">className</label><input name="className" type="text" placeholder="className" require="true" th:value="${config==null}?'':${config.className}" ></input></div>
 				</div>
 				<div id="table-content" class="panel">
 					<div class="title-header clearfix pos_relative">
