@@ -36,9 +36,10 @@ public interface CrawlerConfigService {
 	 * @param cofig
 	 * @return
 	 * @author 王帆
+	 * @throws ResultException 
 	 * @date 2019年1月16日 下午5:02:16
 	 */
-	public CrawlerConfigEntity saveCrawlerConfig(CrawlerConfigEntity config);
+	public CrawlerConfigEntity saveCrawlerConfig(CrawlerConfigEntity config) throws ResultException;
 	
 	/**
 	 * 修改爬虫配置数据
@@ -47,7 +48,7 @@ public interface CrawlerConfigService {
 	 * @author 王帆
 	 * @date 2019年1月16日 下午5:02:39
 	 */
-	public CrawlerConfigEntity editCrawlerConfig(CrawlerConfigEntity config);
+	public CrawlerConfigEntity editCrawlerConfig(CrawlerConfigEntity config) throws ResultException;
 	
 	/**
 	 * 根据id集合删除爬虫配置数据
