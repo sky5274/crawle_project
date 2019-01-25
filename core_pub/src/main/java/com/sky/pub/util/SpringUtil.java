@@ -1,4 +1,4 @@
-package com.sky.crawl.util;
+package com.sky.pub.util;
 
 import org.springframework.context.ApplicationContext;
 
