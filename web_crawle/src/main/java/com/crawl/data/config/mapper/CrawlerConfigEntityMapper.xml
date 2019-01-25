@@ -19,6 +19,7 @@
 	    <result column="code"			property="configCode" 	jdbcType="VARCHAR" />
 	    <result column="url" 			property="url" 			jdbcType="VARCHAR" />
 	    <result column="url_name" 		property="name" 		jdbcType="VARCHAR" />
+	    <result column="url_type" 		property="type" 		jdbcType="VARCHAR" />
 	    <result column="url_condtion" 	property="condtion" 	jdbcType="VARCHAR" />
     </collection>
     <collection property="filters" ofType="com.crawl.data.config.dao.entity.CrawlerConfigFilterEntity">
@@ -35,7 +36,7 @@
   	select
   		config.id, config.name,config.code, config.remark,config.type,config.class_name,config.depth,config.top_n,config.threads, config.js, config.version, config.ts,
   		filter.id as filter_id, filter.name as filter_name, filter.value as filter_value,
-  		url.id as url_id,  url.name as url_name, url.condtion as url_condtion
+  		url.id as url_id,  url.name as url_name, url.condtion as url_condtion,url.type as url_type
   	from crawler_config config
   	left join crawler_config_filter filter on filter.config_code=config.code
   	left join crawler_config_url url on url.config_code=config.code
@@ -51,11 +52,11 @@
     delete from crawler_config
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" >
+  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" useGeneratedKeys="true" keyProperty="id">
     insert into crawler_config (id, name,code, remark,  js, version, ts)
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},#{code,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},  #{js,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER}, now())
   </insert>
-  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" >
+  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" useGeneratedKeys="true" keyProperty="id">
     insert into crawler_config
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >       	id,      		</if>
@@ -160,7 +161,7 @@
   select
   		tab.id, tab.name,tab.code, tab.remark, tab.js,tab.type,tab.class_name,tab.depth,tab.top_n,tab.threads, tab.version, tab.ts,
   		filter.id as filter_id, filter.name as filter_name, filter.value as filter_value,
-  		url.id as url_id,  url.name as url_name, url.condtion as url_condtion
+  		url.id as url_id,  url.name as url_name, url.condtion as url_condtion ,url.type as url_type
   	from (
   			select <include refid="Base_Column_List"></include>
   			from crawler_config config

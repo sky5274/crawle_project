@@ -23,7 +23,7 @@ public class CrawlerConfigEntity extends BasePageRequest{
 	private String type;
     private String name;
     /**爬虫配置*/
-    private String crawlPath="/crawler/"+code;
+    private String crawlPath;
     
     /**迭代次数*/
     private int depth=5;
@@ -113,7 +113,7 @@ public class CrawlerConfigEntity extends BasePageRequest{
 	}
 
 	public String getCrawlPath() {
-		return crawlPath;
+		return crawlPath==null || "".equals(crawlPath)? "/crawler/"+code:crawlPath;
 	}
 
 	public void setCrawlPath(String crawlPath) {
