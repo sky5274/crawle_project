@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="common/header::head('爬虫配置','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/com/sql-formatter.min.js,/js/config/crawler.page.exc.js')"></head>
+<head th:replace="common/header::head('爬虫配置',
+	'/bootstrap/css/bootstrap-table.css,/bootstrap/css/bootstrapSwitch.css',
+	'/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/bootstrap/js/bootstrapSwitch.js,/js/config/crawler.page.exc.js')"></head>
 <script type="text/javascript">
 	$(function(){
 		var actionType=['/crawle/config/add','/crawle/config/modfiy']
 		var defiend_page={
 				btn_ele:"#btn_crawle_add_excute",
 				table_ele:".table-defined",
-				attr_ele:"#table-attr-content .table-attr-column"
+				attr_ele:"#table-attr-content .table-attr-column",
+				panel:"#table-content"
 			}
 		$("#btn_crawl_add_submit").click(function(){
+			if($("#jsContent:visible").prop("readonly")){
+				if($("#jsContent").val()==''){
+					$.alert({type:"warn",content:"请提交修改后的js内容"})
+					return false;
+				}
+			}
 			var data=getConfigData(defiend_page)
 			if(data){
+				data.jsPath=$("#js_path").val()
 				var flag=$(this).parents(".panel-heading").children("h4").attr("flag")
 				if(flag==undefined){
 					flag=0;
@@ -32,6 +42,76 @@
 		//执行爬虫按钮事件
 		btnExcete(defiend_page);
 		
+		$('#JS-swtich').on('switch-change', function (e, data) {
+		    var $el = $(data.el)
+		      , value = data.value;
+		    $el.val(value)
+		    if(!value){
+		    	$("#js-content").addClass("hidden")
+		    	$("#class-content").removeClass("hidden")
+		    }else{
+		    	$("#class-content").addClass("hidden")
+		    	$("#js-content").removeClass("hidden")
+		    }
+		});
+		$("#js_file").on("change",function(){
+			$("#file_name").val($(this).val())
+		})
+		
+		var btnName=['编辑','上传']
+		$("#file-save").click(function(){
+			var status=$(this).data("status");
+			var _this=this;
+			if(status==0){
+				status=1
+			}else{
+				status=0
+			}
+			if(status==0){
+				upFile(function(){
+					$("#js-content textarea").attr("readonly","readonly")
+					$(_this).data("status",status)
+					$(_this).html(btnName[status])
+				})
+			}else{
+				$("#js-content textarea").removeAttr("readonly")
+				$(_this).data("status",status)
+				$(_this).html(btnName[status])
+			}
+			
+		})
+		$("#js_update").on("click",function(){
+			if($("#file_name").val()==""){
+				$.alert({type:"warn",content:"其选择上传的js文件"})
+				return false;
+			}
+			var path;
+			var obj={};
+			if($("#js_path").val()!=''){
+				path="/file/replace"
+				obj.path=$("#js_path").val()
+			}else{
+				path="/file/upload"
+			}
+			$.doUpdateFileAjax({
+				url:path,
+				data:obj,
+				ele:"#js_file",
+				loadding:true,
+				success:function(res){
+					if(res.success){
+						if(res.data[0]!="error"){
+							$("#js_path").val(res.data[0])
+							$.alert({content:"上传js文件成功"})
+							updateJsContent(res.data[0])
+						}else{
+							$.alert({type:"warn",content:"文件上传失败"})
+						}
+					}
+				}
+			})
+		})
+		
 		$("#btn-table-attr-add").on("click",function(){
 			var mid=$("#myTab").find(".active").children("a").attr("href");
 			$(mid).append(addTableAttrPanel(mid))
@@ -42,11 +122,46 @@
 		})
 	})
 	
+	function updateJsContent(path){
+		if(path){
+			$.doAjax({
+				url:"/file"+path,
+				loadding:true,
+				success:function(res){
+					$("#jsContent").val(res)
+				}
+			})
+		}
+	}
+	
+	function upFile(func){
+		var js_con=$("#js-content textarea").val()
+		if(js_con==""){
+			$.atert({message:"缺少js内容"})
+			return false;
+		}
+		$.doJsonAjax({
+			url:"/file/create",
+			data:{name:"crawler",type:"js",content:js_con},
+			loading:true,
+			success:function(res){
+				if(res.success){
+					$("#js_path").val(res.data)
+					$.alert({content:"上传js内容成功"})
+					if(func){
+						func()
+					}
+				}
+			}
+		})
+	}
+	
 	function addTableAttrPanel(node){
 		return $(node).find(".table-attr-column-clone").clone().removeClass("table-attr-column-clone").removeClass("hidden").addClass("table-attr-column")
 	}
 </script>
 <style type="text/css">
+	#page-panel{overflow-y: auto;}
 	.tab-three .pull-left{width: 32%}
 	.tab-second .pull-left{width: 49%}
 	.table-titile>label {text-align: center; height: 20px; line-height: 20px}
@@ -54,12 +169,14 @@
 	.table-attr-column .pull-left{text-align: center;height: 20px;line-height: 20px;}
 	.table-attr-column input,select {width: 98%;padding: 0 1%;}
 	#btn-table-attr-add{position: absolute; top: calc(50% - 10px); right: 5px}
-	.table-defined div:first-child {width: 40%}
-	.table_remark{width:60%; height: 100%;padding-left: 30px;}
+	.table-defined .w_40 {width: 40%}
+	.table-defined .w_60 {width: 60%}
+	.table_remark{ height: 100%;padding-left: 30px;}
 	.table_remark span{position: absolute; top:8px;width: 9%;text-align: right;}
 	.table_remark>textarea{width: 90%; margin-left: 10%;  height: 34px;}
 	.table-attr-column  textarea{height: 25px;}
 	.w_33{width: 30%;padding-right: 3.3%}
+	.input-append{float: left; margin-left: 30px;}
 </style>
 <body>
 	<div id="page-panel" class="panel panel-default fade in">
@@ -74,18 +191,35 @@
 		<div id="page-contain" class="panel-body">
 			<div class="panel panel-default ">
 				<div class="panel table-defined pos_relative">
-					<div class="input-group pull-left"><label  class="input-group-addon">名称</label><input class="form-control" placeholder="表名称"  name="name" th:value="${config==null}?'':${config.name}" type="text" require="true" /></div>
-					<div class="input-group table_remark"><span  >描述</span><textarea   name="remark" th:text="${config==null}?'':${config.remark}"></textarea></div>
-					<div class="input-group">	<label class="input-group-addon">类型</label>
+					<div class="input-group pull-left w_40"><label  class="input-group-addon">名称</label><input class="form-control" placeholder="表名称"  name="name" th:value="${config==null}?'':${config.name}" type="text" require="true" /></div>
+					<div class="input-group table_remark w_60"><span  >描述</span><textarea   name="remark" th:text="${config==null}?'':${config.remark}"></textarea></div>
+					<div class="input-group w_40 pull-left">	<label class="input-group-addon">类型</label>
 						<div class="pull-left"><input checked="checked" type="radio" name="type" value="html"/><label>html</label></div>
 						<div><input type="radio" name="type" value="json"/><label>json</label></div>
+					</div>
+					<div class="input-group w_40 ">	
+						<label class="input-group-addon">是否是js</label>
+						<div id="JS-swtich" class="switch" data-on="success"> <input type="checkbox"  checked="checked" value="true"/></div>
 					</div>
 					<div class="input-group w_33 pull-left">	<label class="input-group-addon">迭代数</label><input class="form-control" placeholder="迭代数"  name="name" th:value="${config==null}?'':${config.depth}" type="number" require="true" /></div>
 					<div class="input-group w_33 pull-left">	<label class="input-group-addon">topN</label><input class="form-control" placeholder="topN"  name="name" th:value="${config==null}?'':${config.topN}" type="number" require="true" /></div>
 					<div class="input-group w_33 pull-left">	<label class="input-group-addon">线程数</label><input class="form-control" placeholder="线程数"  name="name" th:value="${config==null}?'':${config.threads}" type="number" require="true" /></div>
-					<div class="input-group" style="width: 100%;"><textarea name="jsContent" style="width: 100%; height: 200px"></textarea></div>
+					<div id="js-content" class="input-group fade in " style="width: 100%;">
+						<div class="btn-group">
+							<button class="btn btn-primary" id="file-save" data-status="0">编辑</button>
+							<input type="file" class="hidden" id="js_file" name="file" accept="text/javascript, application/javascript"/>
+							<div class="input-append">
+								<input id="file_name" class="input-large" type="text" style="height:30px;"/>
+								<a class="btn" onclick="$('#js_file').click();">选择文件</a>
+							</div>
+							<button class="btn btn-primary" id="js_update" >js上传</button>
+						</div>
+						<input type="hidden" name="jsPath" id="js_path"/>
+						<textarea id="jsContent" name="jsContent" style="width: 100%; height: 200px" class="form-control" readonly="readonly"></textarea>
+					</div>
+					<div id="class-content" class="input-group fade in hidden" style="width: 100%;"><label class="input-group-addon">className</label><input name="className" type="text" placeholder="className" require="true" th:value="${config==null}?'':${config.className}" ></input></div>
 				</div>
-				<div class="panel">
+				<div id="table-content" class="panel">
 					<div class="title-header clearfix pos_relative">
 						<div class="clearfix table-titile ">
 							<ul id="myTab" class="nav nav-tabs">
