@@ -10,11 +10,13 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import org.springframework.util.StringUtils;
+
+import com.alibaba.fastjson.JSON;
+import com.sky.crawler.core.CrawlerJsContant;
 import com.sky.pub.ResultCode;
 import com.sky.pub.common.exception.ResultException;
 import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
 import cn.edu.hfut.dmic.webcollector.model.Page;
-import cn.edu.hfut.dmic.webcollector.plugin.berkeley.BreadthCrawler;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -24,34 +26,28 @@ import okhttp3.Response;
  * @author 王帆
  * @date  2019年1月18日 下午1:35:48
  */
-public class HtmlParseJsCrawler extends BreadthCrawler{
-	private String initJsPath="/js/init.evn.js";
+public class HtmlParseJsCrawler extends BaseHTMLCrawlerBreadth{
+	private String initJsPath=CrawlerJsContant.initJs;
 	private String jsContents=null;
 	private ScriptEngine engine;
-	private Writer writer;
-	private String urlRegex=" /^((ht|f)tps?):\\/\\/([\\w\\-]+(\\.[\\w\\-]+)*\\/)*[\\w\\-]+(\\.[\\w\\-]+)*\\/?(\\?([\\w\\-\\.,@?^=%&:\\/~\\+#]*)+)?/";
+	private SqlExcuteMapper sqlExcuteMapper;
 	
 	
 	public HtmlParseJsCrawler(String crawlPath, boolean autoParse) throws ResultException  {
-		super(crawlPath, autoParse);
-		initJsEngine();
-	};
+		this(crawlPath, autoParse,CrawlerJsContant.initJs,null);
+	}
 	public HtmlParseJsCrawler(String crawlPath, boolean autoParse,Writer writer) throws ResultException  {
-		super(crawlPath, autoParse);
-		this.writer=writer;
-		initJsEngine();
-	};
-	public HtmlParseJsCrawler(String crawlPath, boolean autoParse,String jsInitPath,Writer writer) throws ResultException  {
-		super(crawlPath, autoParse);
-		this.initJsPath=jsInitPath;
-		this.writer=writer;
-		initJsEngine();
-	};
+		this(crawlPath, autoParse,CrawlerJsContant.initJs,writer);
+	}
 	public HtmlParseJsCrawler(String crawlPath, boolean autoParse,String jsInitPath) throws ResultException  {
-		super(crawlPath, autoParse);
+		this(crawlPath, autoParse,jsInitPath,null);
+	}
+	public HtmlParseJsCrawler(String crawlPath, boolean autoParse,String jsInitPath,Writer writer) throws ResultException  {
+		super(crawlPath, autoParse,writer);
 		this.initJsPath=jsInitPath;
 		initJsEngine();
-	};
+	}
+	
 
 	public void initJsEngine() throws ResultException  {
 		loadJsFile(initJsPath);
@@ -63,10 +59,10 @@ public class HtmlParseJsCrawler extends BreadthCrawler{
 			engine.setContext(getJsContext());
 		}
 		try {
-			if(path.matches(urlRegex)) {
+			if(path.matches(CrawlerJsContant.urlRegex)) {
 				engine.eval(loadRemoteFile(path));
 			}else {
-				engine.eval(new FileReader(getClass().getResource(path).getFile()));
+				engine.eval(new FileReader(CrawlerJsContant.getFilePath(path)));
 			}
 		} catch ( ScriptException | IOException e) {
 			engine=null;
@@ -117,47 +113,39 @@ public class HtmlParseJsCrawler extends BreadthCrawler{
 		Invocable invocable = (Invocable) engine;
 		try {
 			engine.put("this", this);
+			engine.put("sql", sqlExcuteMapper);
 			engine.put("page", page);
 			engine.put("url", page.url());
 			engine.put("document", page.doc());
-			engine.put("html", page.html());
+			if(page.contentType().contains("application/json")) {
+				engine.put("json", JSON.parse(page.html()));
+			}else {
+				engine.put("html", page.html());
+			}
 			if(!StringUtils.isEmpty(jsContents)) {
 				engine.eval(jsContents);
 			}
 			try {
 				invocable.invokeFunction("crawler", page.url(),page,this);	
 			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		} catch ( ScriptException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	@Override
-	public void afterStop() {
-		super.afterStop();
-		try {
-			writer.flush();
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public Writer getWriter() {
-		return writer;
-	}
-	public HtmlParseJsCrawler setWriter(Writer writer) {
-		this.writer=writer;
-		return this;
-	}
-	
 	private SimpleScriptContext getJsContext() {
 		SimpleScriptContext context=new SimpleScriptContext();
-		if(writer!=null) {
-			context.setWriter(writer);
+		if(super.getWriter()!=null) {
+			context.setWriter(super.getWriter());
 		}
 		return context;
+	}
+	public SqlExcuteMapper getSqlExcuteMapper() {
+		return sqlExcuteMapper;
+	}
+	public HtmlParseJsCrawler setSqlExcuteMapper(SqlExcuteMapper sqlExcuteMapper) {
+		this.sqlExcuteMapper = sqlExcuteMapper;
+		return this;
 	}
 }
