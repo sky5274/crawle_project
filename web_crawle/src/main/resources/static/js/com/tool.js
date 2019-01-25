@@ -84,25 +84,6 @@
 		})
 	}
 
-	/**上传文件*/
-	function updateFile(obj){
-		var forms={}
-		var list=obj.files
-		for(var i in list){
-			forms[i]=list[i]
-		}
-		forms.mk=obj.type
-		doUpdateFileAjax({
-			data:forms,
-			success:function(data){
-				if(obj.success){
-					obj.success(data)
-				}
-					
-			}
-		})
-	}
-
 
 	/**上传文件aJAX*/
 	function doUpdateFileAjax(obj){
@@ -111,10 +92,19 @@
 		obj.type="POST";
 		obj.contentType=false;
 		obj.processData= false;
-		obj.url="/file/fileUp";
 		var formData = new FormData();
 		for(var key in obj.data){
 			formData.append(key, obj.data[key]);
+		}
+		if(obj.ele){
+			var files=$(obj.ele).prop("files");
+			if(files.length==0){
+				$.diaLog({con:"请选择文件"})
+				return false;
+			}
+			for(var i=0;i<files.length;i++){
+				formData.append($(obj.ele).attr("name"),files[i])
+			}
 		}
 		obj.data=formData
 		doAjax(obj)
@@ -233,7 +223,6 @@
 		doAjax:doAjax,
 		doJsonAjax:doJsonAjax,
 		doPostJsonAjax:doPostJsonAjax,
-		updateFile:updateFile,
 		doUpdateFileAjax:doUpdateFileAjax
 	})
 	
