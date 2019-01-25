@@ -49,7 +49,9 @@ public class FileController {
 		medieType.put("html", MediaType.TEXT_HTML_VALUE);
 	}
 	
-	
+	/**
+	 *   根据文件路径获取文件内容
+	 */
 	@RequestMapping("/**")
 	public ResponseEntity<byte[]> downLownFile(HttpServletRequest req) throws IOException, ResultException {
 		String path=req.getRequestURI().replaceAll("/file", "");
@@ -60,17 +62,28 @@ public class FileController {
 		}
 		HttpHeaders headers = new HttpHeaders();    
 		headers.set(HttpHeaders.CONTENT_TYPE,contentType); 
-//		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		headers.set("Accept-Ranges", "bytes"); 
 		BufferedReader   bufinp=new BufferedReader(new FileReader(getClass().getResource(prefix+path).getFile()));
 		StringBuilder str=new StringBuilder();
-		char[] temp=new char[1];
-		while(bufinp.read(temp)>-1) {
-			str.append(temp);
+		try {
+			char[] temp=new char[1];
+			while(bufinp.read(temp)>-1) {
+				str.append(temp);
+			}
+		}catch (Exception e) {
+		}	finally {
+			bufinp.close();
 		}
 		return new ResponseEntity<byte[]>(str.toString().getBytes() , headers, HttpStatus.CREATED) ; 
 	}
 	
+	/**
+	 *  获取文件类型
+	 * @param path
+	 * @return
+	 * @author 王帆
+	 * @date 2019年1月21日 上午8:53:17
+	 */
 	private String getFileType(String path) {
 		return path.substring(path.lastIndexOf(".")+1, path.length());
 	}
@@ -82,10 +95,7 @@ public class FileController {
 			if(StringUtils.isEmpty(path)) {
 				path = getActiveFilePath(name+"."+type);
 			}
-			File file = new File( getFilePrefix()+path);
-			if(!file.getParentFile().exists()) {
-				file.getParentFile().mkdirs();
-			}
+			File file = getFile( getFilePrefix()+path);
 			FileWriter writer=new FileWriter(file);
 			writer.write(content);
 			writer.flush();
@@ -100,7 +110,7 @@ public class FileController {
 	@RequestMapping("replace")
 	public Result<String> replaceFile(MultipartFile file,String path){
 		try {
-			file.transferTo(new File(getFilePrefix()+path));
+			file.transferTo(getFile(getFilePrefix()+path));
 			return ResultUtil.getOk(ResultCode.OK, path);
 		} catch (IllegalStateException | IOException e) {
 			return ResultUtil.getFailed(ResultCode.FAILED, "文件替换失败");
@@ -114,22 +124,56 @@ public class FileController {
 			try {
 				paths.add(upLoadFile(f));
 			} catch (IllegalStateException | IOException e) {
+				e.printStackTrace();
 				paths.add("error");
 			}
 		}
 		return ResultUtil.getOk(ResultCode.OK, paths);
 	}
 	
+	/***
+	 * 	上传文件
+	 * @param file
+	 * @return
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 * @author 王帆
+	 * @date 2019年1月21日 上午8:49:15
+	 */
 	private String upLoadFile(MultipartFile file) throws IllegalStateException, IOException {
 		String newPath = getActiveFilePath(file.getOriginalFilename());
-		file.transferTo(new File( getFilePrefix()+newPath));
+		file.transferTo(getFile( getFilePrefix()+newPath));
 		return newPath;
 	}
 	
+	private File getFile(String path) throws IOException {
+		File file=new File(path);
+		if(!file.getParentFile().exists()) {
+			file.getParentFile().mkdirs();
+		}
+		if(!file.exists()) {
+			file.createNewFile();
+		}
+		return file;
+	}
 	
+	/***
+	 *       获取文件的起始文件夹路径
+	 * @return
+	 * @author 王帆
+	 * @date 2019年1月21日 上午8:50:29
+	 */
 	private String getFilePrefix() {
 		return getClass().getResource("/").getFile()+prefix;
 	}
+	
+	/**
+	 * 	根据规则生成文件路径
+	 * @param fileName
+	 * @return
+	 * @author 王帆
+	 * @date 2019年1月21日 上午8:49:54
+	 */
 	private String getActiveFilePath(String fileName) {
 		String type=getFileType(fileName);
 		String random_str=random.nextInt()+"";
