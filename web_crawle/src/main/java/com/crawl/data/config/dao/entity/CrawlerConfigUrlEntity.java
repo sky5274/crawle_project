@@ -26,6 +26,8 @@ public class CrawlerConfigUrlEntity extends BaseTableEntity{
     private String url;
 
     private String name;
+    
+    private String type;
 
     private String condtion;
 
@@ -65,12 +67,20 @@ public class CrawlerConfigUrlEntity extends BaseTableEntity{
 	public List<String> bulidUrl() throws ResultException{
 		if(!StringUtils.isEmpty(url)) {
 			if(url.startsWith("http://") || url.startsWith("https://") || url.startsWith("://") ) {
-				return Arrays.asList(url);
+				return Arrays.asList(url.split(","));
 			}else {
 				throw new ResultException(ResultCode.PARAM_VALID,url+"格式错误，请以'http' or 'https'开头");
 			}
 		}else {
 			return new LinkedList<>();
 		}
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }
