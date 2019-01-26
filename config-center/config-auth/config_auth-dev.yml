@@ -29,5 +29,4 @@ Monitor:
 
 logging:
   level:   
-     com.crawl: debug
      com.sky: debug
