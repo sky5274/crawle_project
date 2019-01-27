@@ -22,6 +22,21 @@ spring:
     username: temp
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+security:
+  basic:
+    enabled: false
+  user:
+    name: crawle_dev
+    password: dev_1090
+management:
+  security:
+    enabled: false
+    
+    
 mybatis:
   mapper-locations: classpath:com/sky/auth/config/mapper/*.xml
 Monitor:
