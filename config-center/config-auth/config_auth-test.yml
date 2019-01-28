@@ -15,6 +15,9 @@ spring:
     content-type: text/html; charset=utf-8
     prefix: classpath:/templates/
     suffix: .html 
+  redis:
+    host: 127.0.0.1
+    port: 6379
   datasource:
     name: test
     url: jdbc:mysql://localhost:3306/crawle?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
@@ -29,9 +32,6 @@ spring:
     test-on-borrow: false #获取连接时候验证，会影响性能
     test-while-idle: true #当连接空闲时，是否执行连接测试.
     time-between-eviction-runs-millis: 18800 
-  redis:
-    host: 127.0.0.1
-    port: 6379
 
 security:
   basic:
