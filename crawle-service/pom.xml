@@ -10,6 +10,7 @@
 	<description>crawler service</description>
 
 	<properties>
+		<java.version>1.8</java.version>
 		<WebCollector.version>2.73-alpha</WebCollector.version>
 	</properties>
 
