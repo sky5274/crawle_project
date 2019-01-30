@@ -14,31 +14,19 @@ public class Result<T> implements Serializable{
 	
 	public Result() {}
 	public Result(ResultCode code) {
-		this.setCode(code.getCode());
-		this.setMessage(code.getMsg());
-		this.setSuccess(code==ResultCode.OK);
+		this(code,null,code==ResultCode.OK);
 	}
 	public Result(ResultCode code,Boolean success) {
-		this.setCode(code.getCode());
-		this.setMessage(code.getMsg());
-		this.setSuccess(success);
+		this(code,null,success);
 	}
 	public Result(ResultCode code,T data) {
-		this.setCode(code.getCode());
-		this.setMessage(code.getMsg());
-		this.setSuccess(code==ResultCode.OK);
-		this.setData(data);
+		this(code,data,code==ResultCode.OK);
 	}
 	public Result(ResultCode code,T data,Boolean success) {
-		this.setCode(code.getCode());
-		this.setMessage(code.getMsg());
-		this.setSuccess(success);
-		this.setData(data);
+		this(code.getMsg(),code.getCode(),data,success);
 	}
 	public Result(String code,String msg,T data) {
-		this.setCode(code);
-		this.setMessage(msg);
-		this.setData(data);
+		this(code,msg,data,ResultCode.OK.getCode().equals(code));
 	}
 	public Result(String code,String msg,T data,Boolean success) {
 		this.setCode(code);
@@ -47,13 +35,10 @@ public class Result<T> implements Serializable{
 		this.setData(data);
 	}
 	public Result(String code,String msg) {
-		this.setCode(code);
-		this.setMessage(msg);
+		this(code,msg,null,false);
 	}
 	public Result(String code,String msg,Boolean success) {
-		this.setCode(code);
-		this.setMessage(msg);
-		this.setSuccess(success);
+		this(code,msg,null,success);
 	}
 	
 	public String getCode() {
