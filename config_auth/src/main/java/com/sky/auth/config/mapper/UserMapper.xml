@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.auth.config.dao.UserMapper">
+	<resultMap type="com.sky.auth.config.entity.UserEntity" id="baseMap">
+ 		<id column="id" property="id" jdbcType="INTEGER"/>
+ 		<result column="code" property="code" jdbcType="VARCHAR"/>
+ 		<result column="username" property="username" jdbcType="VARCHAR"/>
+ 		<result column="password" property="password" jdbcType="VARCHAR"/>
+ 		<result column="identity_code" property="identityCode" jdbcType="VARCHAR"/>
+ 		<result column="country" property="country" jdbcType="VARCHAR"/>
+ 		<result column="mail" property="mail" jdbcType="VARCHAR"/>
+ 		<result column="phone" property="phone" jdbcType="VARCHAR"/>
+ 		<result column="sex" property="sex" jdbcType="VARCHAR"/>
+ 		<result column="age" property="age" jdbcType="INTEGER"/>
+ 		<result column="version" property="version" jdbcType="INTEGER"/>
+ 		<result column="ts" property="ts" jdbcType="TIMESTAMP"/>
+ 	</resultMap>
+ 	<resultMap type="com.sky.auth.config.entity.UserDetailEntitiy" id="UserDetailMap">
+ 		<id column="id" property="id" jdbcType="INTEGER"/>
+ 		<result column="code" property="code" jdbcType="VARCHAR"/>
+ 		<result column="username" property="username" jdbcType="VARCHAR"/>
+ 		<result column="password" property="password" jdbcType="VARCHAR"/>
+ 		<result column="identity_code" property="identityCode" jdbcType="VARCHAR"/>
+ 		<result column="country" property="country" jdbcType="VARCHAR"/>
+ 		<result column="mail" property="mail" jdbcType="VARCHAR"/>
+ 		<result column="phone" property="phone" jdbcType="VARCHAR"/>
+ 		<result column="sex" property="sex" jdbcType="VARCHAR"/>
+ 		<result column="age" property="age" jdbcType="INTEGER"/>
+ 		<result column="version" property="version" jdbcType="INTEGER"/>
+ 		<result column="ts" property="ts" jdbcType="TIMESTAMP"/>
+ 		<collection property="roles" ofType="java.lang.String" select="queryRolesByUser" column="id" ></collection>
+ 		<collection property="authorities" ofType="com.sky.auth.config.entity.AuthorityEntity" select="queryAuthsByUser" column="id" ></collection>
+ 	</resultMap>
+	
+	<sql id="BASE_COLUMN_SQL">
+		id,code,username,password,identity_code,country,mail,phone,sex,age,version,ts
+	</sql>
+	
+	 	<insert id="insert" parameterType="com.sky.auth.config.entity.UserEntity" useGeneratedKeys="true" keyProperty="id">
+	 	insert into user_base( id,code,username,password,identity_code,country,mail,phone,sex,age,version,ts)
+	 	values(#{id,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},
+	 	#{identityCode,jdbcType=VARCHAR},#{country,jdbcType=VARCHAR},#{mail,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR},
+    	 #{sex,jdbcType=VARCHAR},#{age,jdbcType=INTEGER},#{createid,jdbcType=INTEGER},#{version,jdbcType=INTEGER}, now())
+	 </insert>
+	 <insert id="insertSelective" parameterType="com.sky.auth.config.entity.UserEntity" useGeneratedKeys="true" keyProperty="id">
+	 	insert into user_base( 
+	 	<trim suffixOverrides=",">
+		 	<if test="id !=null">			id,				</if>
+		 	<if test="code !=null">			code,			</if>
+		 	<if test="username !=null">		username,		</if>
+		 	<if test="password !=null">		password,		</if>
+		 	<if test="identityCode !=null">	identity_code,	</if>
+		 	<if test="country !=null">		country,		</if>
+		 	<if test="mail !=null">			mail,			</if>
+		 	<if test="phone !=null">		phone,			</if>
+		 	<if test="sex !=null">			sex,			</if>
+		 	<if test="age !=null">			age,			</if>
+		 									version,
+		 									ts
+	 	</trim>
+	 	)
+	 	values(
+	 	<trim suffixOverrides=",">
+	 		<if test="id !=null">			#{id,jdbcType=INTEGER},					</if>
+		 	<if test="code !=null">			#{code,jdbcType=VARCHAR},				</if>
+		 	<if test="username !=null">		#{username,jdbcType=VARCHAR},			</if>
+		 	<if test="password !=null">		#{password,jdbcType=VARCHAR},	</if>
+		 	<if test="identityCode !=null">	#{identityCode,jdbcType=VARCHAR},		</if>
+		 	<if test="country !=null">		#{country,jdbcType=VARCHAR},			</if>
+		 	<if test="mail !=null">			#{mail,jdbcType=VARCHAR},				</if>
+		 	<if test="phone !=null">		#{phone,jdbcType=VARCHAR},				</if>
+		 	<if test="sex !=null">			#{sex,jdbcType=VARCHAR},				</if>
+		 	<if test="age !=null">			#{age,jdbcType=INTEGER},				</if>
+	 										0,
+	 										now()
+	 	</trim>
+    	)
+	 </insert>
+ 	<update id="updateByPrimaryKey" parameterType="com.sky.auth.config.entity.UserEntity" >
+	    update user_base
+	    set 
+	    	code			=#{code,jdbcType=VARCHAR},				
+			username		=#{username,jdbcType=VARCHAR},		
+			password		=#{password,jdbcType=VARCHAR},
+			identity_code	=#{identityCode,jdbcType=VARCHAR},		
+			country			=#{country,jdbcType=VARCHAR},			
+			mail			=#{mail,jdbcType=VARCHAR},				
+			phone			=#{phone,jdbcType=VARCHAR},			
+			sex				=#{sex,jdbcType=VARCHAR},				
+			age				=#{age,jdbcType=INTEGER},				
+		 	version			=version+1,
+		 	ts				=now()
+	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	  </update>
+ 	<update id="updateByPrimaryKeySelective" parameterType="com.sky.auth.config.entity.UserEntity" >
+	    update user_base
+	    	<trim prefix="set"  suffixOverrides=",">
+			 	<if test="code !=null">			code			=#{code,jdbcType=VARCHAR},				</if>
+			 	<if test="username !=null">		username		=#{username,jdbcType=VARCHAR},			</if>
+			 	<if test="password !=null">		password		=#{password,jdbcType=VARCHAR},</if>
+			 	<if test="identityCode !=null">	identity_code	=#{identityCode,jdbcType=VARCHAR},		</if>
+			 	<if test="country !=null">		country			=#{country,jdbcType=VARCHAR},			</if>
+			 	<if test="mail !=null">			mail			=#{mail,jdbcType=VARCHAR},				</if>
+			 	<if test="phone !=null">		phone			=#{phone,jdbcType=VARCHAR},				</if>
+			 	<if test="sex !=null">			sex				=#{sex,jdbcType=VARCHAR},				</if>
+			 	<if test="age !=null">			age				=#{age,jdbcType=INTEGER},				</if>
+		 										version			=version+1,
+		 										ts				=now()
+	    	</trim>
+	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	</update>
+	
+	<select id="queryById" parameterType="java.lang.Integer" resultMap="UserDetailMap">
+		select <include refid="BASE_COLUMN_SQL"></include>
+		from user_base where id=#{id}
+	</select>
+	<select id="queryByCode" parameterType="java.lang.String" resultMap="UserDetailMap">
+		select <include refid="BASE_COLUMN_SQL"></include>
+		from user_base where code=#{code}
+	</select>
+	<select id="queryDetailByPhoneOrMailOrCode" parameterType="java.lang.String" resultMap="UserDetailMap">
+		select <include refid="BASE_COLUMN_SQL"></include>
+		from user_base 
+		where username=#{code} or phone=#{code} or identity_code =#{code} or mail =#{code}
+	</select>
+	<select id="queryByNameAndPasswd"  resultMap="baseMap">
+		select <include refid="BASE_COLUMN_SQL"></include>
+		from user_base 
+		where (username=#{code} or phone=#{code} or identity_code =#{code} or mail =#{code})
+		and password=#{password}
+	</select>
+	<select id="queryByPhone" parameterType="java.lang.String" resultMap="baseMap">
+		select <include refid="BASE_COLUMN_SQL"></include>
+		from user_base 
+		where phone=#{code}
+	</select>
+	<select id="queryByMail" parameterType="java.lang.String" resultMap="baseMap">
+		select <include refid="BASE_COLUMN_SQL"></include>
+		from user_base 
+		where mail =#{code}
+	</select>
+	
+	
+	<!-- 增加用户的角色 -->
+	<insert id="addUserRoles">
+		insert int user_role_relate(user_id,role_code,createid)
+		<foreach collection="rolecodes" item="it" open="values" separator=",">(#{userId},#{it},#{createId})</foreach>
+	</insert>
+	<!-- 增加用户的角色 -->
+	<delete id="delUserRoles">
+		delete from user_role_relate
+		where user_id=#{userId}
+		role_code <foreach collection="rolecodes" item="it" open=" in (" close=")" separator=",">#{it}</foreach>
+	</delete>
+	
+	<select id="queryRolesByUser" parameterType="java.lang.String" resultType="java.lang.String">
+		select role_code		from user_role_relate
+		where user_id=#{userId}
+	</select>
+	<select id="queryAuthsByUser" parameterType="java.lang.String" resultType="com.sky.auth.config.entity.AuthorityEntity">
+		select auth.auth_code,auth.auth_name
+		from config_auth auth
+		left join config_auth_relate aurel on auth.auth_code=aurel.auth_code
+		left join user_role_relate rolet on rolet.role_code=aurel.role_code
+		where rolet.user_id=#{userId}
+	</select>
+</mapper>

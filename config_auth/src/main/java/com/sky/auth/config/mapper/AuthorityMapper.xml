@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.auth.config.dao.AuthorityMapper">
+	 <resultMap type="com.sky.auth.config.entity.AuthorityEntity" id="BASEMAP">
+	 	<id column="id" property="id" jdbcType="INTEGER"/>
+	 	<result column="auth_code" property="authcode" jdbcType="VARCHAR"/>
+	 	<result column="auth_name" property="authname" jdbcType="VARCHAR"/>
+	 	<result column="createid" property="createid" jdbcType="INTEGER"/>
+	 	<result column="version" property="version" jdbcType="INTEGER"/>
+	 	<result column="ts" property="ts" jdbcType="TIMESTAMP"/>
+	 </resultMap>
+	 <sql id="BASE_COLUMN_SQL">
+	  id,auth_code,auth_name,createid,version,ts
+	 </sql>
+	 <insert id="insert" parameterType="com.sky.auth.config.entity.AuthorityEntity" useGeneratedKeys="true" keyProperty="id">
+	 	insert into config_auth( id,auth_code,auth_name,createid,version,ts)
+	 	values(#{id,jdbcType=INTEGER}, #{authcode,jdbcType=VARCHAR}, #{authname,jdbcType=VARCHAR},
+    	 #{createid,jdbcType=INTEGER},#{version,jdbcType=INTEGER}, now())
+	 </insert>
+	 <insert id="insertSelective" parameterType="com.sky.auth.config.entity.AuthorityEntity" useGeneratedKeys="true" keyProperty="id">
+	 	insert into config_auth( 
+	 	<trim suffixOverrides=",">
+		 	<if test="id !=null">			id,			</if>
+		 	<if test="authcode !=null">		auth_code,	</if>
+		 	<if test="authname !=null">		auth_name,	</if>
+		 	<if test="createid !=null">		createid,	</if>
+		 									version,
+		 									ts
+	 	</trim>
+	 	)
+	 	values(
+	 	<trim suffixOverrides=",">
+	 		<if test="id !=null">			#{id,jdbcType=INTEGER},			</if>
+	 		<if test="authcode !=null">		#{authcode,jdbcType=VARCHAR},	</if>
+	 		<if test="authname !=null">		#{authname,jdbcType=VARCHAR},	</if>
+	 		<if test="createid !=null">		#{createid,jdbcType=INTEGER},	</if>
+	 										0,
+	 										now()
+	 	</trim>
+    	)
+	 </insert>
+ 	<update id="updateByPrimaryKey" parameterType="com.sky.auth.config.entity.AuthorityEntity" >
+	    update config_auth
+	    set auth_code = #{authcode,jdbcType=VARCHAR},
+	        auth_name=#{authname},
+	      	version = ${version)+1,
+	      	createid = #{createid,jdbcType=INTEGER},
+	     	ts = now()
+	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	  </update>
+ 	<update id="updateByPrimaryKeySelective" parameterType="com.sky.auth.config.entity.AuthorityEntity" >
+	    update config_auth
+	    	<trim prefix="set"  suffixOverrides=",">
+	    		<if test="authcode">	auth_code 	= #{authcode,jdbcType=VARCHAR},	</if>
+	    		<if test="authname">	auth_name	= #{authname},					</if>
+	    		<if test="createid">	createid 	= #{createid,jdbcType=INTEGER},	</if>
+	    								version 	= ${version)+1,
+	    								ts 			= now()
+	    	</trim>
+	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	</update>
+</mapper>
