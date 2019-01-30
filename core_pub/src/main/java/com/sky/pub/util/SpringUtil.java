@@ -1,12 +1,18 @@
 package com.sky.pub.util;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
-public class SpringUtil{
+@Configuration 
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class SpringUtil implements ApplicationContextAware{
 	 
     private static ApplicationContext applicationContext = null;
  
-    public static void setApplicationContext(ApplicationContext applicationContext){
+    public void setApplicationContext(ApplicationContext applicationContext){
         if(SpringUtil.applicationContext == null){
             SpringUtil.applicationContext  = applicationContext;
         }

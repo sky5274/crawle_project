@@ -45,7 +45,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	private static Log logger = LogFactory.getLog(SpringHandlerExceptionResolver.class);
 	private String errorUrl="/error";
 	private String definedType="dev";
-	@Value("${Monitor.type}")
+	@Value("${Monitor.type:beta}")
 	public String monitorType="beta";
 
 	@Override
