@@ -3,6 +3,8 @@ own:
       client:
          id: test
          secret: temp123456   
+      app:
+         secret: app_temp_demo1232
 server:
   port: 8900
   

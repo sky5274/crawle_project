@@ -2,7 +2,9 @@ own:
    config:
       client:
          id: test
-         secret: temp123456   
+         secret: temp123456 
+      app:
+         secret: app_temp_demo1232  
 server:
   port: 8901
 spring:
