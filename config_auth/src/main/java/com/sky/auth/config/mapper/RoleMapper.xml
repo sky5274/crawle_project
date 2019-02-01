@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.auth.config.dao.RoleMapper">
+ 	<resultMap type="com.sky.auth.config.entity.RoleEntity" id="baseMap">
+ 		<id column="id" property="id" jdbcType="INTEGER"/>
+ 		<result column="code" property="code" jdbcType="VARCHAR"/>
+ 		<result column="name" property="name" jdbcType="VARCHAR"/>
+ 		<result column="name" property="name" jdbcType="VARCHAR"/>
+ 		<result column="create_name" property="createName" jdbcType="VARCHAR"/>
+ 		<result column="createid" property="createid" jdbcType="INTEGER"/>
+ 		<result column="version" property="version" jdbcType="INTEGER"/>
+ 		<result column="ts" property="ts" jdbcType="TIMESTAMP"/>
+ 	</resultMap>
+ 	<resultMap type="com.sky.auth.config.entity.RoleEntity" id="RoleMap">
+ 		<id column="id" property="id" jdbcType="INTEGER"/>
+ 		<result column="code" property="code" jdbcType="VARCHAR"/>
+ 		<result column="name" property="name" jdbcType="VARCHAR"/>
+ 		<result column="create_name" property="createName" jdbcType="VARCHAR"/>
+ 		<result column="createid" property="createid" jdbcType="INTEGER"/>
+ 		<result column="version" property="version" jdbcType="INTEGER"/>
+ 		<result column="ts" property="ts" jdbcType="TIMESTAMP"/>
+ 		<collection property="auths"  ofType="com.sky.auth.config.entity.AuthorityEntity">
+ 			<result column="auth_code" property="authcode" jdbcType="VARCHAR"/>
+	 		<result column="auth_name" property="authname" jdbcType="VARCHAR"/>
+ 		</collection>
+ 	</resultMap>
+ 	<sql id="base_column_sql">
+ 		id,code,name,createid,vesion,ts
+ 	</sql>
+ 	<insert id="insert" parameterType="com.sky.auth.config.entity.RoleEntity" useGeneratedKeys="true" keyProperty="id">
+	 	insert into config_role( id,code,name,createid,version,ts)
+	 	values(#{id,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+    	 #{createid,jdbcType=INTEGER},#{version,jdbcType=INTEGER}, now())
+	 </insert>
+	 <insert id="insertSelective" parameterType="com.sky.auth.config.entity.RoleEntity" useGeneratedKeys="true" keyProperty="id">
+	 	insert into config_role( 
+	 	<trim suffixOverrides=",">
+		 	<if test="id !=null">			id,			</if>
+		 	<if test="code !=null">			code,		</if>
+		 	<if test="name !=null">			name,		</if>
+		 	<if test="createid !=null">		createid,	</if>
+		 									version,
+		 									ts
+	 	</trim>
+	 	)
+	 	values(
+	 	<trim suffixOverrides=",">
+	 		<if test="id !=null">			#{id,jdbcType=INTEGER},			</if>
+	 		<if test="code !=null">			#{code,jdbcType=VARCHAR},		</if>
+	 		<if test="name !=null">			#{name,jdbcType=VARCHAR},		</if>
+	 		<if test="createid !=null">		#{createid,jdbcType=INTEGER},	</if>
+	 										0,
+	 										now()
+	 	</trim>
+    	)
+	 </insert>
+ 	<update id="updateByPrimaryKey" parameterType="com.sky.auth.config.entity.RoleEntity" >
+	    update config_role
+	    set code 	= 	#{code,jdbcType=VARCHAR},
+	        name	=	#{name},
+	      	version = 	${version)+1,
+	      	createid = 	#{createid,jdbcType=INTEGER},
+	     	ts = now()
+	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	  </update>
+ 	<update id="updateByPrimaryKeySelective" parameterType="com.sky.auth.config.entity.RoleEntity" >
+	    update config_role
+	    	<trim prefix="set"  suffixOverrides=",">
+	    		<if test="code">		code 		= #{code,jdbcType=VARCHAR},		</if>
+	    		<if test="name">		name		= #{name},						</if>
+	    		<if test="createid">	createid 	= #{createid,jdbcType=INTEGER},	</if>
+	    								version 	= ${version)+1,
+	    								ts 			= now()
+	    	</trim>
+	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	</update>
+ 	
+ 	<select id="queryRoleByPage" parameterType="com.sky.pub.BasePageRequest" resultMap="baseMap">
+ 		select  config_role.id,config_role.code,config_role.name,config_role.createid,config_role.version,config_role.ts,user.username as create_name
+ 		from config_role
+ 		left join user_base user on user.id=config_role.createid
+ 		order by config_role.id
+ 		limit #{current},#{pageSize}
+ 	</select>
+ 	
+ 	<select id="queryRoleDetailsByRole" parameterType="java.lang.String" resultMap="RoleMap">
+ 		select  
+ 			config_role.id,config_role.code,config_role.name,config_role.createid,config_role.version,config_role.ts,
+ 			user.username as create_name,
+ 			auth.auth_code,auth.auth_name
+ 		from config_role
+ 		left join user_base user on user.id=config_role.createid
+ 		left join config_auth_relate ar on config_role.code=ar.role_code
+ 		left join config_auth auth on auth.auth_code=ar.auth_code
+ 		where config_role.code=#{code}
+ 	</select>
+ 	
+ 	<!-- 新增用户角色-权限关联 -->
+ 	<insert id="addRoleAuth">
+ 		insert into config_auth_relate(role_code,auth_code,createid)
+ 		<foreach collection="auths" item="id" open="values" separator=",">(#{code},#{it},#{createid})</foreach>
+ 	</insert>
+ 	<!-- 删除角色权限关联 -->
+ 	<delete id="delRoleAuth">
+ 		delete from config_auth_relate 
+ 		where role_coe=#{code}
+ 		<foreach collection="auths" item="id" open="and auth_code in (" close=")" separator=",">#{it},</foreach>
+ 	</delete>
+ 	
+</mapper>

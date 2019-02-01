@@ -1,0 +1,45 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+    <title>登录页面</title>
+     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/tool.js}"></script>
+    <script type="text/javascript" th:src="@{/js/message.js}"></script>
+    <script type="text/javascript">
+    	$(function(){
+    		$("#submit").on("click",function(){
+    			var obj={}
+    			$("#login-table").find("input").each(function(i,ele){
+    				obj[$(this).attr("name")]=$(this).val();
+    			})
+    			$.ajax({
+    				url:"/auth/login",
+    				data:obj,
+    				success:function(res){
+    					console.log(res)
+    				}
+    			})
+    		})
+    	})
+    </script>
+</head>
+<body>
+    <h2>自定义登录页面</h2>
+        <table id="login-table">
+            <tr>
+                <td>用户名：</td>
+                <td><input type="text" name="username"/></td>
+            </tr>
+            <tr>
+                <td>密码：</td>
+                <td><input type="password" name="password"/></td>
+            </tr>
+            <tr>
+                <td colspan="2"><button id="submit" type="submit">登录</button></td>
+                <td><a th:href="@{/auth/login/regist}">注册</a></td>
+            </tr>
+        </table>
+</body>
+</html>
