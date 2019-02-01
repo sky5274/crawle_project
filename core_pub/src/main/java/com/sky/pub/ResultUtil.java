@@ -11,6 +11,9 @@ public class ResultUtil {
 	public static <T> Result<T> getFailed(ResultCode code,T data){
 		return new Result<>(code,data).fail();
 	}
+	public static <T> Result<T> getFailed(ResultCode code,String msg){
+		return new Result<T>(code.getCode(),msg).fail();
+	}
 	public static <T> Result<T> copy(Result<Object> result){
 		return new Result<>(result.getCode(),result.getMessage());
 	}
