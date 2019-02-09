@@ -24,5 +24,10 @@
 			<artifactId>core_pub</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sky.user</groupId>
+			<artifactId>config_user</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
