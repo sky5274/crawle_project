@@ -5,24 +5,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
 import javax.annotation.Resource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.support.collections.RedisCollectionFactoryBean;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import com.alibaba.fastjson.JSON;
 import com.sky.auth.config.dao.UserMapper;
 import com.sky.auth.config.entity.AuthorityEntity;
 import com.sky.auth.config.entity.UserDetailEntitiy;
@@ -33,7 +26,6 @@ import com.sky.auth.config.provider.IntegrationAuthenticator;
 import com.sky.auth.config.service.UserService;
 import com.sky.pub.ResultCode;
 import com.sky.pub.common.exception.ResultException;
-import com.sky.pub.util.SpringUtil;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService,UserService{
