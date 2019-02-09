@@ -1,20 +1,12 @@
 package com.sky.pub;
 
-/**
- * 页面分仓请求
- * @author 王帆
- * @date  2018年12月23日 下午10:12:11
- */
-public class BasePageRequest extends BaseTableEntity{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class PageRequest <T>{
+	private T bean;
 	private Integer current;
 	private Integer pageSize;
 	private boolean isInit=false;
-	public BasePageRequest() {}
-	public BasePageRequest(int current,int pageSize) {
+	public PageRequest() {}
+	public PageRequest(int current,int pageSize) {
 		super();
 		this.current=current;
 		this.pageSize=pageSize;
@@ -33,7 +25,7 @@ public class BasePageRequest extends BaseTableEntity{
 		this.pageSize = pageSize;
 	}
 	
-	public BasePageRequest initPage() {
+	public PageRequest<T> initPage() {
 		if(!isInit) {
 			if(hasPageData()) {
 				if(current<1) {
@@ -60,5 +52,11 @@ public class BasePageRequest extends BaseTableEntity{
 	}
 	public Boolean hasPageData() {
 		return current !=null && pageSize !=null;
+	}
+	public T getBean() {
+		return bean;
+	}
+	public void setBean(T bean) {
+		this.bean = bean;
 	}
 }
