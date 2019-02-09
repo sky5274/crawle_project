@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.task.dao.JobTaskEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.task.entity.JobTaskEntity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="task_id" property="taskId" jdbcType="INTEGER" />
+    <result column="task_name" property="taskName" jdbcType="VARCHAR" />
+    <result column="tagtet_class" property="tagtetClass" jdbcType="INTEGER" />
+    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="cron_expression" property="cronExpression" jdbcType="VARCHAR" />
+    <result column="json_params" property="jsonParams" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="run_type" property="runType" jdbcType="INTEGER" />
+    <result column="run_times" property="runTimes" jdbcType="INTEGER" />
+    <result column="schedule_model" property="scheduleModel" jdbcType="INTEGER" />
+    <result column="one_targe_addr" property="oneTargeAddr" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="createid" property="createid" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, task_id, task_name, tagtet_class, group_id, cron_expression, json_params, status, 
+    run_type, run_times, schedule_model, one_targe_addr, remark, version, createid, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from job_task
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from job_task
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.sky.task.entity.JobTaskEntity" >
+    insert into job_task (id, task_id, task_name, 
+      tagtet_class, group_id, cron_expression, 
+      json_params, status, run_type, 
+      run_times, schedule_model, one_targe_addr, 
+      remark, version, createid, 
+      ts)
+    values (#{id,jdbcType=INTEGER}, #{taskId,jdbcType=INTEGER}, #{taskName,jdbcType=VARCHAR}, 
+      #{tagtetClass,jdbcType=INTEGER}, #{groupId,jdbcType=INTEGER}, #{cronExpression,jdbcType=VARCHAR}, 
+      #{jsonParams,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{runType,jdbcType=INTEGER}, 
+      #{runTimes,jdbcType=INTEGER}, #{scheduleModel,jdbcType=INTEGER}, #{oneTargeAddr,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER}, #{createid,jdbcType=INTEGER}, 
+      #{ts,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.task.entity.JobTaskEntity" >
+    insert into job_task
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="taskId != null" >
+        task_id,
+      </if>
+      <if test="taskName != null" >
+        task_name,
+      </if>
+      <if test="tagtetClass != null" >
+        tagtet_class,
+      </if>
+      <if test="groupId != null" >
+        group_id,
+      </if>
+      <if test="cronExpression != null" >
+        cron_expression,
+      </if>
+      <if test="jsonParams != null" >
+        json_params,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="runType != null" >
+        run_type,
+      </if>
+      <if test="runTimes != null" >
+        run_times,
+      </if>
+      <if test="scheduleModel != null" >
+        schedule_model,
+      </if>
+      <if test="oneTargeAddr != null" >
+        one_targe_addr,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="ts != null" >
+        ts,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="taskId != null" >
+        #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="taskName != null" >
+        #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="tagtetClass != null" >
+        #{tagtetClass,jdbcType=INTEGER},
+      </if>
+      <if test="groupId != null" >
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="cronExpression != null" >
+        #{cronExpression,jdbcType=VARCHAR},
+      </if>
+      <if test="jsonParams != null" >
+        #{jsonParams,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="runType != null" >
+        #{runType,jdbcType=INTEGER},
+      </if>
+      <if test="runTimes != null" >
+        #{runTimes,jdbcType=INTEGER},
+      </if>
+      <if test="scheduleModel != null" >
+        #{scheduleModel,jdbcType=INTEGER},
+      </if>
+      <if test="oneTargeAddr != null" >
+        #{oneTargeAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=INTEGER},
+      </if>
+      <if test="ts != null" >
+        #{ts,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.task.entity.JobTaskEntity" >
+    update job_task
+    <set >
+      <if test="taskId != null" >
+        task_id = #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="taskName != null" >
+        task_name = #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="tagtetClass != null" >
+        tagtet_class = #{tagtetClass,jdbcType=INTEGER},
+      </if>
+      <if test="groupId != null" >
+        group_id = #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="cronExpression != null" >
+        cron_expression = #{cronExpression,jdbcType=VARCHAR},
+      </if>
+      <if test="jsonParams != null" >
+        json_params = #{jsonParams,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="runType != null" >
+        run_type = #{runType,jdbcType=INTEGER},
+      </if>
+      <if test="runTimes != null" >
+        run_times = #{runTimes,jdbcType=INTEGER},
+      </if>
+      <if test="scheduleModel != null" >
+        schedule_model = #{scheduleModel,jdbcType=INTEGER},
+      </if>
+      <if test="oneTargeAddr != null" >
+        one_targe_addr = #{oneTargeAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=INTEGER},
+      </if>
+      <if test="ts != null" >
+        ts = #{ts,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.task.entity.JobTaskEntity" >
+    update job_task
+    set task_id = #{taskId,jdbcType=INTEGER},
+      task_name = #{taskName,jdbcType=VARCHAR},
+      tagtet_class = #{tagtetClass,jdbcType=INTEGER},
+      group_id = #{groupId,jdbcType=INTEGER},
+      cron_expression = #{cronExpression,jdbcType=VARCHAR},
+      json_params = #{jsonParams,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      run_type = #{runType,jdbcType=INTEGER},
+      run_times = #{runTimes,jdbcType=INTEGER},
+      schedule_model = #{scheduleModel,jdbcType=INTEGER},
+      one_targe_addr = #{oneTargeAddr,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      version = #{version,jdbcType=INTEGER},
+      createid = #{createid,jdbcType=INTEGER},
+      ts = #{ts,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
