@@ -5,6 +5,9 @@ public class ResultUtil {
 	public static <T> Result<T> getOk(ResultCode code,T data){
 		return new Result<>(code,data).ok();
 	}
+	public static <T> Result<T> getOk(T data){
+		return new Result<>(ResultCode.OK,data).ok();
+	}
 	public static <T> Result<T> get(ResultCode code,T data){
 		return new Result<>(code,data);
 	}
