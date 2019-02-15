@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 //@EnableEurekaClient
-//@ComponentScan(value= {"com.sky"})
+@ComponentScan(value= {"com.sky"})
 @MapperScan(value= {"com.sky.*.dao"})
 public class TaskApplication {
 	public static void main(String[] args) {

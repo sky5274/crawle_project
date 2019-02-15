@@ -20,6 +20,11 @@
     from task_group
     where id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="queryAll" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from task_group
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from task_group
     where id = #{id,jdbcType=INTEGER}
@@ -90,9 +95,6 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.sky.task.entity.TaskGroupEntity" >
     update task_group
     <set >
-      <if test="groupId != null" >
-        group_id = #{groupId,jdbcType=VARCHAR},
-      </if>
       <if test="groupName != null" >
         group_name = #{groupName,jdbcType=VARCHAR},
       </if>
@@ -102,27 +104,24 @@
       <if test="remark != null" >
         remark = #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="version != null" >
-        version = #{version,jdbcType=INTEGER},
-      </if>
+        
       <if test="createid != null" >
         createid = #{createid,jdbcType=INTEGER},
       </if>
-      <if test="ts != null" >
-        ts = #{ts,jdbcType=TIMESTAMP},
-      </if>
+      	version = version+1,
+        ts = now()
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER} and  group_id = #{groupId,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.sky.task.entity.TaskGroupEntity" >
     update task_group
-    set group_id = #{groupId,jdbcType=VARCHAR},
+    set 
       group_name = #{groupName,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
       remark = #{remark,jdbcType=VARCHAR},
-      version = #{version,jdbcType=INTEGER},
+      version = vesion+1,
       createid = #{createid,jdbcType=INTEGER},
-      ts = #{ts,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
+      ts = now()
+    where id = #{id,jdbcType=INTEGER}  and group_id = #{groupId,jdbcType=VARCHAR}
   </update>
 </mapper>

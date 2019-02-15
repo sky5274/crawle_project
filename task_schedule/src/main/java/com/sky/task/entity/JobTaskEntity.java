@@ -3,6 +3,8 @@ package com.sky.task.entity;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.sky.pub.BaseTableEntity;
 
 /**
@@ -39,11 +41,14 @@ public class JobTaskEntity extends BaseTableEntity{
 
 	/***/
 	private static final long serialVersionUID = -63659517800512839L;
+	@NotBlank(message="缺少任务所属分组")
 	private String groupId;
 	private String taskId;
+	@NotBlank(message="缺少任务名称")
 	private String taskName;
 	private String isConcurrent;
 	private String targetClass;
+	@NotBlank(message="任务执行规律表达式为空")
 	private String cronExpression;
 	private String jsonParams;
 	/**-1:作废；0：创建，1：运行中;2:停止*/
@@ -54,6 +59,8 @@ public class JobTaskEntity extends BaseTableEntity{
 	private Byte scheduleModel;
 	private String oneTargeAddr;
 	private Integer runTimes;
+	private Integer runErrTimes;
+	private String runErrMsg;
 	private String remark;
 	public String getGroupId() {
 		return groupId;
@@ -141,5 +148,17 @@ public class JobTaskEntity extends BaseTableEntity{
 	}
 	public void setIsConcurrent(String isConcurrent) {
 		this.isConcurrent = isConcurrent;
+	}
+	public Integer getRunErrTimes() {
+		return runErrTimes;
+	}
+	public void setRunErrTimes(Integer runErrTimes) {
+		this.runErrTimes = runErrTimes;
+	}
+	public String getRunErrMsg() {
+		return runErrMsg;
+	}
+	public void setRunErrMsg(String runErrMsg) {
+		this.runErrMsg = runErrMsg;
 	}
 }

@@ -1,5 +1,7 @@
 package com.sky.task.dao;
 
+import java.util.List;
+
 import com.sky.task.entity.TaskGroupEntity;
 
 public interface TaskGroupEntityMapper {
@@ -14,4 +16,6 @@ public interface TaskGroupEntityMapper {
     int updateByPrimaryKeySelective(TaskGroupEntity record);
 
     int updateByPrimaryKey(TaskGroupEntity record);
+
+	 List<TaskGroupEntity> queryAll() ;
 }
