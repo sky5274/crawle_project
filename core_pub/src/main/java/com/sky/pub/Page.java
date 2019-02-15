@@ -10,6 +10,8 @@ import java.util.List;
 public class Page <T>{
 	private List<T> list;
 	private int total;
+	private Integer current;
+	private Integer pageSize;
 	
 	public Page() {}
 	public Page(List<T> list,int total) {
@@ -29,5 +31,33 @@ public class Page <T>{
 	public Page<T> setTotal(int total) {
 		this.total = total;
 		return this;
+	}
+	public Integer getCurrent() {
+		return current;
+	}
+	public void setCurrent(Integer current) {
+		this.current = current;
+	}
+	public Integer getPageSize() {
+		return pageSize;
+	}
+	public void setPageSize(Integer pageSize) {
+		this.pageSize = pageSize;
+	}
+	
+	public void setPageData(PageRequest<T> reqPage) {
+		setPageData(reqPage.hasInit(),reqPage.getCurrent(),reqPage.getPageSize());
+	}
+	public void setPageData(BasePageRequest reqPage) {
+		setPageData(reqPage.hasInit(),reqPage.getCurrent(),reqPage.getPageSize());
+	}
+	
+	private void setPageData(boolean isInit,int current,int pageSize) {
+		if(isInit) {
+			this.current=current/pageSize;
+		}else {
+			this.current=current;
+		}
+		this.pageSize=pageSize;
 	}
 }
