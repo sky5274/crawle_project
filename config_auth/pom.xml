@@ -7,41 +7,26 @@
 		<artifactId>client_parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>com.sky</groupId>
+	<groupId>com.sky.auth</groupId>
 	<artifactId>config_auth</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>config_auth</name>
-	<description> config auth center for Spring Boot</description>
+	<packaging>jar</packaging>
+	<description>config_auth</description>
 
 	<properties>
 		<java.version>1.8</java.version>
-		<mysql.version>8.0.13</mysql.version>
-		<druid.spring.version>1.1.10</druid.spring.version>
-		<druid.version>1.1.10</druid.version>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>com.sky.base</groupId>
 			<artifactId>core_pub</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sky</groupId>
-			<artifactId>crawle-service</artifactId>
+			<groupId>com.sky.user</groupId>
+			<artifactId>config_user</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
