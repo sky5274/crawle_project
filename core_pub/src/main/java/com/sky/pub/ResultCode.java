@@ -4,6 +4,7 @@ public enum ResultCode {
 	
 	OK("0","OK"),
 	FAILED("-1","FAILED"),
+	UNKONW_EXCEPTION("E-0","未知异常"),
 	AUTH_FAILED("-2","AUTH_FAILED"),
 	PARAM_VALID("P_1","参数校验异常"),
 	DATA_OPT_FAIL("100","数据操作失败"),

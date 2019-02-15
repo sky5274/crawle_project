@@ -41,9 +41,7 @@ public class ResultAssert {
 	 * @date 2018年12月28日 下午1:14:21
 	 */
 	public static void isFalse(boolean isture,ResultCode code,String msg) throws ResultException {
-		if(isture) {
-			throw new ResultException(code, msg);
-		}
+		isFalse(isture, code, msg, LogLevel.INFO);
 	}
 	
 	/**
