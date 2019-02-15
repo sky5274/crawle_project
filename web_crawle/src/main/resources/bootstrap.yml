@@ -2,6 +2,8 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8910/eureka
+server:
+  port: 8990
 
 spring:
   cloud:
@@ -15,13 +17,6 @@ spring:
     name: crawle-config
   profiles:
     active: dev
-    
-server:
-  port: 8990
-  
-spring:
-  application:
-    name: crawle-config
   thymeleaf:
     cache: false 
     mode: HTML5  
@@ -36,11 +31,10 @@ spring:
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver
 mybatis:
-  mapper-locations: classpath:com/crawl/data/*/mapper/*.xml
+  mapper-locations: classpath:com/sky/crawl/data/*/mapper/*.xml
 Monitor:
    type: dev
 
 logging:
   level:   
-     com.crawl: debug
      com.sky: debug

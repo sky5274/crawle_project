@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.crawl.data.config.dao.MenuEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.crawl.data.config.dao.entity.MenuEntity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="createId" property="createid" jdbcType="INTEGER" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="version"  property="version" jdbcType="INTEGER"/>
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id,code, name, pid, createId, url,version, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from menu
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="queryAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from menu
+  </select>
+  
+  <sql id="base_entity_condtion">
+  	<trim suffixOverrides="and">
+  		<if test="id !=null"> 		id=#{id} and		</if>
+  		<if test="code !=null"> 	code=#{code} and	</if>
+  		<if test="name !=null"> 	name=#{name} and	</if>
+  		<if test="pid !=null"> 		pid=#{pid} and		</if>
+  		<if test="ts !=null"> 		ts=#{ts} and		</if>
+  	</trim>
+  </sql>
+  
+  <!-- 根据条件查询数据 -->
+  <select id="queryByEntity" resultMap="BaseResultMap" parameterType="com.sky.crawl.data.config.dao.entity.MenuEntity">
+    select 
+    <include refid="Base_Column_List" />
+    from menu
+    <trim prefix="where "> <include refid="base_entity_condtion"></include> </trim>
+  </select>
+  <select id="accountQuery" resultType="java.lang.Integer">
+    select     count(1)    from menu
+  </select>
+  <select id="queryPage" resultMap="BaseResultMap" parameterType="com.sky.pub.BasePageRequest">
+    select 
+    <include refid="Base_Column_List" />
+    from menu
+    limit #{current},#{pageSize}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.sky.pub.BasePageRequest" >
+    delete from menu
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
+  </delete>
+  <insert id="insert" parameterType="com.sky.crawl.data.config.dao.entity.MenuEntity" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into menu (id,code, name, pid, createId, url,version, ts)
+    values (#{id,jdbcType=INTEGER},#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, IFNULL(#{pid,jdbcType=INTEGER},0), 
+      #{createid,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR},#{version} now()
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.crawl.data.config.dao.entity.MenuEntity" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into menu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="code != null" >
+        code,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="createid != null" >
+        createId,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+        ts
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        IFNULL(#{pid,jdbcType=INTEGER},0),
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+        now()
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.crawl.data.config.dao.entity.MenuEntity" >
+    update menu
+    <set >
+      <if test="code != null" >
+       code=  #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        pid = IFNULL(#{pid,jdbcType=INTEGER},0),
+      </if>
+      <if test="createid != null" >
+        createId = #{createid,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      version=version+1,
+        ts =now()
+    </set>
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.MenuEntity" >
+    update menu
+    set name = #{name,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      pid = IFNULL(#{pid,jdbcType=INTEGER},0),
+      createId = #{createid,jdbcType=INTEGER},
+      url = #{url,jdbcType=VARCHAR},
+      version=version+1,
+      ts = now()
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
+  </update>
+</mapper>

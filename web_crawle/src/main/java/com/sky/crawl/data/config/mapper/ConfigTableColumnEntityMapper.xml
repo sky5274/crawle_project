@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.crawl.data.config.dao.ConfigTableColumnEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tableid" property="tableId" jdbcType="INTEGER" />
+    <result column="table_code" property="tableCode" jdbcType="VARCHAR" />
+    <result column="column" property="column" jdbcType="VARCHAR" />
+    <result column="desc" property="desc" jdbcType="VARCHAR" />
+    <result column="attr" property="attr" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="is_null" property="isNull" jdbcType="INTEGER" />
+    <result column="is_primary" property="isPrimary" jdbcType="INTEGER" />
+    <result column="createId" property="createid" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, tableid,attr, remark, type,is_null,is_primary, createId, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from config_table_column
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from config_table_column
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" useGeneratedKeys="true" keyColumn="id">
+    insert into config_table_column (id, attr, remark, tableid,     type,is_null,is_primary, createId, ts      )
+    values (#{id,jdbcType=INTEGER}, #{attr,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{tableId,jdbcType=INTEGER},
+      #{type,jdbcType=VARCHAR},#{isNull},#{isPrimary}, #{createid,jdbcType=INTEGER}, now()
+      )
+  </insert>
+  <insert id="insetBatch" parameterType="java.util.List" >
+    insert into config_table_column ( attr, remark, tableid, type,is_null,is_primary, createId, ts )
+    <foreach collection="list" item="it" open="values "  separator=",">
+    	(#{it.attr,jdbcType=VARCHAR}, #{it.remark,jdbcType=VARCHAR}, #{it.tableId,jdbcType=INTEGER},#{it.type,jdbcType=VARCHAR},#{it.isNull},#{it.isPrimary}, #{it.createid,jdbcType=INTEGER}, now())
+    </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" useGeneratedKeys="true" keyColumn="id">
+    insert into config_table_column
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tableId != null" >
+        tableid,
+      </if>
+      <if test="column != null" >
+        column,
+      </if>
+      <if test="attr != null" >
+        attr,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="isNull != null" >
+        is_null,
+      </if>
+      <if test="isPrimary != null" >
+        is_primary,
+      </if>
+      <if test="createid != null" >
+        createId,
+      </if>
+        ts
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tableId != null" >
+        #{tableId,jdbcType=INTEGER},
+      </if>
+      <if test="column != null" >
+        #{column,jdbcType=VARCHAR},
+      </if>
+      <if test="attr != null" >
+        #{attr,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="isNull != null" >
+        #{isNull},
+      </if>
+      <if test="isPrimary != null" >
+        #{isPrimary},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=INTEGER},
+      </if>
+      now()
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
+    update config_table_column
+    <set >
+     <if test="tableId != null" >
+       tableid= #{tableId,jdbcType=INTEGER},
+      </if>
+      <if test="column != null" >
+        column = #{column,jdbcType=VARCHAR},
+      </if>
+      <if test="attr != null" >
+        attr = #{attr,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="isNull != null" >
+        is_null=#{isNull},
+      </if>
+      <if test="isPrimary != null" >
+        is_primary =#{isPrimary},
+      </if>
+      <if test="createid != null" >
+        createId = #{createid,jdbcType=INTEGER},
+      </if>
+        ts = now()
+    </set>
+    where id = #{id,jdbcType=INTEGER} 
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
+    update config_table_column
+    set attr = #{attr,jdbcType=VARCHAR},
+        is_null=#{isNull},
+        is_primary =#{isPrimary},
+     	tableid= #{tableId,jdbcType=INTEGER},
+      	remark = #{remark,jdbcType=VARCHAR},
+      	type = #{type,jdbcType=VARCHAR},
+      	createId = #{createid,jdbcType=INTEGER},
+     	 ts = now()
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <sql id="table_Column_sql" >
+  	select    col.id, col.tableid,col.attr, col.remark, col.type, col.createId, COL.is_null,col.primary,col.ts,tab.table_code
+  	from config_table_column col
+  	left join config_table tab on tab.id=col.tableid
+  </sql>
+  
+  <select id="queryListByTable" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List" />
+    from config_table_column
+    where tableid = #{id,jdbcType=INTEGER}
+  </select>
+</mapper>

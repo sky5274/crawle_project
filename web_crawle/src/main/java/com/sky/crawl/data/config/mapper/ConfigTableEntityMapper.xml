@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.crawl.data.config.dao.ConfigTableEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="table_code" property="tableCode" jdbcType="VARCHAR" />
+    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="createId" property="createid" jdbcType="INTEGER" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+    <collection property="columns" ofType="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity">
+    	 <id column="cid" property="id" jdbcType="INTEGER" />
+	    <result column="tableid" property="tableId" jdbcType="INTEGER" />
+	    <result column="table_code" property="tableCode" jdbcType="VARCHAR" />
+	    <result column="attr" property="attr" jdbcType="VARCHAR" />
+	    <result column="cremark" property="remark" jdbcType="VARCHAR" />
+	    <result column="ctype" property="type" jdbcType="VARCHAR" />
+	    <result column="is_null" property="isNull" jdbcType="INTEGER" />
+    	<result column="is_primary" property="isPrimary" jdbcType="INTEGER" />
+	    <result column="ccreateId" property="createid" jdbcType="INTEGER" />
+	    <result column="cts" property="ts" jdbcType="TIMESTAMP" />
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, table_code, group_name, remark, createId,version, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" >
+    select 
+    <include refid="Base_Column_List" />
+    from config_table
+    where id = #{id,jdbcType=INTEGER} and table_code=#{tableCode}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" >
+    delete from config_table
+    where id = #{id,jdbcType=INTEGER} and ts=${ts}
+  </delete>
+  <insert id="insert" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" useGeneratedKeys="true" keyProperty="id">
+    insert into config_table (id, name, table_code,group_name, remark, createId,version, ts)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{tableCode,jdbcType=VARCHAR}, 
+      #{groupName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createid,jdbcType=INTEGER},#{version,jdbcType=INTEGER} 
+     now())
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" useGeneratedKeys="true" keyProperty="id">
+    insert into config_table
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="tableCode != null" >
+        table_code,
+      </if>
+      <if test="groupName != null" >
+        group_name,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="createid != null" >
+        createId,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+        ts
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="tableCode != null" >
+        #{tableCode,jdbcType=VARCHAR},
+      </if>
+      <if test="groupName != null" >
+        #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+        now()
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" >
+    update config_table
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="tableCode != null" >
+        table_code = #{tableCode,jdbcType=VARCHAR},
+      </if>
+      <if test="groupName != null" >
+        group_name = #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        createId = #{createid,jdbcType=INTEGER},
+      </if>
+      version=version+1,
+        ts = now()
+    </set>
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" >
+    update config_table
+    set name = #{name,jdbcType=VARCHAR},
+      table_code = #{tableCode,jdbcType=VARCHAR},
+      group_name = #{groupName,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      createId = #{createid,jdbcType=INTEGER},
+      version=version+1,
+      ts = now()
+    where id = #{id,jdbcType=INTEGER} and and version=#{version}
+  </update>
+  
+  <sql id="base-query-condtion">
+  	<trim prefix="where " suffixOverrides="and">
+  		 <if test="name != null" > 							tab.name =concat('%',#{name,jdbcType=VARCHAR},'%')  and	      	</if>
+	     <if test="tableCode != null" >	        			tab.table_code = #{tableCode,jdbcType=VARCHAR} and     			</if>
+	     <if test="groupName != null" >	        			tab.group_name = #{groupName,jdbcType=VARCHAR}   and			</if>
+	     <if test="createid != null and createid !=-1" >	tab.createId = #{createid,jdbcType=INTEGER}    and     			</if>
+  	</trim>
+  </sql>
+  <sql id="table-columns-sql">
+  	 select 
+  	  tab.id, tab.name, tab.table_code, tab.group_name, tab.remark, tab.createId,tab.version, tab.ts,
+  	  col.id as cid, col.tableid,col.attr, col.remark as cremark, col.type as ctype, col.createId as ccreateId, col.ts as cts,
+  	  col.is_null,col.is_primary
+  	 from config_table tab
+  	 left join config_table_column col on col.tableid=tab.id
+  </sql>
+  
+  <!-- 根据条件查询表的数据 -->
+  <select id="queryListByParam" resultMap="BaseResultMap" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" >
+    select 
+    <include refid="Base_Column_List" />
+    from config_table tab
+    <include refid="base-query-condtion"></include>
+  </select>
+  
+  <!-- 根据id查询表与属性数据 -->
+  <select id="queryTableByID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    <include refid="table-columns-sql"></include>
+    where tab.id==#{id}
+  </select>
+  
+   <!-- 根据条件查询表与其属性的数据 -->
+  <select id="queryTableList" resultMap="BaseResultMap" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" >
+    <include refid="table-columns-sql"></include>
+   	<include refid="base-query-condtion"></include>
+  </select>
+  
+  <!-- 统计数据数量 -->
+  <select id="accountData" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" resultType="java.lang.Integer">
+  	select count(1)  from config_table tab
+    <include refid="base-query-condtion"></include>
+  </select>
+  
+  <!-- 根据条件查询表 分页数据及其属性 -->
+  <select id="queryTableByPage" resultMap="BaseResultMap" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableEntity" >
+     select 
+  	  temp.id, temp.name, temp.table_code, temp.group_name, temp.remark, temp.createId,temp.version, temp.ts,
+  	  col.id as cid, col.tableid,col.attr, col.remark as cremark, col.type as ctype, col.createId as ccreateId, col.ts as cts,
+  	  col.is_null,col.is_primary
+  	 from (
+  	 	select  <include refid="Base_Column_List" />
+  	 	from config_table tab
+  	 	<include refid="base-query-condtion"></include>
+	   	<if test="current !=null and pageSize !=null">
+	   		limit #{current} ,#{pageSize}
+	   	</if>
+  	 )temp
+  	 left join config_table_column col on col.tableid=temp.id
+  </select>
+</mapper>

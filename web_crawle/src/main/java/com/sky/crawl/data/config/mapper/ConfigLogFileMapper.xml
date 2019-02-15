@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.crawl.data.config.dao.ConfigLogFileMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.crawl.data.config.dao.entity.ConfigFileDefined" >
+    <id column="id" 			property="id" 		jdbcType="INTEGER" />
+    <result column="code" 		property="code" 	jdbcType="VARCHAR" />
+    <result column="path" 		property="path" 	jdbcType="VARCHAR" />
+    <result column="status" 	property="status" 	jdbcType="INTEGER" />
+    <result column="ts" 		property="ts" 		jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, code,path, status, ts
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from config_log_file
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from config_log_file
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.sky.crawl.data.config.dao.entity.ConfigFileDefined" useGeneratedKeys="true" keyProperty="id">
+    insert into config_log_file (id, code,path, status, ts)
+    values (#{id,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR},#{path,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, now())
+    ON DUPLICATE KEY UPDATE path = VALUES(path),status=VALUES(status),ts=now()
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigFileDefined" useGeneratedKeys="true" keyProperty="id">
+    insert into config_log_file
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >       	id,      		</if>
+      <if test="code != null" >     	code,      		</if>
+      <if test="path != null" >     	path,      		</if>
+      							    	ts
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >       	#{id,jdbcType=INTEGER},      	</if>
+      <if test="code != null" >     	#{code,jdbcType=VARCHAR},      	</if>
+      <if test="path != null" >     	#{path,jdbcType=VARCHAR},      	</if>
+      <if test="status != null" >    	#{status,jdbcType=INTEGER},  	</if>
+       									now()
+    </trim>
+    ON DUPLICATE KEY UPDATE path = VALUES(path),status=VALUES(status),ts=now()
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigFileDefined" >
+    update config_log_file
+    <set >
+      <if test="code != null" >        	code 	= #{code,jdbcType=VARCHAR},     </if>
+      <if test="path != null" >     	path	= #{path,jdbcType=VARCHAR},     </if>
+      <if test="status != null" >    	status	= #{status,jdbcType=INTEGER},  	</if>
+              							ts = now()     
+    </set>
+    where id = #{id,jdbcType=INTEGER}	
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.ConfigFileDefined" >
+    update config_log_file
+    set code 	= #{code,jdbcType=VARCHAR},
+      path		=#{path,jdbcType=VARCHAR},      	
+      status	=#{status,jdbcType=INTEGER},
+      ts 		= now()
+    where id = #{id,jdbcType=INTEGER} 
+  </update>
+  
+  <sql id="base_query_condition">
+  	<trim prefix="where" suffixOverrides="and">
+  		<if test="code !=null">config.code like concat('%',#{code},'%')</if>
+  	</trim>
+  	order by id
+  </sql>
+  
+  
+  <select id="account"  parameterType="com.sky.crawl.data.config.dao.entity.ConfigFileDefined" resultType="java.lang.Integer">
+ 	 select count(1)	
+ 	 from config_log_file config
+  	<include refid="base_query_condition"></include>
+  </select>
+  
+</mapper>
