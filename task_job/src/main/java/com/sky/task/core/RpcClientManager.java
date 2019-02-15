@@ -22,6 +22,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
+import com.alibaba.fastjson.JSON;
+
 @Configuration
 @EnableAutoConfiguration
 @EnableConfigurationProperties(RpcConfigResource.class)
@@ -62,12 +64,12 @@ public class RpcClientManager {
 	}
 	private void iniNode() throws IOException, KeeperException, InterruptedException {
 		String[] initnodes = getRpcConfigResource().getPrefix().split("/");
-		log.debug(getRpcConfigResource().getTipTitle()+" init node"+initnodes);
+		log.debug(getRpcConfigResource().getTipTitle()+" init node"+JSON.toJSONString(initnodes));
 		String nodeUrl="";
 		for(String node:initnodes) {
 			nodeUrl+="/"+node;
-			if( getZookeeper().exists("/"+nodeUrl, true)==null) {
-				 getZookeeper().create("/"+nodeUrl,getRpcConfigResource().getDesc().getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);
+			if( getZookeeper().exists(nodeUrl, true)==null) {
+				 getZookeeper().create(nodeUrl,getRpcConfigResource().getDesc().getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);
 			}
 		}
 		

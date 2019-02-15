@@ -2,7 +2,6 @@ package com.sky.task.core;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
-
 import com.sky.task.job.AbstractBaseJobcClient;
 
 public class HttpTaskRpcClient {
