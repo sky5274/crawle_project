@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
-import com.sky.auth.config.core.AuthTokenDefined;
+import com.sky.auth.config.entity.AuthTokenDefined;
 import com.sky.auth.config.entity.UserDetailEntitiy;
 import com.sky.auth.config.entity.UserEntity;
 import com.sky.auth.config.service.UserService;
