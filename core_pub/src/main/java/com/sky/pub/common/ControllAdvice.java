@@ -41,7 +41,7 @@ import com.alibaba.fastjson.JSON;
 public class ControllAdvice {
 
 	private Log log=LogFactory.getLog(ControllAdvice.class);
-	private String prefix="-->>";
+	private String prefix="-->> ";
 	private Date times=null;
 	private Date timee=null;
 	String method=null;
