@@ -2,24 +2,36 @@ package com.sky.task.core;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
+import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
+import org.quartz.Matcher;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.quartz.impl.matchers.KeyMatcher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import com.sky.task.entity.JobTaskEntity;
 
-public class QuartzManager implements ApplicationContextAware{
-	private static ApplicationContext appCtx;
-	public static SchedulerFactoryBean schedulerFactoryBean = null;
+/**
+ * 	quartz  JOB manager
+ * @author 王帆
+ * @date  2019年2月9日 下午4:14:54
+ */
+@Component
+public class QuartzManager {
+	@Autowired
+	public  SchedulerFactoryBean schedulerFactoryBean ;
+	@Autowired
+	private QuartzJobTaskListener quartzJobTaskListener;
 
 
 	/**
@@ -27,36 +39,56 @@ public class QuartzManager implements ApplicationContextAware{
 	 * @param scheduleJob
 	 * @throws SchedulerException
 	 */
-	public static void addJob(JobTaskEntity job) throws SchedulerException {
-		if (job == null || !JobTaskEntity.STATUS_RUNNING.equals(job.getStatus())) {
+	public  void addJob(JobTaskEntity job) throws SchedulerException {
+		if (job == null) {
 			return;
 		}
 		Scheduler scheduler = schedulerFactoryBean.getScheduler();
 		TriggerKey triggerKey = TriggerKey.triggerKey(job.getTaskId(), job.getGroupId());
-		CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+		Trigger trigger =  scheduler.getTrigger(triggerKey);
 		// 不存在，创建一个
 		if (null == trigger) {
-			Class clazz = JobTaskEntity.CONCURRENT_IS.equals(job.getIsConcurrent()) ? QuartzJobFactory.class
+			Class<? extends Job> clazz = JobTaskEntity.CONCURRENT_IS.equals(job.getIsConcurrent()) ? QuartzJobFactory.class
 					: QuartzJobFactoryDisallowConcurrentExecution.class;
 			JobDataMap newJobDataMap=new JobDataMap();
+			newJobDataMap.put("taskId", job.getTaskId());
 			newJobDataMap.put("class", job.getTargetClass());
 			newJobDataMap.put("params", job.getJsonParams());
+			newJobDataMap.put("scheduleModel", job.getScheduleModel());
 			JobDetail jobDetail = JobBuilder.newJob(clazz).withIdentity(job.getTaskId(), job.getGroupId()).setJobData(newJobDataMap).build();
 			jobDetail.getJobDataMap().put("scheduleJob"+job.getGroupId(), job);
-			CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(job.getCronExpression());
-			trigger = TriggerBuilder
-					.newTrigger()
-					.withDescription(job.getTaskName().toString())
-					.withIdentity(job.getTaskId(), job.getGroupId())
-					.withSchedule(scheduleBuilder).build();
+			if(job.getRunType()==null || job.getRunType()!=1 ||StringUtils.isEmpty(job.getCronExpression())) {
+				trigger = TriggerBuilder
+						.newTrigger()
+						.withDescription(job.getTaskName())
+						.withIdentity(job.getTaskId(), job.getGroupId())
+						.withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(3).withRepeatCount(0))
+						.build();
+			}else {
+				trigger = TriggerBuilder
+						.newTrigger()
+						.withDescription(job.getTaskName())
+						.withIdentity(job.getTaskId(), job.getGroupId())
+						.withSchedule( CronScheduleBuilder.cronSchedule(job.getCronExpression()))
+						.build();
+			}
+			//自定义的调度任务监听器
+			if(quartzJobTaskListener !=null) {
+				Matcher<JobKey> matcher = KeyMatcher.keyEquals(jobDetail.getKey());
+				scheduler.getListenerManager().addJobListener(quartzJobTaskListener,matcher);
+			}
 			scheduler.scheduleJob(jobDetail, trigger);
 		} else {
+			CronTrigger crontrigger=(CronTrigger) trigger;
 			// Trigger已存在，那么更新相应的定时设置
 			CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(job.getCronExpression());
 			// 按新的cronExpression表达式重新构建trigger
-			trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).usingJobData("data", job.getJsonParams()).withSchedule(scheduleBuilder).build();
+			crontrigger = crontrigger.getTriggerBuilder().withIdentity(triggerKey).usingJobData("data", job.getJsonParams()).withSchedule(scheduleBuilder).build();
 			// 按新的trigger重新设置job执行
-			scheduler.rescheduleJob(triggerKey, trigger);
+			scheduler.rescheduleJob(triggerKey, crontrigger);
+		}
+		if(!scheduler.isShutdown()) {
+			scheduler.start();
 		}
 	}
 
@@ -75,7 +107,7 @@ public class QuartzManager implements ApplicationContextAware{
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * @Description: 移除一个任务(使用默认的任务组名，触发器名，触发器组名)
 	 * @param job
@@ -83,7 +115,7 @@ public class QuartzManager implements ApplicationContextAware{
 	 * 
 	 * @Title: QuartzManager.java
 	 */
-	public static boolean removeJob(JobTaskEntity job) {
+	public  boolean removeJob(JobTaskEntity job) {
 		try {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
 			TriggerKey triggerKey = TriggerKey.triggerKey(job.getTaskId(), job.getGroupId());
@@ -101,7 +133,7 @@ public class QuartzManager implements ApplicationContextAware{
 	/**
 	 * @Description:启动所有定时任务
 	 */
-	public static void startJobs() {
+	public  void startJobs() {
 		try {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
 			scheduler.start();
@@ -113,7 +145,7 @@ public class QuartzManager implements ApplicationContextAware{
 	/**
 	 * @Description:关闭所有定时任务
 	 */
-	public static void shutdownJobs() {
+	public  void shutdownJobs() {
 		try {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
 			if (!scheduler.isShutdown()) {
@@ -122,9 +154,5 @@ public class QuartzManager implements ApplicationContextAware{
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		appCtx=applicationContext;
 	}
 }
