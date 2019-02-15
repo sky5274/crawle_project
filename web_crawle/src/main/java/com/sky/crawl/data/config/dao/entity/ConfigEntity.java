@@ -1,4 +1,4 @@
-package com.crawl.data.config.dao.entity;
+package com.sky.crawl.data.config.dao.entity;
 
 import com.sky.pub.BaseTableEntity;
 

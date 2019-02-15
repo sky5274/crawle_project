@@ -1,4 +1,4 @@
-package com.crawl.data.config.dao.entity;
+package com.sky.crawl.data.config.dao.entity;
 
 import java.util.Arrays;
 import java.util.LinkedList;

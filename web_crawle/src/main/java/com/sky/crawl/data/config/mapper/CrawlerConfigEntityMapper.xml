@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.crawl.data.config.dao.CrawlerConfigEntityMapper" >
-  <resultMap id="BaseResultMap" type="com.crawl.data.config.dao.entity.CrawlerConfigEntity" >
+<mapper namespace="com.sky.crawl.data.config.dao.CrawlerConfigEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity" >
     <id column="id" 			property="id" 		jdbcType="INTEGER" />
     <result column="code" 		property="code" 	jdbcType="VARCHAR" />
     <result column="name" 		property="name" 	jdbcType="VARCHAR" />
@@ -14,7 +14,7 @@
     <result column="js" 		property="js" 		jdbcType="VARCHAR" />
     <result column="version" 	property="version" 	jdbcType="INTEGER" />
     <result column="ts" 		property="ts" 		jdbcType="TIMESTAMP" />
-    <collection property="urls" ofType="com.crawl.data.config.dao.entity.CrawlerConfigUrlEntity">
+    <collection property="urls" ofType="com.sky.crawl.data.config.dao.entity.CrawlerConfigUrlEntity">
     	<result column="url_id" 		property="id" 			jdbcType="INTEGER" />
 	    <result column="code"			property="configCode" 	jdbcType="VARCHAR" />
 	    <result column="url" 			property="url" 			jdbcType="VARCHAR" />
@@ -22,7 +22,7 @@
 	    <result column="url_type" 		property="type" 		jdbcType="VARCHAR" />
 	    <result column="url_condtion" 	property="condtion" 	jdbcType="VARCHAR" />
     </collection>
-    <collection property="filters" ofType="com.crawl.data.config.dao.entity.CrawlerConfigFilterEntity">
+    <collection property="filters" ofType="com.sky.crawl.data.config.dao.entity.CrawlerConfigFilterEntity">
     	<result column="filter_id" 		property="id" 			jdbcType="INTEGER" />
 	    <result column="code" 			property="configCode" 	jdbcType="VARCHAR" />
 	    <result column="filter_name" 	property="name" 		jdbcType="VARCHAR" />
@@ -52,11 +52,11 @@
     delete from crawler_config
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" useGeneratedKeys="true" keyProperty="id">
+  <insert id="insert" parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity" useGeneratedKeys="true" keyProperty="id">
     insert into crawler_config (id, name,code, remark,  js, version, ts)
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},#{code,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},  #{js,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER}, now())
   </insert>
-  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" useGeneratedKeys="true" keyProperty="id">
+  <insert id="insertSelective" parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity" useGeneratedKeys="true" keyProperty="id">
     insert into crawler_config
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >       	id,      		</if>
@@ -87,7 +87,7 @@
        									now()
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity" >
     update crawler_config
     <set >
       <if test="name != null" >        	name 	= #{name,jdbcType=VARCHAR},      		</if>
@@ -103,7 +103,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}	and code=${code,jdbcType=VARCHAR} and version=#{version}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" >
+  <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity" >
     update crawler_config
     set name 	= #{name,jdbcType=VARCHAR},
       type		=#{type,jdbcType=VARCHAR},      	
@@ -133,7 +133,7 @@
   </sql>
   
   <!-- 根据爬虫配置条件查询数据 -->
-  <select id="queryListByCrawlerConfig" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" resultMap="BaseResultMap">
+  <select id="queryListByCrawlerConfig" parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity" resultMap="BaseResultMap">
   	<include refid="BASE_QUERY_SQL"></include>
   	<include refid="base_query_condition"></include>
   </select>
@@ -150,14 +150,14 @@
   	where config.name=#{name}
   </select>
   
-  <select id="account"  parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" resultType="java.lang.Integer">
+  <select id="account"  parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity" resultType="java.lang.Integer">
  	 select count(1)	
  	 from crawler_config config
   	<include refid="base_query_condition"></include>
   </select>
   
   <!-- 根据爬虫配置条件分页查询数据 -->
-  <select id="queryPageByCrawlerConfig" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigEntity" resultMap="BaseResultMap">
+  <select id="queryPageByCrawlerConfig" parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity" resultMap="BaseResultMap">
   select
   		tab.id, tab.name,tab.code, tab.remark, tab.js,tab.type,tab.class_name,tab.depth,tab.top_n,tab.threads, tab.version, tab.ts,
   		filter.id as filter_id, filter.name as filter_name, filter.value as filter_value,

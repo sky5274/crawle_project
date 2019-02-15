@@ -1,4 +1,4 @@
-package com.crawl.config;
+package com.sky.crawl.config;
 
 import javax.validation.Validation;
 import javax.validation.Validator;

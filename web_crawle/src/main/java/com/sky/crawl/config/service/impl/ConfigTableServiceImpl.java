@@ -1,15 +1,15 @@
-package com.crawl.config.service.impl;
+package com.sky.crawl.config.service.impl;
 
 import java.util.List;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import com.crawl.config.service.ConfigTableService;
-import com.crawl.data.config.dao.ConfigTableColumnEntityMapper;
-import com.crawl.data.config.dao.ConfigTableEntityMapper;
-import com.crawl.data.config.dao.entity.ConfigTableColumnEntity;
-import com.crawl.data.config.dao.entity.ConfigTableEntity;
+import com.sky.crawl.config.service.ConfigTableService;
+import com.sky.crawl.data.config.dao.ConfigTableColumnEntityMapper;
+import com.sky.crawl.data.config.dao.ConfigTableEntityMapper;
+import com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity;
+import com.sky.crawl.data.config.dao.entity.ConfigTableEntity;
 import com.sky.pub.Page;
 import com.sky.pub.ResultAssert;
 import com.sky.pub.ResultCode;

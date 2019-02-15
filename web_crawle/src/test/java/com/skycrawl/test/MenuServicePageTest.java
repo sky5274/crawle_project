@@ -1,4 +1,4 @@
-package com.crawl.test;
+package com.skycrawl.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -6,9 +6,9 @@ import static org.junit.Assert.assertTrue;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
-import com.crawl.data.config.dao.MenuEntityMapper;
-import com.crawl.data.config.dao.entity.MenuEntity;
-import com.crawl.util.RestTemplateUtil;
+import com.sky.crawl.data.config.dao.MenuEntityMapper;
+import com.sky.crawl.data.config.dao.entity.MenuEntity;
+import com.sky.crawl.util.RestTemplateUtil;
 import com.sky.pub.BasePageRequest;
 import com.sky.pub.Page;
 import com.sky.pub.Result;

@@ -1,7 +1,7 @@
-package com.crawl.config.service;
+package com.sky.crawl.config.service;
 
-import com.crawl.data.config.dao.entity.ConfigFileDefined;
-import com.crawl.data.config.dao.entity.CrawlerConfigEntity;
+import com.sky.crawl.data.config.dao.entity.ConfigFileDefined;
+import com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity;
 
 /**
  *   爬虫事件引擎事件

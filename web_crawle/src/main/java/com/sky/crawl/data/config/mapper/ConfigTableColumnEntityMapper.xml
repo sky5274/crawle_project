@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.crawl.data.config.dao.ConfigTableColumnEntityMapper" >
-  <resultMap id="BaseResultMap" type="com.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
+<mapper namespace="com.sky.crawl.data.config.dao.ConfigTableColumnEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="tableid" property="tableId" jdbcType="INTEGER" />
     <result column="table_code" property="tableCode" jdbcType="VARCHAR" />
@@ -28,7 +28,7 @@
     delete from config_table_column
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.ConfigTableColumnEntity" useGeneratedKeys="true" keyColumn="id">
+  <insert id="insert" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" useGeneratedKeys="true" keyColumn="id">
     insert into config_table_column (id, attr, remark, tableid,     type,is_null,is_primary, createId, ts      )
     values (#{id,jdbcType=INTEGER}, #{attr,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{tableId,jdbcType=INTEGER},
       #{type,jdbcType=VARCHAR},#{isNull},#{isPrimary}, #{createid,jdbcType=INTEGER}, now()
@@ -40,7 +40,7 @@
     	(#{it.attr,jdbcType=VARCHAR}, #{it.remark,jdbcType=VARCHAR}, #{it.tableId,jdbcType=INTEGER},#{it.type,jdbcType=VARCHAR},#{it.isNull},#{it.isPrimary}, #{it.createid,jdbcType=INTEGER}, now())
     </foreach>
   </insert>
-  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.ConfigTableColumnEntity" useGeneratedKeys="true" keyColumn="id">
+  <insert id="insertSelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" useGeneratedKeys="true" keyColumn="id">
     insert into config_table_column
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -103,7 +103,7 @@
       now()
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
     update config_table_column
     <set >
      <if test="tableId != null" >
@@ -134,7 +134,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER} and ts=#{ts}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
+  <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
     update config_table_column
     set attr = #{attr,jdbcType=VARCHAR},
         is_null=#{isNull},

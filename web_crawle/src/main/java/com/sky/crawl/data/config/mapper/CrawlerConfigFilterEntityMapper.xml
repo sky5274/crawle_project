@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.crawl.data.config.dao.CrawlerConfigFilterEntityMapper" >
-  <resultMap id="BaseResultMap" type="com.crawl.data.config.dao.entity.CrawlerConfigFilterEntity" >
+<mapper namespace="com.sky.crawl.data.config.dao.CrawlerConfigFilterEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.crawl.data.config.dao.entity.CrawlerConfigFilterEntity" >
     <id column="id" 				property="id" 			jdbcType="INTEGER" />
     <result column="config_code" 	property="configCode" 	jdbcType="VARCHAR" />
     <result column="name" 			property="name" 		jdbcType="VARCHAR" />
@@ -21,7 +21,7 @@
     delete from crawler_config_filter
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigFilterEntity" >
+  <insert id="insert" parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigFilterEntity" >
     insert into crawler_config_filter (id,config_code name, value, ts)
     values (#{id,jdbcType=INTEGER},#{configCode,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR},now())
   </insert>
@@ -31,7 +31,7 @@
     	(#{it.configCode,jdbcType=VARCHAR}, #{it.name,jdbcType=VARCHAR}, #{it.value,jdbcType=VARCHAR},now())
     </foreach>
   </insert>
-  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigFilterEntity" >
+  <insert id="insertSelective" parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigFilterEntity" >
     insert into crawler_config_filter
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >        	id,      	</if>
@@ -48,7 +48,7 @@
             							now()    
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigFilterEntity" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigFilterEntity" >
     update crawler_config_filter
     <set >
       <if test="name != null" >        	name = #{name,jdbcType=VARCHAR},      	</if>
@@ -57,7 +57,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER} and config_code=#{configCode,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.CrawlerConfigFilterEntity" >
+  <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.CrawlerConfigFilterEntity" >
     update crawler_config_filter
     set name 	= #{name,jdbcType=VARCHAR},
       value 	= #{value,jdbcType=VARCHAR},

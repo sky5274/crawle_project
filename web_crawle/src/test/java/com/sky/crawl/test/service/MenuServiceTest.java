@@ -1,4 +1,4 @@
-package com.crawl.test.service;
+package com.sky.crawl.test.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,10 +14,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
 
 import com.alibaba.fastjson.JSON;
-import com.crawl.config.service.MenuService;
-import com.crawl.data.config.dao.MenuEntityMapper;
-import com.crawl.data.config.dao.entity.MenuEntity;
-import com.crawl.data.config.dao.entity.MenuNode;
+import com.sky.crawl.config.service.MenuService;
+import com.sky.crawl.data.config.dao.MenuEntityMapper;
+import com.sky.crawl.data.config.dao.entity.MenuEntity;
+import com.sky.crawl.data.config.dao.entity.MenuNode;
 import com.sky.pub.BasePageRequest;
 import com.sky.pub.Page;
 

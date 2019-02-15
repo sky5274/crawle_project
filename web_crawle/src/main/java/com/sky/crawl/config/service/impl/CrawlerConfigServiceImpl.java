@@ -1,4 +1,4 @@
-package com.crawl.config.service.impl;
+package com.sky.crawl.config.service.impl;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -10,13 +10,13 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import com.crawl.config.service.CrawlerConfigService;
-import com.crawl.data.config.dao.CrawlerConfigEntityMapper;
-import com.crawl.data.config.dao.CrawlerConfigFilterEntityMapper;
-import com.crawl.data.config.dao.CrawlerConfigUrlEntityMapper;
-import com.crawl.data.config.dao.entity.CrawlerConfigEntity;
-import com.crawl.data.config.dao.entity.CrawlerConfigFilterEntity;
-import com.crawl.data.config.dao.entity.CrawlerConfigUrlEntity;
+import com.sky.crawl.config.service.CrawlerConfigService;
+import com.sky.crawl.data.config.dao.CrawlerConfigEntityMapper;
+import com.sky.crawl.data.config.dao.CrawlerConfigFilterEntityMapper;
+import com.sky.crawl.data.config.dao.CrawlerConfigUrlEntityMapper;
+import com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity;
+import com.sky.crawl.data.config.dao.entity.CrawlerConfigFilterEntity;
+import com.sky.crawl.data.config.dao.entity.CrawlerConfigUrlEntity;
 import com.sky.pub.Page;
 import com.sky.pub.ResultCode;
 import com.sky.pub.common.exception.ResultException;

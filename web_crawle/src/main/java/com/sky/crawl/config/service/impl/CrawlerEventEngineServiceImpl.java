@@ -1,4 +1,4 @@
-package com.crawl.config.service.impl;
+package com.sky.crawl.config.service.impl;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,14 +16,14 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
-import com.crawl.config.service.CrawlerEventEngineService;
-import com.crawl.data.config.dao.ConfigLogFileMapper;
-import com.crawl.data.config.dao.ConfigSqlExcuteMapper;
-import com.crawl.data.config.dao.entity.ConfigFileDefined;
-import com.crawl.data.config.dao.entity.CrawlerConfigEntity;
-import com.crawl.data.config.dao.entity.CrawlerConfigFilterEntity;
-import com.crawl.data.config.dao.entity.CrawlerConfigUrlEntity;
-import com.crawl.util.CrawlerHttpEventWriter;
+import com.sky.crawl.config.service.CrawlerEventEngineService;
+import com.sky.crawl.data.config.dao.ConfigLogFileMapper;
+import com.sky.crawl.data.config.dao.ConfigSqlExcuteMapper;
+import com.sky.crawl.data.config.dao.entity.ConfigFileDefined;
+import com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity;
+import com.sky.crawl.data.config.dao.entity.CrawlerConfigFilterEntity;
+import com.sky.crawl.data.config.dao.entity.CrawlerConfigUrlEntity;
+import com.sky.crawl.util.CrawlerHttpEventWriter;
 import com.sky.crawler.core.CrawlerUrlDatum;
 import com.sky.crawler.engine.BaseJsonCrawlerBreath;
 import com.sky.crawler.engine.HtmlParseClassNameCrawler;

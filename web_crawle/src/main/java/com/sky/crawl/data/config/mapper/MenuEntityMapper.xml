@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.crawl.data.config.dao.MenuEntityMapper" >
-  <resultMap id="BaseResultMap" type="com.crawl.data.config.dao.entity.MenuEntity" >
+<mapper namespace="com.sky.crawl.data.config.dao.MenuEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.crawl.data.config.dao.entity.MenuEntity" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="code" property="code" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
@@ -37,7 +37,7 @@
   </sql>
   
   <!-- 根据条件查询数据 -->
-  <select id="queryByEntity" resultMap="BaseResultMap" parameterType="com.crawl.data.config.dao.entity.MenuEntity">
+  <select id="queryByEntity" resultMap="BaseResultMap" parameterType="com.sky.crawl.data.config.dao.entity.MenuEntity">
     select 
     <include refid="Base_Column_List" />
     from menu
@@ -56,13 +56,13 @@
     delete from menu
     where id = #{id,jdbcType=INTEGER} and version=#{version}
   </delete>
-  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.MenuEntity" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+  <insert id="insert" parameterType="com.sky.crawl.data.config.dao.entity.MenuEntity" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into menu (id,code, name, pid, createId, url,version, ts)
     values (#{id,jdbcType=INTEGER},#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, IFNULL(#{pid,jdbcType=INTEGER},0), 
       #{createid,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR},#{version} now()
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.MenuEntity" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+  <insert id="insertSelective" parameterType="com.sky.crawl.data.config.dao.entity.MenuEntity" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into menu
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -113,7 +113,7 @@
         now()
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.crawl.data.config.dao.entity.MenuEntity" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.crawl.data.config.dao.entity.MenuEntity" >
     update menu
     <set >
       <if test="code != null" >
@@ -136,7 +136,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER} and version=#{version}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.MenuEntity" >
+  <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.MenuEntity" >
     update menu
     set name = #{name,jdbcType=VARCHAR},
       code = #{code,jdbcType=VARCHAR},

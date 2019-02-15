@@ -1,8 +1,8 @@
-package com.crawl.config.service;
+package com.sky.crawl.config.service;
 
 import java.util.List;
 
-import com.crawl.data.config.dao.entity.CrawlerConfigEntity;
+import com.sky.crawl.data.config.dao.entity.CrawlerConfigEntity;
 import com.sky.pub.Page;
 import com.sky.pub.common.exception.ResultException;
 

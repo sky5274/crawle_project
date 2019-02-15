@@ -1,4 +1,4 @@
-package com.crawl.test;
+package com.skycrawl.test;
 
 import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
 import cn.edu.hfut.dmic.webcollector.model.Page;

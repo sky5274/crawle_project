@@ -1,8 +1,8 @@
-package com.crawl.data.config.dao;
+package com.sky.crawl.data.config.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.crawl.data.config.dao.entity.ConfigEntity;
+import com.sky.crawl.data.config.dao.entity.ConfigEntity;
 
 @Mapper
 public interface ConfigEntityMapper {

@@ -1,4 +1,4 @@
-package com.crawl.controller;
+package com.sky.crawl.controller;
 
 import java.util.List;
 
@@ -8,9 +8,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.crawl.config.service.MenuService;
-import com.crawl.data.config.dao.entity.MenuEntity;
-import com.crawl.data.config.dao.entity.MenuNode;
+import com.sky.crawl.config.service.MenuService;
+import com.sky.crawl.data.config.dao.entity.MenuEntity;
+import com.sky.crawl.data.config.dao.entity.MenuNode;
 import com.sky.pub.BasePageRequest;
 import com.sky.pub.Page;
 import com.sky.pub.Result;

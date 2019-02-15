@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.crawl.data.config.dao.ConfigDetailEntityMapper">
-  <resultMap id="BaseResultMap" type="com.crawl.data.config.dao.entity.ConfigDetailEntity">
+<mapper namespace="com.sky.crawl.data.config.dao.ConfigDetailEntityMapper">
+  <resultMap id="BaseResultMap" type="com.sky.crawl.data.config.dao.entity.ConfigDetailEntity">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="pid" jdbcType="INTEGER" property="pid" />
     <result column="key" jdbcType="VARCHAR" property="key" />
@@ -24,7 +24,7 @@
     delete from config_detail
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.ConfigDetailEntity" useGeneratedKeys="true" keyColumn="id">
+  <insert id="insert" parameterType="com.sky.crawl.data.config.dao.entity.ConfigDetailEntity" useGeneratedKeys="true" keyColumn="id">
     insert into config_detail (id, pid, key, 
       value, desc, type, 
       createid, ts)
@@ -32,7 +32,7 @@
       #{value,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{createid,jdbcType=INTEGER}, #{ts,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.ConfigDetailEntity" useGeneratedKeys="true" keyColumn="id">
+  <insert id="insertSelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigDetailEntity" useGeneratedKeys="true" keyColumn="id">
     insert into config_detail
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -87,7 +87,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.crawl.data.config.dao.entity.ConfigDetailEntity">
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigDetailEntity">
     update config_detail
     <set>
       <if test="pid != null">
@@ -114,7 +114,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER} and ts=#{ts}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.ConfigDetailEntity">
+  <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.ConfigDetailEntity">
     update config_detail
     set pid = #{pid,jdbcType=INTEGER},
       key = #{key,jdbcType=VARCHAR},

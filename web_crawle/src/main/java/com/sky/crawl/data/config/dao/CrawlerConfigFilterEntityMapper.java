@@ -1,11 +1,11 @@
-package com.crawl.data.config.dao;
+package com.sky.crawl.data.config.dao;
 
 import java.util.List;
 import java.util.Set;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.crawl.data.config.dao.entity.CrawlerConfigFilterEntity;
+import com.sky.crawl.data.config.dao.entity.CrawlerConfigFilterEntity;
 
 @Mapper
 public interface CrawlerConfigFilterEntityMapper {

@@ -1,4 +1,4 @@
-package com.crawl.controller;
+package com.sky.crawl.controller;
 
 
 import java.io.BufferedReader;
@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.crawl.config.service.MenuService;
-import com.crawl.data.config.dao.ConfigSqlExcuteMapper;
+import com.sky.crawl.config.service.MenuService;
+import com.sky.crawl.data.config.dao.ConfigSqlExcuteMapper;
 import com.sky.pub.Result;
 import com.sky.pub.ResultCode;
 import com.sky.pub.ResultUtil;

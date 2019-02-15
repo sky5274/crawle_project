@@ -1,4 +1,4 @@
-package com.crawl.test.controller;
+package com.sky.crawl.test.controller;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,10 +13,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.crawl.WebCrawleApplication;
-import com.crawl.data.config.dao.MenuEntityMapper;
-import com.crawl.test.MenuServicePageTest;
-import com.crawl.util.RestTemplateUtil;
+import com.sky.crawl.WebCrawleApplication;
+import com.sky.crawl.data.config.dao.MenuEntityMapper;
+import com.sky.crawl.util.RestTemplateUtil;
+import com.skycrawl.test.MenuServicePageTest;
 
 /**
  *	 页面测试

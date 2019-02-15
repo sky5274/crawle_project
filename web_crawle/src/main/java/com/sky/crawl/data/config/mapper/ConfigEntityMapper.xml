@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.crawl.data.config.dao.ConfigEntityMapper">
-  <resultMap id="BaseResultMap" type="com.crawl.data.config.dao.entity.ConfigEntity">
+<mapper namespace="com.sky.crawl.data.config.dao.ConfigEntityMapper">
+  <resultMap id="BaseResultMap" type="com.sky.crawl.data.config.dao.entity.ConfigEntity">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="desc" jdbcType="VARCHAR" property="desc" />
@@ -19,11 +19,11 @@
     from config
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.ConfigEntity">
+  <delete id="deleteByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.ConfigEntity">
     delete from config
     where id = #{id,jdbcType=INTEGER} and version=#{version}
   </delete>
-  <insert id="insert" parameterType="com.crawl.data.config.dao.entity.ConfigEntity" useGeneratedKeys="true" keyColumn="id">
+  <insert id="insert" parameterType="com.sky.crawl.data.config.dao.entity.ConfigEntity" useGeneratedKeys="true" keyColumn="id">
     insert into config (id, name, desc, 
       type, createId,version, ts
       )
@@ -31,7 +31,7 @@
       #{type,jdbcType=VARCHAR}, #{createid,jdbcType=INTEGER},#{version}, #{ts,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.crawl.data.config.dao.entity.ConfigEntity" useGeneratedKeys="true" keyColumn="id">
+  <insert id="insertSelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigEntity" useGeneratedKeys="true" keyColumn="id">
     insert into config
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -76,7 +76,7 @@
         now()
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.crawl.data.config.dao.entity.ConfigEntity">
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.crawl.data.config.dao.entity.ConfigEntity">
     update config
     <set>
       <if test="name != null">
@@ -96,7 +96,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER} and version=#{version}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.crawl.data.config.dao.entity.ConfigEntity">
+  <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.ConfigEntity">
     update config
     set name = #{name,jdbcType=VARCHAR},
       desc = #{desc,jdbcType=VARCHAR},

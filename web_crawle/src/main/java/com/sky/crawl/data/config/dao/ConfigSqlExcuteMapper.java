@@ -1,4 +1,4 @@
-package com.crawl.data.config.dao;
+package com.sky.crawl.data.config.dao;
 
 import java.util.List;
 import java.util.Map;

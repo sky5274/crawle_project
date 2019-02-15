@@ -1,10 +1,10 @@
-package com.crawl.controller;
+package com.sky.crawl.controller;
 
 import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.crawl.config.service.ConfigTableService;
-import com.crawl.data.config.dao.entity.ConfigTableEntity;
+import com.sky.crawl.config.service.ConfigTableService;
+import com.sky.crawl.data.config.dao.entity.ConfigTableEntity;
 import com.sky.pub.Page;
 import com.sky.pub.Result;
 import com.sky.pub.ResultCode;

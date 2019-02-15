@@ -1,11 +1,11 @@
-package com.crawl.util;
+package com.sky.crawl.util;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.crawl.data.config.dao.ConfigLogFileMapper;
-import com.crawl.data.config.dao.entity.ConfigFileDefined;
+import com.sky.crawl.data.config.dao.ConfigLogFileMapper;
+import com.sky.crawl.data.config.dao.entity.ConfigFileDefined;
 
 /**
  * 	爬虫前端控制

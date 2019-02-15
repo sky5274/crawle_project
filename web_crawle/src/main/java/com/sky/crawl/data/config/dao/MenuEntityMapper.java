@@ -1,10 +1,10 @@
-package com.crawl.data.config.dao;
+package com.sky.crawl.data.config.dao;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.crawl.data.config.dao.entity.MenuEntity;
+import com.sky.crawl.data.config.dao.entity.MenuEntity;
 import com.sky.pub.BasePageRequest;
 
 @Mapper

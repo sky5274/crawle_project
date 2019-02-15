@@ -1,9 +1,9 @@
-package com.crawl.data.config.dao;
+package com.sky.crawl.data.config.dao;
 
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.crawl.data.config.dao.entity.ConfigFileDefined;
+import com.sky.crawl.data.config.dao.entity.ConfigFileDefined;
 
 /**
  * 系统配置临时日志输出

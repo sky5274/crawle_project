@@ -1,8 +1,8 @@
-package com.crawl.data.config.dao;
+package com.sky.crawl.data.config.dao;
 
 import java.util.List;
 
-import com.crawl.data.config.dao.entity.ConfigTableColumnEntity;
+import com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity;
 
 public interface ConfigTableColumnEntityMapper {
     int deleteByPrimaryKey(Integer id);
