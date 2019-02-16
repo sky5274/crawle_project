@@ -116,7 +116,9 @@
 			doAjax(obj)
 	}
 	function doPostJsonAjax(obj){
+		obj.type="POST";
 		obj.contentType='application/json'
+		obj.data=JSON.stringify(obj.data)
 		doJsonAjax(obj)
 	}
 	function jTable(tar,obj){

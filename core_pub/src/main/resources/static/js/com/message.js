@@ -83,7 +83,7 @@
 				this.settings.flag=false;
 			},
 			getModal:function(id,i){
-				var con='<div class="modal fade" id="'+id+'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="'+this.settings.hidden+'" >'+
+				var con='<div class="dialog modal fade" id="'+id+'" tabindex="-1" role="dialog" aria-hidden="'+this.settings.hidden+'" >'+
 				'<div class="modal-backdrop" style="opacity:0.5;z-index:-1"></div>'+
 				'<div class="modal-dialog">'+
 				' <div class="modal-content">'+
