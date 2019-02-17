@@ -25,7 +25,7 @@ public class ResultException extends Exception{
 	public ResultException(ResultCode code) {
 		this(code.getCode(),code.getMsg());
 	}
-	public ResultException(ResultCode code,Object data) {
+	public ResultException(Object data,ResultCode code) {
 		this(code.getCode(),code.getMsg(),LogLevel.INFO,data);
 	}
 	public ResultException(ResultCode code,LogLevel level) {
