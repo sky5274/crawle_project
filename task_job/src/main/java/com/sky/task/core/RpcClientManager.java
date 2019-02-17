@@ -19,6 +19,7 @@ import org.apache.zookeeper.data.Stat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
@@ -55,7 +56,7 @@ public class RpcClientManager {
 		if(zkClient==null) {
 			zkClient=new ZooKeeper(getRpcConfigResource().getUrl(), rpcConfigResource.getSessionTimeout(), new Watcher() {
 				public void process(WatchedEvent watch) {
-					log.debug("rpc config get watch:"+watch.getPath());
+					showLog(LogLevel.DEBUG," get watch:"+watch.getPath());
 				}
 			});
 			iniNode();
@@ -64,7 +65,7 @@ public class RpcClientManager {
 	}
 	private void iniNode() throws IOException, KeeperException, InterruptedException {
 		String[] initnodes = getRpcConfigResource().getPrefix().split("/");
-		log.debug(getRpcConfigResource().getTipTitle()+" init node"+JSON.toJSONString(initnodes));
+		showLog(LogLevel.DEBUG," init node"+JSON.toJSONString(initnodes));
 		String nodeUrl="";
 		for(String node:initnodes) {
 			nodeUrl+="/"+node;
@@ -104,7 +105,7 @@ public class RpcClientManager {
 	* @throws Exception
 	 */
 	public String create(String path,String data) throws KeeperException, InterruptedException, IOException {
-		log.info(getRpcConfigResource().getTipTitle()+"add node:"+path);
+		showLog(LogLevel.INFO,"add node:"+path);
 		path=intPath(path);
 		Stat state = getZookeeper().exists(path, true);
 		if( state==null) {
@@ -127,7 +128,7 @@ public class RpcClientManager {
 	* @throws IOException
 	 */
 	public String createTemp(String path,String data) throws KeeperException, InterruptedException, IOException {
-		log.info(getRpcConfigResource().getTipTitle()+"add node:"+path);
+		showLog(LogLevel.INFO,"add node:"+path);
 		path=intPath(path);
 		Stat state = getZookeeper().exists(path, true);
 		if( state==null) {
@@ -148,7 +149,7 @@ public class RpcClientManager {
 	 * @date 2019年2月7日 下午9:54:12
 	 */
 	public void remove(String path) throws KeeperException, InterruptedException, IOException {
-		log.info(getRpcConfigResource().getTipTitle()+"add node:"+path);
+		showLog(LogLevel.INFO,"add node:"+path);
 		path=intPath(path);
 		Stat state = getZookeeper().exists(path, true);
 		if(state !=null) {
@@ -170,7 +171,7 @@ public class RpcClientManager {
 	 * @throws IOException 
 	 */
 	public Stat setData(String path,byte[]data ,int version) throws KeeperException, InterruptedException, IOException {
-		log.info(getRpcConfigResource().getTipTitle()+"update node:"+path);
+		showLog(LogLevel.INFO,"update node:"+path);
 		path=intPath(path);
 		if(exists(path)!=null) {
 			return  getZookeeper().setData(path, data, version);
@@ -190,7 +191,7 @@ public class RpcClientManager {
 	 * @throws IOException 
 	 */
 	public Stat exists(String path) throws KeeperException, InterruptedException, IOException {
-		log.info(getRpcConfigResource().getTipTitle()+"check node is exist:"+path);
+		showLog(LogLevel.INFO,"check node is exist:"+path);
 		path=intPath(path);
 		return getZookeeper().exists(path, true);
 	}
@@ -225,19 +226,48 @@ public class RpcClientManager {
 	 */
 	public List<String> getChildrenPath(String path,Watcher watcher) throws KeeperException, InterruptedException, IOException {
 		path=intPath(path);
-		List<String> children = getChildrenNode(path, watcher);
 		List<String> list=new LinkedList<String>();
-		for(String cs:children) {
-			list.add(path+"/"+cs);
+		List<String> children = getChildrenNode(path, watcher);
+		if(children!=null) {
+			for(String cs:children) {
+				list.add(path+"/"+cs);
+			}
 		}
 		return list;
 	}
 	
 	public List<String> getChildrenNode(String path,Watcher watcher) throws KeeperException, InterruptedException, IOException {
 		path=intPath(path);
-		log.debug(getRpcConfigResource().getTipTitle()+" get child node in path:"+path);
-		List<String> children = getZookeeper().getChildren(path, watcher);
-		return children;
+		showLog(LogLevel.DEBUG," get child node in path:"+path);
+		if(exists(path)!=null) {
+			List<String> children = getZookeeper().getChildren(path, watcher);
+			return children;
+		}else {
+			return null;
+		}
+		
+	}
+	
+	private void showLog(LogLevel level, String msg) {
+		if(getRpcConfigResource().isShowlog()) {
+			switch (level) {
+			case DEBUG:
+				log.debug(getRpcConfigResource().getTipTitle()+msg);
+				break;
+			case INFO:
+				log.info(getRpcConfigResource().getTipTitle()+msg);
+				break;
+			case WARN:
+				log.warn(getRpcConfigResource().getTipTitle()+msg);
+				break;
+			case ERROR:
+				log.error(getRpcConfigResource().getTipTitle()+msg);
+				break;
+			default:
+				log.debug(getRpcConfigResource().getTipTitle()+msg);
+				break;
+			}
+		}
 	}
 
 	/**

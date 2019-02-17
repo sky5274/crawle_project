@@ -99,8 +99,10 @@ public class RpcConfig {
 		Set<Long> list=new HashSet<Long>();
 		try {
 			List<String> nodes = getManager().getChildrenNode(url, null);
-			for(String s:nodes) {
-				list.add(Long.valueOf(s));
+			if(nodes!=null) {
+				for(String s:nodes) {
+					list.add(Long.valueOf(s));
+				}
 			}
 		} catch (KeeperException | InterruptedException | IOException e) {
 			e.printStackTrace();

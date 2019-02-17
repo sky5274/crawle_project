@@ -8,6 +8,7 @@ public class RpcConfigResource {
 	private String desc="com_sky_rpc_link_root_node";
 	private String url="127.0.0.1:2181";
 	private int sessionTimeout=3000;
+	private boolean showlog=false;
 	private String tipTitle="rpc center ";
 	public String getPrefix() {
 		return prefix;
@@ -38,6 +39,12 @@ public class RpcConfigResource {
 	}
 	public void setTipTitle(String tipTitle) {
 		this.tipTitle = tipTitle;
+	}
+	public boolean isShowlog() {
+		return showlog;
+	}
+	public void setShowlog(boolean showlog) {
+		this.showlog = showlog;
 	}
 	
 }
