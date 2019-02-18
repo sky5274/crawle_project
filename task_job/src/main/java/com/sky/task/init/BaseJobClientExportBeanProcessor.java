@@ -15,7 +15,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 import org.springframework.stereotype.Component;
-import com.sky.task.core.RpcConfig;
 import com.sky.task.job.AbstractBaseJobcClient;
 
 @Component
@@ -28,12 +27,10 @@ public class BaseJobClientExportBeanProcessor implements ApplicationContextAware
 		this.beanFactory= (DefaultListableBeanFactory) beanFactory;;
 		Map<String, AbstractBaseJobcClient> jobClazzMaps = this.applicationContext.getBeansOfType(AbstractBaseJobcClient.class);
 		if(jobClazzMaps!=null && !jobClazzMaps.isEmpty()) {
-			String port = this.applicationContext.getEnvironment().getProperty("server.port");
-			RpcConfig rpcConfig = applicationContext.getBean(RpcConfig.class);
 
 			for(String key:jobClazzMaps.keySet()) {
 				try {
-					regist(key,jobClazzMaps.get(key),port,rpcConfig);
+					regist(key,jobClazzMaps.get(key));
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -43,11 +40,9 @@ public class BaseJobClientExportBeanProcessor implements ApplicationContextAware
 
 	}
 
-	private void regist(String key, AbstractBaseJobcClient abstractBaseJobcClient, String port, RpcConfig rpcConfig) throws NumberFormatException, Exception {
+	private void regist(String key, AbstractBaseJobcClient abstractBaseJobcClient) throws NumberFormatException, Exception {
 		//注册httpinvoke  export服务
 		String url = registHTTPExport(key,abstractBaseJobcClient);
-		//注册  服务客户端
-		rpcConfig.regist("/"+abstractBaseJobcClient.getClass().getName(), Integer.parseInt(port), url);
 	}
 
 	/**
