@@ -16,30 +16,29 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
-
 import com.alibaba.fastjson.JSON;
 
-@Configuration
-@EnableAutoConfiguration
-@EnableConfigurationProperties(RpcConfigResource.class)
 public class RpcClientManager {
 	private static  Log log=LogFactory.getLog(RpcClientManager.class);
 	private ZooKeeper zkClient=null;
-	@Autowired
 	private RpcConfigResource rpcConfigResource;
 	public static String ip;
+	private String node_prefix="";
 	
 	public RpcClientManager() throws IOException, KeeperException, InterruptedException {
 		zkClient=getZookeeper();
 	}
-	public RpcClientManager(String path) throws IOException, KeeperException, InterruptedException {
-		rpcConfigResource.setUrl(path);
+	public RpcClientManager(RpcConfigResource rpcConfigResource) throws IOException, KeeperException, InterruptedException {
+		this.setRpcConfigResource(rpcConfigResource);
+		zkClient=getZookeeper();
+	}
+	public RpcClientManager(RpcConfigResource rpcConfigResource,String path) throws IOException, KeeperException, InterruptedException {
+		if(rpcConfigResource!=null) {
+			rpcConfigResource.setUrl(path);
+			this.setRpcConfigResource(rpcConfigResource);
+		}
 		zkClient=getZookeeper();
 	}
 
@@ -66,11 +65,12 @@ public class RpcClientManager {
 	private void iniNode() throws IOException, KeeperException, InterruptedException {
 		String[] initnodes = getRpcConfigResource().getPrefix().split("/");
 		showLog(LogLevel.DEBUG," init node"+JSON.toJSONString(initnodes));
-		String nodeUrl="";
 		for(String node:initnodes) {
-			nodeUrl+="/"+node;
-			if( getZookeeper().exists(nodeUrl, true)==null) {
-				 getZookeeper().create(nodeUrl,getRpcConfigResource().getDesc().getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);
+			if(!StringUtils.isEmpty(node)) {
+				node_prefix+="/"+node;
+				if( getZookeeper().exists(node_prefix, true)==null) {
+					 getZookeeper().create(node_prefix,getRpcConfigResource().getDesc().getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);
+				}
 			}
 		}
 		
@@ -85,11 +85,11 @@ public class RpcClientManager {
 	* @return
 	 */
 	private String intPath(String path) {
-		if(!path.startsWith("/"+getRpcConfigResource().getPrefix())) {
+		if(!path.startsWith(node_prefix)) {
 			if(path.startsWith("/")){
 				path="/"+path;
 			}
-			path="/"+getRpcConfigResource().getPrefix()+path;
+			path=node_prefix+path;
 		}
 		return path.replace("//", "/");
 	}
@@ -304,10 +304,14 @@ public class RpcClientManager {
 		return ip;
 	}
 	public RpcConfigResource getRpcConfigResource() {
-		if(rpcConfigResource==null) {
-			rpcConfigResource= new RpcConfigResource();
+		if(this.rpcConfigResource==null) {
+			this.rpcConfigResource=new RpcConfigResource();
 		}
 		return rpcConfigResource;
 	}
+	public void setRpcConfigResource(RpcConfigResource rpcConfigResource) {
+		this.rpcConfigResource = rpcConfigResource;
+	}
+	
 }
 

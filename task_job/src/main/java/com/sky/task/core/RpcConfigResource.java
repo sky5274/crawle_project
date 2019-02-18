@@ -1,7 +1,9 @@
 package com.sky.task.core;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
+@Component
 @ConfigurationProperties(prefix="spring.rpc.zookeeper")
 public class RpcConfigResource {
 	private String prefix="com_sky_rpc_02";

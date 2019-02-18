@@ -14,8 +14,7 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 
@@ -28,15 +27,18 @@ import com.alibaba.fastjson.JSON;
  * @author sky
  * @date 2018年10月15日
  */
-@Configuration
-@ConditionalOnBean(RpcClientManager.class)
+@Component
 public class RpcConfig {
 	private static  Log log=LogFactory.getLog(RpcConfig.class);
 	@Autowired
 	private RpcClientManager clientManange;
+	@Autowired
+	private RpcConfigResource rpcConfigResource;
+	
 	@Value("${spring.rpc.groupid:1.0.0_dev}")
-	private String groupid="1.0.0_dev";
+	private String groupid;
 	public static String path;
+	public RpcConfig() {}
 	
 	public void intiPath(String  path) {
 		RpcConfig.path=path;
@@ -45,9 +47,9 @@ public class RpcConfig {
 	public RpcClientManager getManager() throws IOException, KeeperException, InterruptedException {
 		if(clientManange==null) {
 			if(path==null) {
-				clientManange=new RpcClientManager();
+				clientManange=new RpcClientManager(rpcConfigResource);
 			}else {
-				clientManange=new RpcClientManager(path);
+				clientManange=getManager(path);
 			}
 		}
 		return clientManange;
@@ -55,7 +57,7 @@ public class RpcConfig {
 	
 	public  RpcClientManager getManager(String path) throws IOException, KeeperException, InterruptedException {
 		if(clientManange==null) {
-			clientManange=new RpcClientManager(path);
+			clientManange=new RpcClientManager(rpcConfigResource,path);
 		}
 		return clientManange;
 	}
@@ -218,9 +220,9 @@ public class RpcConfig {
 		
 	}
 
-	public  List<NodeData> getAllNodeDataByClassName(String className) {
+	public  List<NodeData> getAllNodeDataByClassName(String group,String className) {
 		List<NodeData> nodes=new LinkedList<>();
-		List<String> list = getAllNodeByClassName(className);
+		List<String> list = getAllNodeByClassName(group,className);
 		if(!list.isEmpty()) {
 			for (String path:list) {
 				try {
@@ -241,9 +243,9 @@ public class RpcConfig {
 	* @param name
 	* @return
 	 */
-	public  NodeData getRandomServer(String className) {
+	public  NodeData getRandomServer(String group,String className) {
 		log.debug("rpc config get server request class:"+className);
-		List<String> list = getAllNodeByClassName(className);
+		List<String> list = getAllNodeByClassName(group,className);
 		if(!list.isEmpty()) {
 			Random random = new Random(list.size());
 			String upath = list.get((int) Math.round(random.nextDouble())-1);
@@ -267,10 +269,10 @@ public class RpcConfig {
 		return null;
 	}
 	
-	private List<String> getAllNodeByClassName(String className) {
+	private List<String> getAllNodeByClassName(String group,String className) {
 		List<String> list=new LinkedList<String>();
 		try {
-			list = getManager().getChildrenPath(getNodeUrl(className), null);
+			list = getManager().getChildrenPath("/"+group+"/"+className, null);
 		} catch (KeeperException | InterruptedException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
