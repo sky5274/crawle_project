@@ -24,7 +24,7 @@
 		case "alert":
 			var _this=this;
 			var dialog=$(this.getModal(id));
-			this.initModalEvent(dialog)
+			this.initModalEvent(dialog,id)
 			if(this.settings.closed){
 				window.setTimeout(function(){
 					$(dialog).modal('hide')
@@ -33,19 +33,26 @@
 			break;
 		case "confrim":
 			var dialog=this.getModal(id,1);
-			this.initModalEvent(dialog)
+			this.initModalEvent(dialog,id)
 			break;
 		default:
 			break;
 		}
 	}
 	Message.prototype={
-			initModalEvent:function(dialog){
+			initModalEvent:function(dialog,id){
 				var _this=this;
 				$(dialog).find("button[type=button]").click(function(){
 					var flag
 					try {
-						flag=_this.settings.func($(this).data("type"),dialog)
+						var win=dialog
+						if(_this.settings.src.length>0){
+							win=dialog.find("#iframe_"+id).contents().find("body")
+							if(win.length==0){
+								win=dialog
+							}
+						}
+						flag=_this.settings.func($(this).data("type"),win)
 					} catch (e) {
 						console.error(e)
 						throw 'dialog err'
@@ -54,11 +61,6 @@
 							if(flag){
 								$(dialog).modal('toggle')
 							}
-				})
-				$(dialog).find(".modal-content").resize(function(){
-					var H=$("body").height()
-					var h=$(this).height()
-					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
 				})
 				$(dialog).on('hide.bs.modal',function(){
 					$(this).remove()
@@ -70,14 +72,25 @@
 			},
 			initModalEvn:function(dialog,id){
 				//页面初始化事件
+				var _this=this;
 				this.settings.init(dialog);
 				this.parent.find("#"+id).modal('toggle')
+				var H=$(_this.parent).height()
 				window.setTimeout(function(){
-					$("body").children(".modal-backdrop").remove();
+					$(_this.parent).children(".modal-backdrop").remove();
+					var h=$(dialog).find(".modal-body").height()
+					var con_w=$(dialog).find(".modal-content").width();
+					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
 				},200)
-				var H=this.parent.height()
-				var h=$(dialog).children().height()
-				$(dialog).find(".modal-content").css("margin-top",this.settings.top+"%")
+				if(this.settings.width){
+					$(dialog).find(".modal-content").css({"width":this.settings.width,"margin-left":(600-this.settings.width)/2+"px"})
+				}
+				$(dialog).find(".modal-body").css({"max-height":"500px","overflow-y": "auto"})
+				$(dialog).find(".modal-content").resize(function(){
+					var H=$(_this.parent).height()
+					var h=$(this).height()
+					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
+				})
 			},
 			stop:function(){
 				this.settings.flag=false;
@@ -104,13 +117,32 @@
 				var dialog=$(con)
 				var _this=this;
 				this.parent.append(dialog);
-					if(this.settings.src.lenght>0){
-						$.loading().show()
-						dialog.find(".modal-body").load(this.settings.url,"",function(){
-							$.loading().close();
-							_this.modal.show();
-							_this.initModalEvn(dialog,id);
-						})
+					if(this.settings.src.length>0){
+//						$.loading().show()
+						dialog.find(".modal-body").css("height","500px")
+						dialog.find(".modal-body").append("<iframe id='iframe_"+id+"' style='width:100%;height:100%'></iframe>")
+						var iframe=dialog.find(".modal-body iframe")
+						iframe.attr("src",this.settings.src)
+						_this.initModalEvn(dialog,id);
+//						$(iframe).load(function() { 
+//							console.log("page load")
+//							$.loading().close();
+//							if($(this).find("body").html().length>0){
+//								_this.initModalEvn(dialog,id);
+//							}else{
+//								$(dialog).find(".close").click();
+//								$.diaLog({con:"dialog load page error! src:"+_this.settings.src})
+//							}
+//			            });
+//						dialog.find(".modal-body").load(this.settings.src,"",function(){
+//							$.loading().close();
+//							if($(dialog).find(".modal-body").html().length>0){
+//								_this.initModalEvn($(dialog),id);
+//							}else{
+//								$(dialog).find(".close").click();
+//								$.diaLog({con:"dialog load page error! src:"+_this.settings.src})
+//							}
+//						})
 					}else{
 						this.initModalEvn(dialog,id)
 					}
