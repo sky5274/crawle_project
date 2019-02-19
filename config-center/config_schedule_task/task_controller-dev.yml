@@ -37,7 +37,7 @@ spring:
      groupid: 1.0.0_dev.test
      zookeeper:
         prefix: /com/task/temp/01
-        url: 127.0.0.1:2181
+        url: 127.0.0.1:2182
         showlog: true
 
     
