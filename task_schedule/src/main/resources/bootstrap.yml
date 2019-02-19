@@ -48,6 +48,12 @@ spring:
     test-on-borrow: false #获取连接时候验证，会影响性能
     test-while-idle: true #当连接空闲时，是否执行连接测试.
     time-between-eviction-runs-millis: 18800 
+  rpc:
+     groupid: 1.0.0_dev.test
+     zookeeper:
+        prefix: /com/task/temp/01
+        url: 127.0.0.1:2182
+        showlog: true
 
     
 mybatis:
