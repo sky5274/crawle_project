@@ -7,7 +7,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-//@EnableEurekaClient
+@EnableEurekaClient
 @ComponentScan(value= {"com.sky"})
 @MapperScan(value= {"com.sky.*.dao"})
 public class TaskApplication {
