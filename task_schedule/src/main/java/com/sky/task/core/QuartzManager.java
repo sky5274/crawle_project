@@ -32,8 +32,13 @@ public class QuartzManager {
 	public  SchedulerFactoryBean schedulerFactoryBean ;
 	@Autowired
 	private QuartzJobTaskListener quartzJobTaskListener;
+	@Autowired
+	private QuartzJobTaskTriggerListenner quartzJobTaskTriggerListenner;
 
-
+	public Scheduler getScheduler() {
+		return schedulerFactoryBean.getScheduler();
+	}
+	
 	/**
 	 * 	添加任务
 	 * @param scheduleJob
@@ -43,18 +48,19 @@ public class QuartzManager {
 		if (job == null) {
 			return;
 		}
-		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+		Scheduler scheduler = getScheduler();
 		TriggerKey triggerKey = TriggerKey.triggerKey(job.getTaskId(), job.getGroupId());
 		Trigger trigger =  scheduler.getTrigger(triggerKey);
+		JobDataMap newJobDataMap=new JobDataMap();
+		newJobDataMap.put("taskId", job.getTaskId());
+		newJobDataMap.put("class", job.getTargetClass());
+		newJobDataMap.put("params", job.getJsonParams());
+		newJobDataMap.put("scheduleModel", job.getScheduleModel());
+		newJobDataMap.put("limitnodes", job.getLimitTargetNode());
 		// 不存在，创建一个
 		if (null == trigger) {
 			Class<? extends Job> clazz = JobTaskEntity.CONCURRENT_IS.equals(job.getIsConcurrent()) ? QuartzJobFactory.class
 					: QuartzJobFactoryDisallowConcurrentExecution.class;
-			JobDataMap newJobDataMap=new JobDataMap();
-			newJobDataMap.put("taskId", job.getTaskId());
-			newJobDataMap.put("class", job.getTargetClass());
-			newJobDataMap.put("params", job.getJsonParams());
-			newJobDataMap.put("scheduleModel", job.getScheduleModel());
 			JobDetail jobDetail = JobBuilder.newJob(clazz).withIdentity(job.getTaskId(), job.getGroupId()).setJobData(newJobDataMap).build();
 			jobDetail.getJobDataMap().put("scheduleJob"+job.getGroupId(), job);
 			if(job.getRunType()==null || job.getRunType()!=1 ||StringUtils.isEmpty(job.getCronExpression())) {
@@ -77,13 +83,17 @@ public class QuartzManager {
 				Matcher<JobKey> matcher = KeyMatcher.keyEquals(jobDetail.getKey());
 				scheduler.getListenerManager().addJobListener(quartzJobTaskListener,matcher);
 			}
+			//自定义的调度任务监听器
+			if(quartzJobTaskTriggerListenner !=null) {
+				scheduler.getListenerManager().addTriggerListener(quartzJobTaskTriggerListenner);
+			}
 			scheduler.scheduleJob(jobDetail, trigger);
 		} else {
 			CronTrigger crontrigger=(CronTrigger) trigger;
 			// Trigger已存在，那么更新相应的定时设置
 			CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(job.getCronExpression());
 			// 按新的cronExpression表达式重新构建trigger
-			crontrigger = crontrigger.getTriggerBuilder().withIdentity(triggerKey).usingJobData("data", job.getJsonParams()).withSchedule(scheduleBuilder).build();
+			crontrigger = crontrigger.getTriggerBuilder().withIdentity(triggerKey).usingJobData(newJobDataMap).withSchedule(scheduleBuilder).build();
 			// 按新的trigger重新设置job执行
 			scheduler.rescheduleJob(triggerKey, crontrigger);
 		}
@@ -100,7 +110,7 @@ public class QuartzManager {
 	 */
 	public void pauseJob(JobTaskEntity job) {
 		try {
-			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			Scheduler scheduler = getScheduler();
 			JobKey jobkey=new JobKey(job.getTaskId(), job.getGroupId());
 			scheduler.pauseJob(jobkey);
 		} catch (Exception e) {
@@ -117,7 +127,7 @@ public class QuartzManager {
 	 */
 	public  boolean removeJob(JobTaskEntity job) {
 		try {
-			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			Scheduler scheduler = getScheduler();
 			TriggerKey triggerKey = TriggerKey.triggerKey(job.getTaskId(), job.getGroupId());
 			JobKey jobkey=new JobKey(job.getTaskId(), job.getGroupId());
 			scheduler.pauseJob(jobkey);
@@ -135,7 +145,7 @@ public class QuartzManager {
 	 */
 	public  void startJobs() {
 		try {
-			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			Scheduler scheduler = getScheduler();
 			scheduler.start();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -147,7 +157,7 @@ public class QuartzManager {
 	 */
 	public  void shutdownJobs() {
 		try {
-			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			Scheduler scheduler = getScheduler();
 			if (!scheduler.isShutdown()) {
 				scheduler.shutdown();
 			}
