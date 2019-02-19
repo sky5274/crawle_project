@@ -18,9 +18,11 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import com.alibaba.fastjson.JSON;
+import com.sky.pub.util.ListUtils;
 
 
 /** 
@@ -62,6 +64,7 @@ public class ControllAdvice {
 		Object[] argList = joinpoint.getArgs();
 		for(int i=0;i<argList.length;i++){
 			if(argList[i] instanceof HttpServletRequest){
+				argMap.put(params[i],req.getParameterMap());
 				continue;
 			}else if(argList[i] instanceof HttpServletResponse){
 				continue;
@@ -69,7 +72,8 @@ public class ControllAdvice {
 			argMap.put(params[i], argList[i]);
 		}
 		log.info(prefix+method+"  被"+req.getRemoteAddr()+"调用");
-		log.info(prefix+"url:"+req.getRequestURI()+"  args："+JSON.toJSONString(argMap));
+		String queryString = req.getQueryString();
+		log.info(prefix+"url:"+req.getRequestURI()+(StringUtils.isEmpty(queryString)?"":queryString)+(ListUtils.isEmpty(argMap.keySet())?"":"  args:"+JSON.toJSONString(argMap)));
 	}
 	@After("point()")
 	public synchronized void after(JoinPoint joinPoint){
