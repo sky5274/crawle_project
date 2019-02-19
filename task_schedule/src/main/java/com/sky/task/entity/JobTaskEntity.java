@@ -30,9 +30,9 @@ public class JobTaskEntity extends BaseTableEntity{
 	private static Map<Byte, String> scheduleModelMap=new HashMap<>();
 	static {
 		statusMap.put((byte)-1, "作废");
-		statusMap.put((byte)0, "创建");
-		statusMap.put((byte)1, "运行");
-		statusMap.put((byte)2, "停止");
+		statusMap.put((byte)0, "停止");
+		statusMap.put((byte)1, "暂停");
+		statusMap.put((byte)2, "运行中");
 		runTypeMap.put((byte)0, "单次执行");
 		runTypeMap.put((byte)1, "循环执行");
 		scheduleModelMap.put((byte)0, "单点调用");
@@ -48,7 +48,6 @@ public class JobTaskEntity extends BaseTableEntity{
 	private String taskName;
 	private String isConcurrent;
 	private String targetClass;
-	@NotBlank(message="任务执行规律表达式为空")
 	private String cronExpression;
 	private String jsonParams;
 	/**-1:作废；0：创建，1：运行中;2:停止*/
@@ -57,7 +56,7 @@ public class JobTaskEntity extends BaseTableEntity{
 	private Byte runType;
 	/** 调度模式：0：单点调用，1：多点调用*/
 	private Byte scheduleModel;
-	private String oneTargeAddr;
+	private String limitTargetNode;
 	private Integer runTimes;
 	private Integer runErrTimes;
 	private String runErrMsg;
@@ -119,12 +118,6 @@ public class JobTaskEntity extends BaseTableEntity{
 	public String getScheduleModelName() {
 		return scheduleModelMap.get(scheduleModel);
 	}
-	public String getOneTargeAddr() {
-		return oneTargeAddr;
-	}
-	public void setOneTargeAddr(String oneTargeAddr) {
-		this.oneTargeAddr = oneTargeAddr;
-	}
 	public Integer getRunTimes() {
 		return runTimes;
 	}
@@ -160,5 +153,11 @@ public class JobTaskEntity extends BaseTableEntity{
 	}
 	public void setRunErrMsg(String runErrMsg) {
 		this.runErrMsg = runErrMsg;
+	}
+	public String getLimitTargetNode() {
+		return limitTargetNode;
+	}
+	public void setLimitTargetNode(String limitTargetNode) {
+		this.limitTargetNode = limitTargetNode;
 	}
 }
