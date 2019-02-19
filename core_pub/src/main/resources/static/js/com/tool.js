@@ -118,7 +118,7 @@
 	function doPostJsonAjax(obj){
 		obj.type="POST";
 		obj.contentType='application/json'
-		if(typeof(JSON.stringify(obj.data))!="string"){
+		if(typeof(obj.data)!="string"){
 			obj.data=JSON.stringify(obj.data)
 		}
 		doJsonAjax(obj)
