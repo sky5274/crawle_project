@@ -1,12 +1,13 @@
 package com.sky.task.service;
 
 import java.util.List;
+import java.util.Set;
 
 import com.sky.pub.Page;
-import com.sky.pub.PageRequest;
 import com.sky.pub.common.exception.ResultException;
 import com.sky.task.entity.JobTaskEntity;
 import com.sky.task.entity.TaskGroupEntity;
+import com.sky.task.entity.req.JobTaskReqData;
 
 /**
  * 		调度任务服务
@@ -51,9 +52,10 @@ public interface JobTaskService {
 	 * @param job
 	 * @return
 	 * @author 王帆
+	 * @throws ResultException 
 	 * @date 2019年2月9日 下午2:46:48
 	 */
-	public boolean runJobTask(JobTaskEntity job);
+	public boolean runJobTask(JobTaskEntity job) throws ResultException;
 	
 	/**
 	 * 	暂停调度任务
@@ -88,8 +90,49 @@ public interface JobTaskService {
 	 * @author 王帆
 	 * @date 2019年2月9日 下午2:46:12
 	 */
-	public Page<JobTaskEntity> queryPageByTask(PageRequest<JobTaskEntity> jobPage);
+	public Page<JobTaskEntity> queryPageByTask(JobTaskReqData jobPage);
 	
+	/**
+	 * 	根据主键id查询调度任务
+	 * @param id
+	 * @return
+	 * @author 王帆
+	 * @date 2019年2月16日 上午9:44:27
+	 */
 	public JobTaskEntity getJobTask(Integer id);
+	
+	/**
+	 * 	根据任务id查询调度任务
+	 * @param taskId
+	 * 
+	 * @return
+	 * @author 王帆
+	 * @date 2019年2月16日 上午9:45:03
+	 */
 	public JobTaskEntity getJobTask(String taskId);
+	
+	/**
+	 * 	自动执行系统定义的调度任务
+	 * 
+	 * @author 王帆
+	 * @date 2019年2月16日 上午9:49:50
+	 */
+	public void autoStartJobTask();
+	
+	/**
+	 *	 自动更新调度任务的停止状态
+	 * 
+	 * @author 王帆
+	 * @date 2019年2月16日 上午10:01:42
+	 */
+	public void autoStopJobTask();
+
+	/**
+	 * 根据类名获取节点的ip+port
+	 * @param className
+	 * @return
+	 * @author 王帆
+	 * @date 2019年2月17日 下午2:03:31
+	 */
+	public Set<String> getNodeIps(String groupId,String className);
 }
