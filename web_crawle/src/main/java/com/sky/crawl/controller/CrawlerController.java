@@ -78,6 +78,7 @@ public class CrawlerController {
 	 * @param config
 	 * @return
 	 * @author 王帆
+	 * @throws ResultException 
 	 * @date 2019年1月17日 下午3:29:17
 	 */
 	@RequestMapping(value="/modfiy",method=RequestMethod.POST)
@@ -94,7 +95,7 @@ public class CrawlerController {
 	 */
 	@RequestMapping("page/cart")
 	public ModelAndView getCartPage(int id) {
-		ModelAndView view=new ModelAndView("/config/crawler/cartPage");
+		ModelAndView view=new ModelAndView("config/crawler/cartPage");
 		view.addObject("config",crawlerConfigService.getById(id));
 		return view;
 	}
@@ -108,7 +109,7 @@ public class CrawlerController {
 	 */
 	@RequestMapping("page/mod")
 	public ModelAndView getmodPage(HttpServletRequest req) {
-		ModelAndView view=new ModelAndView("/config/crawler/modPage");
+		ModelAndView view=new ModelAndView("config/crawler/modPage");
 		String id=req.getParameter("id");
 		if(id!=null && StringUtils.isNumber(id)) {
 			view.addObject("config",crawlerConfigService.getById(Integer.valueOf(id)));
@@ -126,7 +127,7 @@ public class CrawlerController {
 	}
 	
 	/**
-	 * 	获取临时日志任务信息
+	 * 获取临时日志任务信息
 	 * @param id
 	 * @return
 	 * @throws IOException

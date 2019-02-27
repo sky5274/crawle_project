@@ -1,13 +1,9 @@
 package com.sky.crawl.controller;
 
 import java.util.List;
-
 import javax.annotation.Resource;
-
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.sky.crawl.config.service.MenuService;
 import com.sky.crawl.data.config.dao.entity.MenuEntity;
 import com.sky.crawl.data.config.dao.entity.MenuNode;
@@ -46,8 +42,7 @@ public class MenuController {
 		return ResultUtil.getOk(ResultCode.OK, menuSerive.saveMenu(menu));
 	}
 	@RequestMapping("update")
-	public Result<Boolean> updateMenu(MenuEntity menu,BindingResult result) throws ResultException{
-		System.err.println(result.getAllErrors());
+	public Result<Boolean> updateMenu(MenuEntity menu) throws ResultException{
 		return ResultUtil.getOk(ResultCode.OK, menuSerive.updateMenu(menu));
 	}
 	@RequestMapping("del")

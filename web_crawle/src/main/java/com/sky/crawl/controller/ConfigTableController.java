@@ -59,7 +59,7 @@ public class ConfigTableController {
 	
 	@RequestMapping("/mod/page")
 	public ModelAndView getModifyPage(Integer type,HttpServletRequest req) {
-		ModelAndView  view=new ModelAndView("/config/table/addTable");
+		ModelAndView  view=new ModelAndView("config/table/addTable");
 		String id=req.getParameter("id");
 		if(!StringUtils.isEmpty(id)) {
 			view.addObject("table",configTableService.getConfigTableById(Integer.valueOf(id)));
@@ -70,7 +70,7 @@ public class ConfigTableController {
 	
 	@RequestMapping("/cart/page")
 	public ModelAndView getCartPage(Integer id) {
-		ModelAndView  view=new ModelAndView("/config/table/cartTable");
+		ModelAndView  view=new ModelAndView("config/table/cartTable");
 		ConfigTableEntity table = configTableService.getConfigTableById(id);
 		view.addObject("table",table);
 		try {

@@ -1,7 +1,7 @@
 package com.sky.crawler.engine;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.concurrent.TimeUnit;
 import javax.script.Invocable;
@@ -10,7 +10,6 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import org.springframework.util.StringUtils;
-
 import com.alibaba.fastjson.JSON;
 import com.sky.crawler.core.CrawlerJsContant;
 import com.sky.pub.ResultCode;
@@ -62,7 +61,7 @@ public class HtmlParseJsCrawler extends BaseHTMLCrawlerBreadth{
 			if(path.matches(CrawlerJsContant.urlRegex)) {
 				engine.eval(loadRemoteFile(path));
 			}else {
-				engine.eval(new FileReader(CrawlerJsContant.getFilePath(path)));
+				engine.eval(new InputStreamReader(CrawlerJsContant.getFilePathStream(path)));
 			}
 		} catch ( ScriptException | IOException e) {
 			engine=null;

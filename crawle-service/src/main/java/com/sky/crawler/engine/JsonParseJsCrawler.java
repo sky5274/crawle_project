@@ -1,7 +1,7 @@
 package com.sky.crawler.engine;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.concurrent.TimeUnit;
 import javax.script.Invocable;
@@ -57,7 +57,7 @@ public class JsonParseJsCrawler extends BaseJsonCrawlerBreath{
 			if(path.matches(CrawlerJsContant.urlRegex)) {
 				engine.eval(loadRemoteFile(path));
 			}else {
-				engine.eval(new FileReader(CrawlerJsContant.getFilePath(path)));
+				engine.eval(new InputStreamReader(CrawlerJsContant.getFilePathStream(path)));
 			}
 		} catch ( ScriptException | IOException e) {
 			engine=null;
