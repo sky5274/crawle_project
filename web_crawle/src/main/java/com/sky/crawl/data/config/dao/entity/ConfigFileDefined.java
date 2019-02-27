@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import com.sky.crawler.core.CrawlerJsContant;
 import com.sky.pub.BaseTableEntity;
 
 /**
@@ -44,7 +46,7 @@ public class ConfigFileDefined extends BaseTableEntity {
 		}else {
 			code=config.getCode();
 		}
-		this.path=getClass().getResource("/").getFile()+"/log/"+new SimpleDateFormat("yyyy/MM").format(new Date())+"/"+this.code+".txt";
+		this.path=CrawlerJsContant.getJarPath()+"/log/"+new SimpleDateFormat("yyyy/MM").format(new Date())+"/"+this.code+".txt";
 	}
 	public String getPath() {
 		return path;
