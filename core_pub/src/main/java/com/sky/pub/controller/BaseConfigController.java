@@ -1,12 +1,10 @@
 package com.sky.pub.controller;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +16,8 @@ public class BaseConfigController {
 	@RequestMapping("/config/config.js")
 	public ResponseEntity<byte[]> getConfigJs(HttpServletRequest req) throws IOException {
 		HttpHeaders headers = new HttpHeaders();    
-		File file = new File(getClass().getResource("/static/js/com/config.js").getFile());
-		BufferedReader read=new BufferedReader(new FileReader(file));
+		InputStream inputStream = getClass().getResourceAsStream("/static/js/com/config.js");
+		BufferedReader read=new BufferedReader(new InputStreamReader(inputStream));
 		StringBuilder str=new StringBuilder();
 		String temp=null;
 		while((temp=read.readLine())!=null) {
