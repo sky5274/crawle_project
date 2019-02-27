@@ -49,6 +49,13 @@
 //			timeout: 10000,
 			dataType:obj.dataType,
 			beforeSend:function(){
+				if(obj.btn){
+					var btns=$(obj.btn);
+					if(btns.length>0){
+						btns.addClass('disabled');
+						btns.prop('disabled', true);
+					}
+				}
 				if(obj.beforeSend){
 					obj.beforeSend()
 				}
@@ -72,7 +79,13 @@
 				if(obj.complete){
 					obj.complete()
 				}
-				
+				if(obj.btn){
+					var btns=$(obj.btn);
+					if(btns.length>0){
+						btns.removeClass('disabled');
+						btns.prop('disabled', false);
+					}
+				}
 			},
 			error:function(){
 				if(obj.error){
