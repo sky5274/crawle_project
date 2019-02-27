@@ -43,30 +43,29 @@ public class JobTaskController extends BaseExcepionController{
 			for(ObjectError field:validResult.getAllErrors()) {
 				msgs.add(field.getDefaultMessage());
 			}
-			System.err.println(msgs);
 			throw new ResultException(ResultCode.VALID, "定时任务校验："+String.join(";", msgs));
 		}
 	}
 	
 	@RequestMapping("/page/cron")
 	public ModelAndView taskQuartzCron() {
-		return new ModelAndView("/task/cron");
+		return new ModelAndView("task/cron");
 	}
 	@RequestMapping("/page/list")
 	public ModelAndView taskListPage() {
-		ModelAndView view=new ModelAndView("/task/list");
+		ModelAndView view=new ModelAndView("task/list");
 		view.addObject("groups", jobTaskService.queryGroup());
 		return view;
 	}
 	@RequestMapping("/page/cart")
 	public ModelAndView taskCartPage(Integer id) {
-		ModelAndView view=new ModelAndView("/task/cart");
+		ModelAndView view=new ModelAndView("task/cart");
 		view.addObject("job", jobTaskService.getJobTask(id));
 		return view;
 	}
 	@RequestMapping("/page/modify")
 	public ModelAndView taskModifyPage(HttpServletRequest req) {
-		ModelAndView view=new ModelAndView("/task/modify");
+		ModelAndView view=new ModelAndView("task/modify");
 		String id=req.getParameter("id");
 		if(!StringUtils.isEmpty(id)) {
 			view.addObject("job", jobTaskService.getJobTask(Integer.valueOf(id)));
