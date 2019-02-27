@@ -37,12 +37,12 @@ public class ConfigController {
 	@RequestMapping("/main")
 	public String goConfigMainPage(Model mod) {
 		mod.addAttribute("menu", menuService.getMenuNode());
-		return "/config/main";
+		return "config/main";
 	}
 	
 	@RequestMapping("page/{path}")
 	public String goConfigPage( @PathVariable("path") String path) {
-		return "/config/"+path;
+		return "config/"+path;
 	}
 	
 	@RequestMapping("/page/{path}/{html}")
@@ -52,7 +52,7 @@ public class ConfigController {
 			String key=params.nextElement();
 			mod.addAttribute(key, req.getParameter(key));
 		}
-		return "/config/"+path+"/"+html;
+		return "config/"+path+"/"+html;
 	}
 
 	@ResponseBody

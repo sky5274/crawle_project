@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.druid.util.StringUtils;
+import com.sky.crawler.core.CrawlerJsContant;
 import com.sky.pub.Result;
 import com.sky.pub.ResultCode;
 import com.sky.pub.ResultUtil;
@@ -63,7 +64,7 @@ public class FileController {
 		HttpHeaders headers = new HttpHeaders();    
 		headers.set(HttpHeaders.CONTENT_TYPE,contentType); 
 		headers.set("Accept-Ranges", "bytes"); 
-		BufferedReader   bufinp=new BufferedReader(new FileReader(getClass().getResource(prefix+path).getFile()));
+		BufferedReader   bufinp=new BufferedReader(new FileReader(getFile(getFilePrefix()+path)));
 		StringBuilder str=new StringBuilder();
 		try {
 			char[] temp=new char[1];
@@ -151,7 +152,8 @@ public class FileController {
 		if(!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
 		}
-		if(!file.exists()) {
+		String filename=path.substring(path.lastIndexOf("/"), path.length());
+		if(!file.exists() && filename.contains(".")) {
 			file.createNewFile();
 		}
 		return file;
@@ -164,7 +166,7 @@ public class FileController {
 	 * @date 2019年1月21日 上午8:50:29
 	 */
 	private String getFilePrefix() {
-		return getClass().getResource("/").getFile()+prefix;
+		return CrawlerJsContant.getJarPath()+prefix;
 	}
 	
 	/**
