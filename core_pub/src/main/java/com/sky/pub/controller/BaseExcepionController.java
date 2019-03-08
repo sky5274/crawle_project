@@ -14,6 +14,7 @@ public class BaseExcepionController {
 	public Result<?> getException(ResultException exp){
 		return new Result(exp.getCode(), exp.getMsg()).fail();
 	}
+	@SuppressWarnings("unchecked")
 	@ExceptionHandler(Exception.class)
 	public Result<?> getException(Exception exp){
 		log.error(exp.getMessage(), exp);
