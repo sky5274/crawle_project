@@ -16,21 +16,6 @@ spring:
     name: config_auth
   profiles:
     active: dev
-
-server:
-  port: 8980
-  
-own:
-   config:
-      client:
-         id: test
-         secret: temp123456   
-      app:
-         secret: app_temp_demo1232
-  
-spring:
-  application:
-    name: config_auth
   thymeleaf:
     cache: false 
     mode: HTML5  
@@ -63,6 +48,17 @@ spring:
     test-while-idle: true #当连接空闲时，是否执行连接测试.
     time-between-eviction-runs-millis: 18800 
 
+server:
+  port: 8980
+  
+own:
+   config:
+      client:
+         id: test
+         secret: temp123456   
+      app:
+         secret: app_temp_demo1232
+  
 security:
   basic:
     enabled: false
