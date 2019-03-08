@@ -65,7 +65,7 @@ public class HttpRequest extends CommonConfigured implements JsonRequester{
 				boolean flag=!url.contains("?");
 				for(String key:param1.keySet()) {
 					if(flag) {
-						flag=true;
+						flag=false;
 						url+="?";
 					}else {
 						url+="&";
