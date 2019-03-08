@@ -7,6 +7,9 @@ import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.sky.pub.Result;
 import com.sky.pub.common.exception.HttpExceptionEnum;
 import com.sky.pub.common.exception.ResultException;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
@@ -255,7 +258,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 		}else {
 			view.setAttributesMap((JSONObject) JSON.toJSON(new Result<>(code, message,definedType.equals(monitorType)?getExceptionStrace(ex):null,false)));
 		}
-		
+
 		mv.setView(view);
 		return mv;
 	}
@@ -267,11 +270,10 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @author 王帆
 	 * @date 2019年1月17日 下午2:37:59
 	 */
-	private String getExceptionStrace(Exception ex) {
-		StringBuilder str=new StringBuilder();
-		for(StackTraceElement strace:ex.getStackTrace()) {
-			str.append(strace+"\n");
-		}
-		return str.toString();
+	public static String getExceptionStrace(Throwable ex) {
+		final StringWriter sw = new StringWriter();
+		final PrintWriter pw = new PrintWriter(sw, true);
+		ex.printStackTrace(pw);
+		return sw.getBuffer().toString();
 	}
 }
