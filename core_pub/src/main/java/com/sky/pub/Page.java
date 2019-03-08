@@ -45,11 +45,15 @@ public class Page <T>{
 		this.pageSize = pageSize;
 	}
 	
-	public void setPageData(PageRequest<T> reqPage) {
-		setPageData(reqPage.hasInit(),reqPage.getCurrent(),reqPage.getPageSize());
+	public void setPageData(PageRequest reqPage) {
+		if(reqPage !=null) {
+			setPageData(reqPage.hasInit(),reqPage.getCurrent(),reqPage.getPageSize());
+		}
 	}
 	public void setPageData(BasePageRequest reqPage) {
-		setPageData(reqPage.hasInit(),reqPage.getCurrent(),reqPage.getPageSize());
+		if(reqPage !=null) {
+			setPageData(reqPage.hasInit(),reqPage.getCurrent(),reqPage.getPageSize());
+		}
 	}
 	
 	private void setPageData(boolean isInit,int current,int pageSize) {
