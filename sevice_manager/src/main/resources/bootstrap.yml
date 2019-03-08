@@ -77,4 +77,3 @@ Monitor:
 logging:
   level:   
      com.sky: debug
-     redis.clients: debug
