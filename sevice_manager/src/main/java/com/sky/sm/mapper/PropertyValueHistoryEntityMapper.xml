@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.sm.dao.PropertyValueHistoryEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.sm.bean.PropertyValueHistoryEntity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="key" property="key" jdbcType="VARCHAR" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="project" property="project" jdbcType="VARCHAR" />
+    <result column="profile" property="profile" jdbcType="VARCHAR" />
+    <result column="version_code" property="versionCode" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="version" property="version" jdbcType="VARCHAR" />
+    <result column="createid" property="createid" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, `key`, `value`, project, `profile`, version_code, pid, version, createid, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from property_value_his
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from property_value_his
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.sky.sm.bean.PropertyValueHistoryEntity" >
+    insert into property_value_his (id, `key`, `value`, 
+      project, `profile`, version_code, 
+      pid, version, createid, 
+      ts)
+    values (#{id,jdbcType=INTEGER}, #{key,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, 
+      #{project,jdbcType=VARCHAR}, #{profile,jdbcType=VARCHAR}, #{versionCode,jdbcType=VARCHAR}, 
+      #{pid,jdbcType=INTEGER}, #{version,jdbcType=VARCHAR}, #{createid,jdbcType=INTEGER}, 
+      #{ts,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.sm.bean.PropertyValueHistoryEntity" >
+    insert into property_value_his
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="key != null" >
+        `key`,
+      </if>
+      <if test="value != null" >
+        `value`,
+      </if>
+      <if test="project != null" >
+        project,
+      </if>
+      <if test="profile != null" >
+        `profile`,
+      </if>
+      <if test="versionCode != null" >
+        version_code,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="createid != null" >
+        createid,
+      </if>
+      <if test="ts != null" >
+        ts,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="key != null" >
+        #{key,jdbcType=VARCHAR},
+      </if>
+      <if test="value != null" >
+        #{value,jdbcType=VARCHAR},
+      </if>
+      <if test="project != null" >
+        #{project,jdbcType=VARCHAR},
+      </if>
+      <if test="profile != null" >
+        #{profile,jdbcType=VARCHAR},
+      </if>
+      <if test="versionCode != null" >
+        #{versionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        #{createid,jdbcType=INTEGER},
+      </if>
+      <if test="ts != null" >
+        #{ts,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.sm.bean.PropertyValueHistoryEntity" >
+    update property_value_his
+    <set >
+      <if test="key != null" >
+        `key` = #{key,jdbcType=VARCHAR},
+      </if>
+      <if test="value != null" >
+        `value` = #{value,jdbcType=VARCHAR},
+      </if>
+      <if test="project != null" >
+        project = #{project,jdbcType=VARCHAR},
+      </if>
+      <if test="profile != null" >
+        `profile` = #{profile,jdbcType=VARCHAR},
+      </if>
+      <if test="versionCode != null" >
+        version_code = #{versionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="createid != null" >
+        createid = #{createid,jdbcType=INTEGER},
+      </if>
+      <if test="ts != null" >
+        ts = #{ts,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.sm.bean.PropertyValueHistoryEntity" >
+    update property_value_his
+    set `key` = #{key,jdbcType=VARCHAR},
+      `value` = #{value,jdbcType=VARCHAR},
+      project = #{project,jdbcType=VARCHAR},
+      `profile` = #{profile,jdbcType=VARCHAR},
+      version_code = #{versionCode,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=INTEGER},
+      version = #{version,jdbcType=VARCHAR},
+      createid = #{createid,jdbcType=INTEGER},
+      ts = #{ts,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
