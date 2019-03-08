@@ -1,7 +1,6 @@
 package com.sky.pub;
 
-public class PageRequest <T>{
-	private T bean;
+public class PageRequest{
 	private Integer current;
 	private Integer pageSize;
 	private boolean isInit=false;
@@ -25,7 +24,7 @@ public class PageRequest <T>{
 		this.pageSize = pageSize;
 	}
 	
-	public PageRequest<T> initPage() {
+	public PageRequest initPage() {
 		if(!isInit) {
 			if(hasPageData()) {
 				if(current<1) {
@@ -52,11 +51,5 @@ public class PageRequest <T>{
 	}
 	public Boolean hasPageData() {
 		return current !=null && pageSize !=null;
-	}
-	public T getBean() {
-		return bean;
-	}
-	public void setBean(T bean) {
-		this.bean = bean;
 	}
 }
