@@ -1,8 +1,10 @@
 package com.sky.pub.common;
 
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,18 +46,24 @@ public class ControllAdvice {
 
 	private Log log=LogFactory.getLog(ControllAdvice.class);
 	private String prefix="-->> ";
+	private List<String> excuteUrl=Arrays.asList("/error");
 	private Date times=null;
 	private Date timee=null;
 	String method=null;
-	@Pointcut("execution(* com.sky..*.controller.*.*(..))")
+	@Pointcut("@annotation(org.springframework.web.bind.annotation.RequestMapping)")
 	public void point(){}
 
 	@Before("point()")
 	public void before(JoinPoint joinpoint){
+		HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		String url = req.getRequestURI().toString();
+		if(excuteUrl.contains(url)) {
+			return;
+		}
 		//获取request
 		times=new Date();
 		method=joinpoint.getSignature().getDeclaringTypeName()+"."+joinpoint.getSignature().getName();
-		HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		
 		Map<String, Object> argMap=new HashMap<>();
 		MethodSignature msd = (MethodSignature) joinpoint.getSignature();
 
@@ -73,19 +81,21 @@ public class ControllAdvice {
 		}
 		log.info(prefix+method+"  被"+req.getRemoteAddr()+"调用");
 		String queryString = req.getQueryString();
-		log.info(prefix+"url:"+req.getRequestURI()+(StringUtils.isEmpty(queryString)?"":queryString)+(ListUtils.isEmpty(argMap.keySet())?"":"  args:"+JSON.toJSONString(argMap)));
+		log.info(prefix+"url:"+url+(StringUtils.isEmpty(queryString)?"":" ?"+queryString)+(ListUtils.isEmpty(argMap.keySet())?"":"  args:"+JSON.toJSONString(argMap)));
 	}
 	@After("point()")
 	public synchronized void after(JoinPoint joinPoint){
+		HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		String url = req.getRequestURI().toString();
+		if(excuteUrl.contains(url)) {
+			return;
+		}
 		timee=new Date();
-
 		try {
 			long cost=timee.getTime()-times.getTime();
 			log.info(prefix+joinPoint.getSignature().getName()+"  执行结束。 耗时:  "+cost+"ms;");
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
-
 		timee=null;
 		times=null;
 	}
