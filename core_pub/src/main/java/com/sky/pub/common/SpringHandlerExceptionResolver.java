@@ -82,7 +82,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 				showLog(request,resex);
 				mv = errorResult(resex.getCode(),resex.getMsg(),request.getPathInfo(),resex, request,isRespondBody);
 			}else{
-				logger.error(ex.getMessage(),ex);
+				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage());
 				mv = errorResult(500+"",message, request.getPathInfo(), ex,request,isRespondBody);
 			}
 		}
@@ -213,7 +213,6 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @return 模型视图对象
 	 */
 	private ModelAndView result(HttpExceptionEnum httpException, HttpServletRequest request,Exception ex) {
-		logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ httpException.getMessage(),ex);
 		if (isAjax(request)) {
 			return jsonResult(httpException.getCode(), httpException.getMessage(),ex);
 		} else {
@@ -238,6 +237,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 		model.put("strace", definedType.equals(monitorType)?getExceptionStrace(ex):null);
 		model.put("exception", ex.getClass().getName());
 		model.put("message", message);
+		logger.warn(ex.getMessage(),ex);
 		return new ModelAndView(errorUrl, model);
 	}
 
