@@ -42,7 +42,15 @@ spring:
     test-on-borrow: false #获取连接时候验证，会影响性能
     test-while-idle: true #当连接空闲时，是否执行连接测试.
     time-between-eviction-runs-millis: 18800 
-
+own:
+   config:
+      client:
+         id: test
+         secret: temp123456   
+      app:
+         secret: app_temp_demo1232
+      robot:
+         secret: robot_client_123456
 security:
   basic:
     enabled: false
