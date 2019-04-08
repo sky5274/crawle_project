@@ -38,10 +38,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
-@SuppressWarnings("deprecation")
 @Configuration
 public class SpringHandlerExceptionResolver implements HandlerExceptionResolver {
 
@@ -81,8 +78,11 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 				ResultException resex = (ResultException)ex;
 				showLog(request,resex);
 				mv = errorResult(resex.getCode(),resex.getMsg(),request.getPathInfo(),resex, request,isRespondBody);
+			}else if("org.springframework.security.authentication.InsufficientAuthenticationException".equals(ex.getClass().getName())) {
+				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
+				mv = errorResult("oauth-1","请先授权登录", request.getPathInfo(), ex,request,isRespondBody);
 			}else{
-				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage());
+				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
 				mv = errorResult(500+"",message, request.getPathInfo(), ex,request,isRespondBody);
 			}
 		}
@@ -122,11 +122,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 */
 	private ModelAndView specialExceptionResolve(Exception ex, HttpServletRequest request) {
 		try {
-			if (ex instanceof NoSuchRequestHandlingMethodException 
-					|| ex instanceof NoHandlerFoundException) {
-				return result(HttpExceptionEnum.NOT_FOUND_EXCEPTION, request,ex);
-			}
-			else if (ex instanceof HttpRequestMethodNotSupportedException) {
+			if (ex instanceof HttpRequestMethodNotSupportedException) {
 				return result(HttpExceptionEnum.NOT_SUPPORTED_METHOD_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof HttpMediaTypeNotSupportedException) {
@@ -185,7 +181,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @return
 	 */
 	private boolean isJson(HttpServletRequest request) {
-		return "application/json".equalsIgnoreCase(request.getHeader("content-Type "));
+		return "application/json".equalsIgnoreCase(request.getHeader("Content-Type"));
 	}
 
 	/**
