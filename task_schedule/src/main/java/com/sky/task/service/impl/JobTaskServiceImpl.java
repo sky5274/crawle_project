@@ -50,7 +50,7 @@ public class JobTaskServiceImpl implements JobTaskService{
 		//基础校验
 		baseValidJobTask(job);
 		int size = jobTaskMapper.insertSelective(job);
-		ResultAssert.isFalse(size==0, "调度任务创建失败");
+		ResultAssert.isTure(size==0, "调度任务创建失败");
 		return job;
 	}
 	
@@ -111,7 +111,7 @@ public class JobTaskServiceImpl implements JobTaskService{
 	@Override
 	public TaskGroupEntity addTaskGroup(TaskGroupEntity group) throws ResultException {
 		int size = taskGroupMapper.insertSelective(group);
-		ResultAssert.isFalse(size==0, "任务分组创建失败");
+		ResultAssert.isTure(size==0, "任务分组创建失败");
 		return group;
 	}
 
