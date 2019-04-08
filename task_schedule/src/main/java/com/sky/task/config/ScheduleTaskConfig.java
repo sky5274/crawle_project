@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component;
 import com.sky.pub.util.ListUtils;
 import com.sky.task.dao.JobTaskEntityMapper;
 
-//@Component
-//@EnableScheduling
+@Component
+@EnableScheduling
 public class ScheduleTaskConfig {
 	@Autowired
 	private SchedulerFactoryBean schedulerFactoryBean;
