@@ -87,11 +87,16 @@
 					}
 				}
 			},
-			error:function(){
+			error:function(e){
 				if(obj.error){
 					obj.error()
 				}else{
 					console.log(url)
+					if(e.responseJSON){
+						if(e.responseJSON.message){
+							$.diaLog({con: e.responseJSON.message,closed:true})
+						}
+					}
 				}
 			}
 		})
