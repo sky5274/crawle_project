@@ -50,7 +50,7 @@ public class ControllAdvice {
 	private Date times=null;
 	private Date timee=null;
 	String method=null;
-	@Pointcut("@annotation(org.springframework.web.bind.annotation.RequestMapping)")
+	@Pointcut("@annotation(org.springframework.web.bind.annotation.RequestMapping) || execution(* *..controller.*.*(..))")
 	public void point(){}
 
 	@Before("point()")
