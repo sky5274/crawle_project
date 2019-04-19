@@ -50,6 +50,27 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,Object handlerMethod, Exception ex) {
+		boolean isRespondBody=isResponseBody(handlerMethod);
+		ModelAndView mv = specialExceptionResolve(ex, request);
+		if (null == mv) {
+			String message = "系统异常，请联系管理员";
+			//BaseSystemException是我自定义的异常基类，继承自RuntimeException
+			if (ex instanceof ResultException) {
+				ResultException resex = (ResultException)ex;
+				showLog(request,resex);
+				mv = errorResult(resex.getCode(),resex.getMsg(),request.getPathInfo(),resex, request,isRespondBody);
+			}else if("org.springframework.security.authentication.InsufficientAuthenticationException".equals(ex.getClass().getName())) {
+				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
+				mv = errorResult("oauth-1","请先授权登录", request.getPathInfo(), ex,request,isRespondBody);
+			}else{
+				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
+				mv = errorResult(500+"",message, request.getPathInfo(), ex,request,isRespondBody);
+			}
+		}
+		return mv;
+	}
+	
+	protected boolean isResponseBody(Object handlerMethod) {
 		boolean isRespondBody=false;
 		if(handlerMethod instanceof HandlerMethod ){
 			if (handlerMethod != null) {
@@ -70,26 +91,10 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 				}
 			}
 		}
-		ModelAndView mv = specialExceptionResolve(ex, request);
-		if (null == mv) {
-			String message = "系统异常，请联系管理员";
-			//BaseSystemException是我自定义的异常基类，继承自RuntimeException
-			if (ex instanceof ResultException) {
-				ResultException resex = (ResultException)ex;
-				showLog(request,resex);
-				mv = errorResult(resex.getCode(),resex.getMsg(),request.getPathInfo(),resex, request,isRespondBody);
-			}else if("org.springframework.security.authentication.InsufficientAuthenticationException".equals(ex.getClass().getName())) {
-				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
-				mv = errorResult("oauth-1","请先授权登录", request.getPathInfo(), ex,request,isRespondBody);
-			}else{
-				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
-				mv = errorResult(500+"",message, request.getPathInfo(), ex,request,isRespondBody);
-			}
-		}
-		return mv;
+		return isRespondBody;
 	}
 
-	private void showLog(HttpServletRequest request, ResultException resex) {
+	protected void showLog(HttpServletRequest request, ResultException resex) {
 		switch (resex.getLevel()) {
 		case TRACE:
 			logger.trace("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+resex.getMsg());
@@ -122,6 +127,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 */
 	private ModelAndView specialExceptionResolve(Exception ex, HttpServletRequest request) {
 		try {
+			logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
 			if (ex instanceof HttpRequestMethodNotSupportedException) {
 				return result(HttpExceptionEnum.NOT_SUPPORTED_METHOD_EXCEPTION, request,ex);
 			}
@@ -193,7 +199,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @param isRespondBody 
 	 * @return 模型视图对象
 	 */
-	private ModelAndView errorResult(String code,String message, String url,Exception ex, HttpServletRequest request, boolean isRespondBody) {
+	protected ModelAndView errorResult(String code,String message, String url,Exception ex, HttpServletRequest request, boolean isRespondBody) {
 		if (isRespondBody || isAjax(request) || isJson(request)) {
 			return jsonResult(code, message,ex);
 		} else {
