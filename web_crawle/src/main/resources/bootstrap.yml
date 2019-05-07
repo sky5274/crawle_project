@@ -45,7 +45,7 @@ security:
          client-secret: temp123456
          user-authorization-uri: ${security.basic.url}/oauth/authorize
          access-token-uri:   ${security.basic.url}/oauth/token ##网关的地址
-         redirect-uri-template: http:127.0.0.1:${server.port}/config/main
+         redirect-uri-template: http//:127.0.0.1:${server.port}/config/main
          scope: all
        resource:
          user-info-uri:  ${security.basic.url}/auth/user/info
