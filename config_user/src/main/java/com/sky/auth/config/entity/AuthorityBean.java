@@ -1,23 +1,19 @@
 package com.sky.auth.config.entity;
 
-import java.util.List;
-
-import com.sky.pub.BaseTableEntity;
+import java.io.Serializable;
 
 /**
- * 	角色定义
+ * 权限数据
  * @author 王帆
- * @date  2019年1月25日 下午2:15:42
+ * @date  2019年4月15日 下午5:22:07
  */
-public class RoleEntity extends BaseTableEntity{
+public class AuthorityBean implements Serializable{
 
-	/**
-	 * 
-	 */
+	/***/
 	private static final long serialVersionUID = 1L;
+	
 	private String code;
 	private String name;
-	private List<AuthorityEntity> auths;
 	public String getCode() {
 		return code;
 	}
@@ -30,11 +26,4 @@ public class RoleEntity extends BaseTableEntity{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<AuthorityEntity> getAuths() {
-		return auths;
-	}
-	public void setAuths(List<AuthorityEntity> auths) {
-		this.auths = auths;
-	}
-	
 }
