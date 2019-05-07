@@ -37,13 +37,13 @@ public @interface Limit {
 	 * 单位秒
 	 * @return int
 	 */
-	int period();
+	int period() default 1;
 
 	/**
 	 * 最多的访问限制次数
 	 * @return int
 	 */
-	int count();
+	int count() default 5;
 
 	/**
 	 * 类型
