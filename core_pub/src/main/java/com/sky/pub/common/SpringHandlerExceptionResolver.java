@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.sky.pub.Result;
+import com.sky.pub.ResultCode;
 import com.sky.pub.common.exception.HttpExceptionEnum;
 import com.sky.pub.common.exception.ResultException;
 
@@ -51,8 +52,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,Object handlerMethod, Exception ex) {
 		boolean isRespondBody=isResponseBody(handlerMethod);
-		ModelAndView mv = specialExceptionResolve(ex, request);
-		if (null == mv) {
+		ModelAndView mv = null;
 			String message = "系统异常，请联系管理员";
 			//BaseSystemException是我自定义的异常基类，继承自RuntimeException
 			if (ex instanceof ResultException) {
@@ -60,12 +60,14 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 				showLog(request,resex);
 				mv = errorResult(resex.getCode(),resex.getMsg(),request.getPathInfo(),resex, request,isRespondBody);
 			}else if("org.springframework.security.authentication.InsufficientAuthenticationException".equals(ex.getClass().getName())) {
-				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
+				logger.info("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
 				mv = errorResult("oauth-1","请先授权登录", request.getPathInfo(), ex,request,isRespondBody);
 			}else{
 				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
 				mv = errorResult(500+"",message, request.getPathInfo(), ex,request,isRespondBody);
 			}
+		if(mv==null) {
+			mv=specialExceptionResolve(ex, request);
 		}
 		return mv;
 	}
@@ -166,6 +168,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 			}
 		} catch (Exception handlerException) {
 			logger.warn("Handling of [" + ex.getClass().getName() + "] resulted in Exception", handlerException);
+			return errorResult(ResultCode.UNKONW_EXCEPTION.getCode(),ResultCode.UNKONW_EXCEPTION.getMsg(),request.getPathInfo(),ex, request,isAjax(request));
 		}
 		return null;
 	}
@@ -239,7 +242,6 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 		model.put("strace", definedType.equals(monitorType)?getExceptionStrace(ex):null);
 		model.put("exception", ex.getClass().getName());
 		model.put("message", message);
-		logger.warn(ex.getMessage(),ex);
 		return new ModelAndView(errorUrl, model);
 	}
 
