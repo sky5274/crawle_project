@@ -34,6 +34,25 @@ mybatis:
   mapper-locations: classpath:com/sky/crawl/data/*/mapper/*.xml
 Monitor:
    type: dev
+   
+security:
+     basic:
+       url:   http://127.0.0.1:8980
+       enabled: false
+     oauth2:
+       client:
+         client-id: test
+         client-secret: temp123456
+         user-authorization-uri: ${security.basic.url}/oauth/authorize
+         access-token-uri:   ${security.basic.url}/oauth/token ##网关的地址
+         redirect-uri-template: http:127.0.0.1:${server.port}/config/main
+         scope: all
+       resource:
+         user-info-uri:  ${security.basic.url}/auth/user/info
+         prefer-token-info: false
+       sso:
+         loginPath: /do/login
+
 
 logging:
   level:   
