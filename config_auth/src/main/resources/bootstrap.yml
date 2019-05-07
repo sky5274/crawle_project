@@ -58,13 +58,18 @@ own:
          secret: temp123456   
       app:
          secret: app_temp_demo1232
+      robot:
+         secret: robot_client_123456
 
 security:
   basic:
     enabled: false
   user:
-    name: crawle_dev
-    password: dev_1090
+    name: test
+    password: temp123456
+  oauth2:
+     resource:
+        filter-order:3
 management:
   security:
     enabled: false

@@ -2,32 +2,19 @@
 <head>
 <meta charset="UTF-8"/>
     <title>登录页面</title>
-     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
-    <script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/load.css}"/>
+    <link rel="stylesheet" th:href="@{/css/pub.css}"/>
+    <script type="text/javascript" th:src="@{/js/com/jquery-3.3.1.min.js}"></script>
     <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
-    <script type="text/javascript" th:src="@{/js/tool.js}"></script>
-    <script type="text/javascript" th:src="@{/js/message.js}"></script>
-    <script type="text/javascript">
-    	$(function(){
-    		$("#submit").on("click",function(){
-    			var obj={}
-    			$("#login-table").find("input").each(function(i,ele){
-    				obj[$(this).attr("name")]=$(this).val();
-    			})
-    			$.ajax({
-    				url:"/auth/login",
-    				data:obj,
-    				success:function(res){
-    					console.log(res)
-    				}
-    			})
-    		})
-    	})
-    </script>
+    <script type="text/javascript" th:src="@{/js/com/tool.js}"></script>
+    <script type="text/javascript" th:src="@{/js/com/message.js}"></script>
+   <script type="text/javascript" th:src="@{/js/login.js}"></script> 
 </head>
 <body>
     <h2>自定义登录页面</h2>
         <table id="login-table">
+        <!-- <form action="/auth/login/progress" method="post"> -->
             <tr>
                 <td>用户名：</td>
                 <td><input type="text" name="username"/></td>
@@ -36,10 +23,17 @@
                 <td>密码：</td>
                 <td><input type="password" name="password"/></td>
             </tr>
+            
+            <a th:if="${paramsData.redirect_uri ==null}" id="redirect_url" class="hidden" th:href="@{/say?worf=w343}"></a>
+            <a th:if="${paramsData.redirect_uri !=null}" id="redirect_url" class="hidden" th:href="${paramsData.redirect_uri}"></a>
+            <tr class='hidden authorize-param'>
+            	<input type="hidden" th:each="paramd:${paramsData}" th:name="${paramd.key}" th:value="${paramd.value}"></input>
+            </tr>
             <tr>
                 <td colspan="2"><button id="submit" type="submit">登录</button></td>
                 <td><a th:href="@{/auth/login/regist}">注册</a></td>
             </tr>
+      <!--    </form> -->
         </table>
 </body>
 </html>
