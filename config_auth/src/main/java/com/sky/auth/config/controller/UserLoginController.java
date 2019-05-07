@@ -1,42 +1,41 @@
 package com.sky.auth.config.controller;
-
 import java.security.Principal;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
-import com.alibaba.fastjson.JSON;
-import com.sky.auth.config.entity.AuthTokenDefined;
 import com.sky.auth.config.entity.UserDetailEntitiy;
 import com.sky.auth.config.entity.UserEntity;
-import com.sky.auth.config.service.UserService;
+import com.sky.auth.config.service.UserLoginService;
+import com.sky.auth.config.util.UserUtil;
 import com.sky.pub.Result;
 import com.sky.pub.ResultCode;
 import com.sky.pub.ResultUtil;
 import com.sky.pub.common.exception.ResultException;
 
+
 @RestController
 @RequestMapping("auth")
-public class UserController {
+@SessionAttributes("authorizationRequest")
+public class UserLoginController {
 	@Resource
-	private UserService userService;
-	@Resource
-	RestTemplate restTemplate;
+	private UserLoginService userService;
 	@Value("${own.config.client.id:dev}")
 	private String clientId;
 	@Value("${own.config.client.secret:dev}")
 	private String clientSecret;
-
-	@GetMapping("/info")
+	@Value("${own.config.redirectUri:/auth/user/info}")
+	private String redirectUri;
+	
+	@RequestMapping(value="/user/info",method=RequestMethod.GET)
 	public Result<Principal> getUserInfo(Principal user) {
 		return ResultUtil.getOk(ResultCode.OK, user);
 	}
@@ -50,36 +49,69 @@ public class UserController {
 	public ModelAndView  loginPage(HttpServletRequest req) {
 		ModelAndView view =new ModelAndView("login");
 		Enumeration<String> names = req.getParameterNames();
+		Map<String, Object> params=new HashMap<>();
 		while(names.hasMoreElements()) {
 			String name = names.nextElement();
-			view.addObject(name, req.getParameter(name));
+			params.put(name, req.getParameter(name));
 		}
+		String tempRedirectUri = req.getParameter("redirect_uri");
+		params.put("clientId",clientId);
+		params.put("clientSecret",clientSecret);
+		if(StringUtils.isEmpty(tempRedirectUri)) {
+			params.put("redirect_uri",redirectUri);
+			req.getSession().setAttribute("redirect_uri", redirectUri);
+		}else {
+			req.getSession().setAttribute("redirect_uri", tempRedirectUri);
+		}
+		view.addObject("paramsData", params);
+		return view;
+	}
+	
+	@RequestMapping("authorize")
+	public ModelAndView doauthorize(HttpServletRequest req) {
+		String viewName = "redirect:";
+		ModelAndView view =new ModelAndView();
+		
+		if(StringUtils.isEmpty(req.getParameter("access_token"))){
+			viewName+="/auth/login/page";
+			Enumeration<String> names = req.getParameterNames();
+			while(names.hasMoreElements()) {
+				String name = names.nextElement();
+				view.addObject(name, req.getParameter(name));
+			}
+		}else {
+			viewName+="/oauth/authorize";
+			boolean flag=true;
+			Enumeration<String> names = req.getParameterNames();
+			while(names.hasMoreElements()) {
+				String name = names.nextElement();
+				viewName+=(flag?"?":"&")+name+"="+req.getParameter(name);
+				if(flag) {
+					flag=false;
+				}
+			}
+		}
+		view.setViewName(viewName);
 		return view;
 	}
 
-	@RequestMapping("/login")
-	public Result<UserDetailEntitiy> loginUser(UserEntity user,HttpServletRequest req) throws ResultException{
-
-		String url="http://" + req.getServerName() //服务器地址  
-		+ ":"   
-		+ req.getServerPort()           //端口号 
-		+"/oauth/token";
-		MultiValueMap<String, String> requestEntity = new LinkedMultiValueMap<>();
-		requestEntity.add("grant_type", "password");
-		requestEntity.add("username", user.getUsername());
-		requestEntity.add("password", user.getPassword());
-		requestEntity.add("client_id", clientId);
-		requestEntity.add("client_secret", clientSecret);
-		//获取token
-		ResponseEntity<String> response = restTemplate.postForEntity(url,requestEntity, String.class);
-		String res_result = response.getBody();
-		if(res_result.contains("\"error\"")&& res_result.contains("error_description")) {
-			return ResultUtil.getFailed(ResultCode.FAILED, JSON.parseObject(res_result).get("error_description").toString());
-		}
+	@RequestMapping(value="/login/progress",method=RequestMethod.POST)
+	public ModelAndView loginUserProgess(UserEntity user,HttpServletRequest req) throws ResultException{
+		 ModelAndView view = new ModelAndView("redirect:/say?word=sdfse");
 		UserDetailEntitiy userinfo = userService.login(user);
-		userinfo.setToken(JSON.parseObject(res_result,AuthTokenDefined.class));
-		return  ResultUtil.getOk(ResultCode.OK, userinfo);
+		//存储信息到session中
+		UserUtil.saveUser(userinfo);
+		req.getSession().removeAttribute("redirect_uri");
+		return view;
 	}
+//	@RequestMapping(value="/login",method=RequestMethod.POST)
+//	public Result<UserDetailEntitiy> loginUser(UserEntity user,HttpServletRequest req) throws ResultException{
+//		UserDetailEntitiy userinfo = userService.login(user);
+//		//存储信息到session中
+//		req.getSession().removeAttribute("redirect_uri");
+//		UserUtil.saveUser(userinfo);
+//		return  ResultUtil.getOk(ResultCode.OK, userinfo);
+//	}
 
 	@RequestMapping("/user/regist")
 	public Result<UserEntity> registUser(UserEntity  user) throws ResultException{
