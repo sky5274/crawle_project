@@ -2,9 +2,9 @@ package com.sky.sm.config;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
 import javax.annotation.Resource;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Aspect  
 @Component
 public class RedisConnectAdvice {
-	private Logger log=Logger.getLogger(RedisConnectAdvice.class);
+	private Log log=LogFactory.getLog(RedisConnectAdvice.class);
 	private Long times=null;
 	private Long timee=null;
 	String method=null;
