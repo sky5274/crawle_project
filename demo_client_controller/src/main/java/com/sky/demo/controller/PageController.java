@@ -1,16 +1,13 @@
 package com.sky.demo.controller;
 
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
+import com.sky.cm.annotation.Limit;
 import com.sky.pub.Result;
 import com.sky.pub.ResultUtil;
 
@@ -21,6 +18,8 @@ public class PageController {
 	public ModelAndView goPage(@PathVariable String name) {
 		return new ModelAndView(name);
 	}
+	
+	@Limit(name="sayword",period=20,prefix="test")
 	@RequestMapping("/say/{word}")
 	public Result<String> say(@PathVariable String word) {
 		return ResultUtil.getOk("you say:"+word);
