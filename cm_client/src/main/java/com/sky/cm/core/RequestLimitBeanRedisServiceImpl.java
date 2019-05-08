@@ -3,10 +3,10 @@ package com.sky.cm.core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
 import com.sky.cm.annotation.Limit;
 import com.sky.cm.bean.LimitBean;
 import com.sky.cm.enums.LimitType;
+import com.sky.pub.service.impl.BaseRedisServiceImpl;
 
 @Component
 public class RequestLimitBeanRedisServiceImpl extends BaseRedisServiceImpl<LimitBean>{

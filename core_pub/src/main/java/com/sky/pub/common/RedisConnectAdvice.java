@@ -1,4 +1,4 @@
-package com.sky.sm.config;
+package com.sky.pub.common;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,7 +30,7 @@ public class RedisConnectAdvice {
 	@Resource
 	private JedisConnectionFactory connects;
 	
-	@Pointcut("execution(* com.sky.sm.service.impl.BaseRedis*+.*(..))")
+	@Pointcut("execution(* com.sky.pub.service.impl.BaseRedis*+.*(..))")
 	public void point(){}
 	
 	@Before("point()")
@@ -63,3 +63,4 @@ public class RedisConnectAdvice {
 	}
 	
 }
+

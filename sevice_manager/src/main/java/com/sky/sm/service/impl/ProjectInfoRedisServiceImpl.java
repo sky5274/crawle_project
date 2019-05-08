@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.sky.pub.service.impl.BaseRedisServiceImpl;
 import com.sky.sm.bean.ProjectInfoBean;
 import com.sky.sm.service.ProjectInfoRedisService;
 

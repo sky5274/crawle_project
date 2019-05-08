@@ -1,4 +1,4 @@
-package com.sky.sm.config;
+package com.sky.pub.common;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;

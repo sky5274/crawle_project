@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import com.sky.pub.ResultCode;
 import com.sky.pub.common.exception.ResultException;
+import com.sky.pub.service.impl.BaseRedisServiceImpl;
 import com.sky.pub.util.ListUtils;
 import com.sky.sm.bean.TraceRecordBean;
 import com.sky.sm.bean.TraceRecordEntity;
