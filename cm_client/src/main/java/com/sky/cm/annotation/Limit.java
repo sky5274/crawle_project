@@ -30,7 +30,7 @@ public @interface Limit {
 	 * Key的prefix
 	 * @return String
 	 */
-	String prefix() default "";
+	String prefix() default "LIMIT_Location";
 
 	/**
 	 * 给定的时间段
@@ -49,5 +49,5 @@ public @interface Limit {
 	 * 类型
 	 * @return LimitType
 	 */
-	LimitType limitType() default LimitType.CUSTOMER;
+	LimitType limitType() default LimitType.LOCATION;
 }
