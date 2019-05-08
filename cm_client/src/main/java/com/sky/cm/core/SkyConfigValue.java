@@ -13,10 +13,11 @@ import com.sky.pub.util.SpringUtil;
 @Component
 @ConfigurationProperties(prefix="sky.client.config")
 public class SkyConfigValue {
-	private Long readTimeout=60*1000L;						//http读取时间
+	private Long readTimeout=60*1000L;					//http读取时间
 	private String location="http://localhost:9000";	//请求地址
 	private String serviceName;							//项目名称
 	private String profile;								//项目环境
+	private boolean enablelimit=true;					//项目服务限流
 	private String version;								//项目版本
 	private String desc;								//项目说明
 	public Long getReadTimeout() {
@@ -60,6 +61,12 @@ public class SkyConfigValue {
 	}
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+	public boolean isEnablelimit() {
+		return enablelimit;
+	}
+	public void setEnablelimit(boolean enablelimit) {
+		this.enablelimit = enablelimit;
 	}
 
 }
