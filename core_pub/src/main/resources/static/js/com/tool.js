@@ -158,11 +158,20 @@
 				sidePagination: 'server',
 				queryParams :function(param){
 					if(obj.param){
-						param=$.extend(param,obj.param())
+						param=$.extend(param,obj.param)
 					}
-					param.current=param.offset;
-					param.pageSize=param.limit;
-					return param;
+					if(obj.getParam){
+						param=$.extend(param,obj.getParam())
+					}
+					var params={}
+					if(obj.ispost && (obj.method=='post'|| obj.method=='POST')){
+						params.data=param;
+					}else{
+						params=param;
+					}
+					params.current=param.offset;
+					params.pageSize=param.limit;
+					return params;
 				},
 				responseHandler:function(res){
 					if(res.success && res.data){
@@ -186,6 +195,9 @@
 					}
 				}
 				}
+		if(obj.ispost && (obj.method=='post'|| obj.method=='POST')){
+			param.contentType='application/json';
+		}
 		param=$.extend(param,obj)
 		$(tar).bootstrapTable(param)
 	}
@@ -236,6 +248,89 @@
 		}
 	}
 	
+	function getOptionEle(save_key,d){
+		var opt=$('<p class="hidden" style="margin: 0px;padding: 2px 10px;text-align: center;"></p>')
+		opt.data(save_key,d)
+		opt.html(d.name)
+		opt.attr('value',d.value)
+		return opt
+	}
+	
+	/*input  输入选择*/
+	function inputSelect(ele,obj){
+		var save_key="_value"
+		var zindex=$(ele).css('z-index')
+		if(zindex==undefined || zindex=='' || zindex=='auto'){
+			zindex=0;
+		}
+		var sel_id='sel_'+parseInt(Math.random()*1000);
+		var targetKey=obj.target?obj.target:'name'
+		var sel=$('<div id="'+sel_id+'" class="form-control hidden"></div>')
+		$.each(obj.data,function(i,d){
+			if(obj.getOption){
+				d=obj.getOption(d)
+			}
+			if(Array.isArray(d)){
+				$.each(d,function(i,el){
+					sel.append(getOptionEle(save_key,el))
+				})
+			}else{
+				sel.append(getOptionEle(save_key,d))
+			}
+		})
+		window.setTimeout(function(){
+			if($(ele).length==0){
+				$.alert({type:"warn",content:"input select  has not found the target input-element"})
+			}
+			$(ele).parent().append(sel)
+			$(ele).parent().append('<style>.opt_hover{background-color: #E6E6E6; border: 1px solid #BDBDBD; box-shadow: 0 0 5px #A9E2F3;  border-radius: 5px}</style>')
+			$(ele).parent().mouseleave(function(){
+				$(sel).addClass('hidden')
+			})
+		},500)
+		var isSelect=false;
+		$(ele).bind('input propertychange',function(){
+			var val=$(this).val();
+			var flag=false;
+			var select=$(ele).parent().find("div#"+sel_id)
+			select.children().each(function(){
+				var optd=$(this).data(save_key);
+				var targetVal=optd[targetKey];
+				try{
+					isSelect=val==targetVal
+					if(targetVal.indexOf(val)<0){
+						$(this).addClass("hidden")
+					}else{
+						$(this).removeClass("hidden")
+						flag=true;
+					}
+				}catch (e) {
+					$(this).removeClass("hidden")
+				}
+			})
+			if(flag || isSelect){
+				$(select).css({	position: 'absolute','cursor': 'pointer','height':'auto','max-height':'150px','overflow-y': 'auto','top': $(ele).parent().height()+"px",'width': $(ele).parent().width()+'px','z-index': zindex+1})
+				$(select).removeClass('hidden')
+			}else{
+				$(select).addClass('hidden')
+			}
+		})
+		$(sel).on('click','p',function(){
+			$(this).parent().addClass('hidden')
+			var opt=$(this);
+			var optd=opt.data(save_key)
+			$(ele).val(optd[targetKey])
+			$(ele).data(targetKey,optd[targetKey])
+			if(obj.change){
+				obj.change(ele,optd)
+			}
+		})
+		$(sel).children().hover(function(){
+			$(this).addClass("opt_hover")
+		},function(){
+			$(this).removeClass('opt_hover')
+		})
+	}
 	
 	$.fn.extend({
 		jTable:function(param){
@@ -243,6 +338,9 @@
 		},
 		jmTable:function(method,param){
 			return $(this).bootstrapTable(method,param)
+		},
+		inputSelect:function(param){
+			return new inputSelect($(this),param)
 		},
 	})
 	$.extend({
