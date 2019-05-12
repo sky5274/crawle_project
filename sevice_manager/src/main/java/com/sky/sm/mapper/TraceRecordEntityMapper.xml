@@ -43,7 +43,7 @@
     <result column="session_id" property="sessionId" jdbcType="VARCHAR" />
     <result column="cost" property="cost" jdbcType="INTEGER" />
     <result column="ts" property="time" jdbcType="TIMESTAMP" />
-    <collection property="traces" ofType="java.lang.List" select="queryTraceRecordByGroup" column="{groupId=group_id}"></collection>
+    <collection property="traces" ofType="java.util.List" select="queryTraceRecordByGroup" column="{groupId=group_id}"></collection>
   </resultMap>
   <sql id="Base_Column_List" >
     id, trace_id,trace_pid, group_id, url, type,status, request_body,response_body, headers, session_id, cost, ts
@@ -151,7 +151,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   
-  <select id="queryTraceRecordByGroup" resultMap="TraceBaseResultMap" >
+  <select id="queryTraceRecordByGroup" parameterType="java.lang.String" resultMap="TraceBaseResultMap" >
     select 
     <include refid="Base_Column_List" />
     from trace_record

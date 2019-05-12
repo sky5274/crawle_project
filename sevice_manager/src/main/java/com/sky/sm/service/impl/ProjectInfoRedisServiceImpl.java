@@ -5,15 +5,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.sky.pub.ResultAssert;
+import com.sky.pub.common.exception.ResultException;
 import com.sky.pub.service.impl.BaseRedisServiceImpl;
+import com.sky.pub.util.ListUtils;
 import com.sky.sm.bean.ProjectInfoBean;
+import com.sky.sm.dao.ProjectInfoBeanMapper;
 import com.sky.sm.service.ProjectInfoRedisService;
+import com.sky.sm.service.ProjectInfoService;
 
 @Service
-public class ProjectInfoRedisServiceImpl extends BaseRedisServiceImpl<ProjectInfoBean> implements ProjectInfoRedisService{
+public class ProjectInfoRedisServiceImpl extends BaseRedisServiceImpl<ProjectInfoBean> implements ProjectInfoRedisService,ProjectInfoService{
 
+	@Autowired
+	private ProjectInfoBeanMapper projectInfoBeanMapper;
+	
 	@Override
 	public void registProject(ProjectInfoBean info) {
 		doStringSet(getKey(info), info);
@@ -42,9 +53,9 @@ public class ProjectInfoRedisServiceImpl extends BaseRedisServiceImpl<ProjectInf
 	private String getQueryKey(ProjectInfoBean info) {
 		StringBuilder key=new StringBuilder();
 		if(info!=null) {
-			key.append("/").append(info.getServiceName()==null?"*":info.getServiceName())
-				.append("-").append(info.getProfile()==null?"*":info.getProfile())
-				.append("-").append(info.getVersion()==null?"*":info.getVersion());
+			key.append("/").append(getNullTxt(info.getServiceName()))
+				.append("-").append(getNullTxt(info.getProfile()))
+				.append("-").append(getNullTxt(info.getVersion()));
 		}else {
 			key.append("*");
 		}
@@ -55,7 +66,10 @@ public class ProjectInfoRedisServiceImpl extends BaseRedisServiceImpl<ProjectInf
 	protected Class<ProjectInfoBean> getExtendClass() {
 		return ProjectInfoBean.class;
 	}
-
+	private String getNullTxt(String txt) {
+		return StringUtils.isEmpty(txt)?"*":txt;
+	}
+	
 	@Override
 	public List<ProjectInfoBean> queryInfo(String service, String[] profiles, String version) {
 		List<ProjectInfoBean> list=new LinkedList<>();
@@ -64,15 +78,15 @@ public class ProjectInfoRedisServiceImpl extends BaseRedisServiceImpl<ProjectInf
 			for(String profile:profiles) {
 				StringBuilder key=new StringBuilder();
 				key.append("/").append(service)
-					.append("-").append(profile)
-					.append("-").append(version==null?"*":version);
+					.append("-").append(getNullTxt(profile))
+					.append("-").append(getNullTxt(version));
 				keys.addAll(doGetObjKeys(key.toString()));
 			}
 		}else {
 			StringBuilder key=new StringBuilder();
 				key.append("/").append(service)
 					.append("-").append("*")
-					.append("-").append(version==null?"*":version);
+					.append("-").append(getNullTxt(version));
 			keys.addAll(doGetObjKeys(key.toString()));
 		}
 		if(!keys.isEmpty()) {
@@ -81,6 +95,33 @@ public class ProjectInfoRedisServiceImpl extends BaseRedisServiceImpl<ProjectInf
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public Integer addProJectInfo(ProjectInfoBean project) throws ResultException{
+		ResultAssert.isBlank(project.getServiceName(), "项目的服务名称为空");
+		ResultAssert.isBlank(project.getProfile(), "项目的服务概述为空");
+		ProjectInfoBean newproject=new ProjectInfoBean();
+		BeanUtils.copyProperties( project,newproject);
+		project.setVersion(null);
+		List<ProjectInfoBean> newprojects = projectInfoBeanMapper.selectByProject(project);
+		//追加版本号
+		if(!ListUtils.isEmpty(newprojects)) {
+			newproject.appendVersion(newprojects.get(0).getVersion());
+		}
+		return projectInfoBeanMapper.insert(newproject);
+	}
+
+	@Override
+	public Integer deleteProJectInfo(ProjectInfoBean project) throws ResultException{
+		ResultAssert.isBlank(project.getServiceName(), "项目的服务名称为空");
+		ResultAssert.isBlank(project.getProfile(), "项目的服务概述为空");
+		return projectInfoBeanMapper.deleteProject(project);
+	}
+
+	@Override
+	public List<ProjectInfoBean> queryProject(ProjectInfoBean project) {
+		return projectInfoBeanMapper.selectByProject(project);
 	}
 
 }

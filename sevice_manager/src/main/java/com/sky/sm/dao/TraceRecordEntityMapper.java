@@ -40,4 +40,13 @@ public interface TraceRecordEntityMapper {
      * @date 2019年3月16日 上午10:35:44
      */
     List<TraceRecordEntity> queryTraceList(TraceRecordEntity record);
+    
+    /**
+     * 根据groupId 查询链路信息
+     * @param groupId
+     * @return
+     * @author 王帆
+     * @date 2019年5月9日 上午11:57:03
+     */
+    List<TraceRecordEntity> queryTraceRecordByGroup(String groupId);
 }

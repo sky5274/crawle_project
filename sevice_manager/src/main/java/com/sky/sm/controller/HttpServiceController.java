@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sky.pub.Result;
 import com.sky.pub.ResultUtil;
 import com.sky.pub.common.exception.ResultException;
+import com.sky.sm.bean.TraceLimitBean;
 import com.sky.sm.bean.TraceRecordBean;
 import com.sky.sm.bean.TraceRecordEntity;
+import com.sky.sm.bean.req.TraceLimitReqBean;
+import com.sky.sm.service.TraceLimitService;
 import com.sky.sm.service.TraceRecordService;
 
 @RestController
@@ -18,10 +21,12 @@ import com.sky.sm.service.TraceRecordService;
 public class HttpServiceController {
 	@Autowired
 	private TraceRecordService traceRecordSerive;
+	@Autowired
+	private TraceLimitService traceLimitService;
 	
 	@RequestMapping("limit")
-	public Object limit(String url) {
-		return ResultUtil.getOk(null);
+	public Result<TraceLimitBean> limit(TraceLimitReqBean limit) {
+		return ResultUtil.getOk(traceLimitService.queryMaxLike(limit));
 	}
 	
 	@RequestMapping("/trace/start")

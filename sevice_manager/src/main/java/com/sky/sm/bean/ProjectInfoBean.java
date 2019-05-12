@@ -1,7 +1,10 @@
 package com.sky.sm.bean;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
+
+import org.springframework.util.StringUtils;
 
 /**
  * 挂载项目信息
@@ -61,6 +64,24 @@ public class ProjectInfoBean implements Serializable{
 	}
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+	public void appendVersion(String version) {
+		if(StringUtils.isEmpty(version)) {
+			return;
+		}
+		if(StringUtils.isEmpty(this.version)) {
+			this.version=version;
+		}else {
+			if(!this.version.contains(version)) {
+				this.version+=","+version;
+			}
+		}
+	}
+	public List<String> getVersions(){
+		return StringUtils.isEmpty(this.version)?null:Arrays.asList(this.version.split(","));
+	}
+	public void setVersions(List<String> versions){
+		this.version= versions==null?null:String.join(",", versions);
 	}
 	public static class HttpUrlInfo implements Serializable{
 		/***/

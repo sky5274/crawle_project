@@ -1,6 +1,5 @@
 package com.sky.sm.bean.req;
 
-import com.sky.pub.PageRequest;
 import com.sky.sm.bean.PropertyValueEntity;
 
 /**
@@ -14,23 +13,32 @@ public class PropertyValueReqEntity extends PropertyValueEntity{
 	 */
 	private static final long serialVersionUID = 1L;
 	private String keyLike;
-	private PageRequest page;
-	public PageRequest getPage() {
-		return page;
-	}
-	public void setPage(PageRequest page) {
-		this.page = page;
-	}
-	public void initPage() {
-		if(page !=null) {
-			page=page.initPage();
-		}
-	}
+	private String projectLike;
+	private String profileLike;
+	private String versionCodeLike;
 	public String getKeyLike() {
 		return keyLike;
 	}
 	public void setKeyLike(String keyLike) {
 		this.keyLike = keyLike;
+	}
+	public String getProjectLike() {
+		return projectLike;
+	}
+	public void setProjectLike(String projectLike) {
+		this.projectLike = projectLike;
+	}
+	public String getProfileLike() {
+		return profileLike;
+	}
+	public void setProfileLike(String profileLike) {
+		this.profileLike = profileLike;
+	}
+	public String getVersionCodeLike() {
+		return versionCodeLike;
+	}
+	public void setVersionCodeLike(String versionCodeLike) {
+		this.versionCodeLike = versionCodeLike;
 	}
 	
 }

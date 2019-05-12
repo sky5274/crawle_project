@@ -2,10 +2,13 @@ package com.sky.sm.service.impl;
 
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sky.pub.Page;
+import com.sky.pub.PageRequest;
+import com.sky.pub.ResultAssert;
 import com.sky.pub.ResultCode;
 import com.sky.pub.common.exception.ResultException;
 import com.sky.sm.bean.ProjectPropertyBean;
@@ -21,20 +24,24 @@ import com.sky.sm.service.PropertyValueService;
 public class PropertyValueServiceImpl implements PropertyValueService{
 	@Autowired
 	private PropertyValueEntityMapper propertyValueMapper;
+	@Autowired
 	private PropertyValueHistoryEntityMapper propertyValueHistoryMapper;
 	
 	@Override
-	public Page<PropertyValueEntity> queryPageOfProperty(PropertyValueReqEntity property) {
-		property.initPage();
+	public Page<PropertyValueEntity> queryPageOfProperty(PageRequest<PropertyValueReqEntity> pageProperty) {
+		pageProperty.initPage();
 		Page<PropertyValueEntity> page= new Page<PropertyValueEntity>();
-		page.setPageData(property.getPage());
-		page.setList(propertyValueMapper.queryPropertyList(property));
-		page.setTotal(propertyValueMapper.accoutProperty(property));
+		page.setPageData(pageProperty);
+		page.setList(propertyValueMapper.queryPropertyList(pageProperty,pageProperty.getData()));
+		page.setTotal(propertyValueMapper.accoutProperty(pageProperty.getData()));
 		return page;
 	}
 
 	@Override
 	public Boolean addProperty(PropertyValueEntity property) throws ResultException {
+		ResultAssert.isBlank(property.getKey(), "属性的key为空");
+		ResultAssert.isBlank(property.getValue(), "属性的value为空");
+		ResultAssert.isBlank(property.getProject(), "属性所属项目为空");
 		return propertyValueMapper.insertSelective(property)>0;
 	}
 
@@ -44,7 +51,8 @@ public class PropertyValueServiceImpl implements PropertyValueService{
 		if(nowProperty ==null) {
 			throw new ResultException(ResultCode.VALID, "根据id:"+property.getId()+" 未找到配置数据");
 		}
-		PropertyValueHistoryEntity propertyHistory=(PropertyValueHistoryEntity) nowProperty;
+		PropertyValueHistoryEntity propertyHistory=new PropertyValueHistoryEntity();
+		BeanUtils.copyProperties(nowProperty, propertyHistory);
 		propertyHistory.setPid(nowProperty.getId());
 		propertyHistory.setId(null);
 		propertyValueHistoryMapper.insert(propertyHistory);
@@ -65,7 +73,7 @@ public class PropertyValueServiceImpl implements PropertyValueService{
 	}
 
 	@Override
-	public String getPropertyValue(PropertyValueEntity property) {
+	public String getPropertyValue(PropertyValueReqEntity property) {
 		List<PropertyValueEntity> list = propertyValueMapper.queryProperties(property);
 		if(list !=null && list.size()==1) {
 			return list.get(0).getValue();
