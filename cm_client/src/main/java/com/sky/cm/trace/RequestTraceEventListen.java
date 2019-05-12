@@ -28,6 +28,15 @@ public abstract class RequestTraceEventListen <T>{
 	protected Log log=LogFactory.getLog(getClass());
 	private RequestTraceBean trace;
 	
+	private static  String tracelocation=null;
+	
+	public static String getTraceLocation() {
+		if(tracelocation==null) {
+			tracelocation=SpringUtil.getBean(SkyConfigValue.class).getLocation();
+		}
+		return tracelocation;
+	}
+	
 	private T request;
 	public HttpServletRequest getHttpRequest() {
 		ServletRequestAttributes requestAtrributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -115,6 +124,6 @@ public abstract class RequestTraceEventListen <T>{
 	}
 
 	private boolean isTraceUrl(RequestTraceBean trace) {
-		return  trace.getUrl().contains(SkyConfigRequest.trace_start.getUrl()) || trace.getUrl().contains(SkyConfigRequest.trace_end.getUrl())|| trace.getUrl().contains(SkyConfigRequest.limit.getUrl());
+		return  trace !=null && trace.getUrl()!=null && (trace.getUrl().startsWith(getTraceLocation()) || trace.getUrl().endsWith("/error"));
 	}
 }

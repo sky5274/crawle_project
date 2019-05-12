@@ -34,10 +34,17 @@ public class RequestLimitBeanRedisServiceImpl extends BaseRedisServiceImpl<Limit
 	 * @param key
 	 * @return
 	 * @author 王帆
+	 * @param url 
 	 * @param limitdef 
 	 * @date 2019年3月13日 上午9:27:23
 	 */
-	public LimitBean isLimit(String key, Limit limitdef) {
+	public LimitBean isLimit(String url, String sessionId, Limit limitdef) {
+		//如果限流平台未配置数据，则不限流
+		if(isNoLimitDefined(url)) {
+			return null;
+		}
+		LimitBean tempLimit = new LimitBean(skyConfig.getConfig(),url,sessionId);
+		String key=tempLimit.getKey();
 		if(limitdef !=null) {
 			StringBuilder temp=new StringBuilder();
 			if(!StringUtils.isEmpty(limitdef.prefix())) {
@@ -67,25 +74,38 @@ public class RequestLimitBeanRedisServiceImpl extends BaseRedisServiceImpl<Limit
 			 * 2：服务限流标识为true  使用服务限流配置
 			 * 3: 服务限流标识为false  limit存在  使用本地限流配置
 			 */
-			String url =key.substring(key.indexOf("$")+1);
 			if(limitdef !=null && limitdef.limitType()==LimitType.LOCATION) {
-				limit=new LimitBean(key);
+				limit=tempLimit;
 				limit.setCount(limitdef.count());
 				limit.setPriod(limitdef.period());
 				limit.setLimitCount(limitdef.count());
 			}else if(skyConfig.getConfig().isEnablelimit()){
-				limit=skyConfig.getLimit(url);
+				//从链路-限流服务器获取限流配置
+				limit=skyConfig.getLimit(tempLimit);
 			}else if(limitdef !=null){
-				limit=new LimitBean(key);
+				limit=tempLimit;
 				limit.setCount(limitdef.count());
 				limit.setPriod(limitdef.period());
 				limit.setLimitCount(limitdef.count());
 			}
-			if(limit==null) {
-				limit=new LimitBean(key);
+			if(limit !=null) {
+				doStringSet(limit.getKey(), limit, limit.getPriod());
+			}else {
+				//记录无限流配置数据
+				doHashSet(url, tempLimit);
 			}
-			doStringSet(limit.getKey(), limit, limit.getPriod());
 		}
 		return limit;
+	}
+	
+	/**
+	 * 是否是未配置的限流路径
+	 * @param url
+	 * @return
+	 * @author 王帆
+	 * @date 2019年5月9日 下午1:44:00
+	 */
+	private boolean isNoLimitDefined(String url) {
+		return doHashGet(url) !=null;
 	}
 }

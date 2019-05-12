@@ -19,7 +19,6 @@ import com.sky.cm.annotation.Limit;
 import com.sky.cm.bean.LimitBean;
 import com.sky.cm.core.RequestLimitBeanRedisServiceImpl;
 import com.sky.cm.core.SkyConfig;
-import com.sky.cm.core.SkyConfigValue;
 import com.sky.pub.Result;
 
 @Component
@@ -42,14 +41,6 @@ public class WebLimitInterceptor implements HandlerInterceptor {
 			}
 		}
 		return flag;
-	}
-	private String getKey(HttpServletRequest req) {
-		SkyConfigValue config = skyConfig.getConfig();
-		StringBuilder key=new StringBuilder();
-		key.append(config.getServiceName()).append("-").append(config.getProfile()).append("-").append(config.getVersion());
-		key.append("/").append(req.getSession().getId());
-		key.append("$").append(req.getRequestURI());
-		return key.toString();
 	}
 	
 	private List<String> unLimitUrl=Arrays.asList("/error");
@@ -75,8 +66,9 @@ public class WebLimitInterceptor implements HandlerInterceptor {
 		if(!skyConfig.getConfig().isEnablelimit() && limitdef==null) {
 			return true;
 		}
-		LimitBean limit = requestLimitService.isLimit(getKey(request),limitdef);
-		if(limit.isLimit()) {
+		LimitBean limit = requestLimitService.isLimit(request.getRequestURL().toString(),request.getSession().getId(),limitdef);
+		boolean flag = limit !=null && limit.isLimit();
+		if( flag) {
 			response.setCharacterEncoding("UTF-8");  
 		    response.setContentType("application/json; charset=utf-8");  
 		    PrintWriter out = null;  
@@ -91,7 +83,7 @@ public class WebLimitInterceptor implements HandlerInterceptor {
 		        }  
 		    }  
 		}
-		return true;
+		return !flag;
 	}
 
 	@Override
