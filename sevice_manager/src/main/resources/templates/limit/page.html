@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('限流控制主页','/bootstrap/css/bootstrap-table.css,/css/page-tool.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/bootstrap/js/bootstrap-treeview.js,/js/com/dialog-table.js,/js/page-project-select.js,/js/page-dialog-action.js')"></head>
+<script type="text/javascript">
+$(function(){
+	initEvent();
+	
+	$("#limit-table").jTable({
+		url:"/project/limit/query/page",
+		uniqueId:'id',
+		method:"post",
+		ispost:true,
+		showColumns:true,
+		showRefresh:true,
+		showToggle:true,
+		toolbar:'#limit-page-query-tool',
+		getParam:getQueryParam,
+		columns :[
+			{field: 'radio', radio: true}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "id", title : "id",align: 'center'},
+			{ field : "matchUrl", title : "url",align: 'center'},
+			{ field : "count", title : "count",align: 'center'},
+			{ field : "priod", title : "priod",align: 'center'},
+			{ field : "serverName", title : "项目名称",align: 'center'},
+			{ field : "profile", title : "项目环境分支",align: 'center'},
+			{ field : "serverVersion", title : "项目版本",align: 'center'},
+			{ field : "isGlobal", title : "项目",align: 'center',formatter:function(value,row){return value !=1?'私有':'全局'}},
+			{ field : "version", title : "版本号", visible: false},
+			{ field : "ts", title : "时间",align: 'center',formatter:function(value,row){return value !=null?new Date(value).toLocaleString():'-'}},
+		],
+	})
+})
+
+function getQueryParam(){
+	return $("#limit-page-query-tool").pageQuery()
+}
+
+function initEvent(){
+	var projects=getProjects();
+	var match={
+			'serverNametLike':'serviceName',
+			'profileLike':'profile',
+			'serverVersionLike':'version',
+	}
+	var matchp={
+			'serverName':'serviceName',
+			'profile':'profile',
+			'serverVersion':'version',
+	}
+	$("#limit-page-query-tool").pageQueryTool({
+			columns:[
+				{title:"服务名称",name:"serverNameLike",Exact:'serverName',size:2,init:function(ele){
+					inputSelectInit({'ele':ele,'match':match,'parent':"#limit-page-query-tool"})
+				}},
+				{title:"服务环境",name:"profileLike",Exact:'profile',size:2},
+				{title:"服务版本",name:"serverVersionLike",Exact:'serverVersion',size:2},
+				{title:"url",name:"matchUrl",Exact:'url',size:2},
+				{title:"是否全局",name:"showGlobal",type:'checkbox',size:1},
+			]
+	})
+	$("#btn_limit_search").on("click",function(){
+		$("#limit-table").jmTable("refresh")
+	})
+	
+		var col=[
+				{title:"服务",name:"serverName",require:true,
+					init:function(ele){
+						inputSelectInit({'ele':ele,'match':matchp,'parent':".item-content",
+									change:function(ele,data){
+										inputProjectUrlSelectInit($(ele).parents(".item-content").find("input[name=matchUrl]"),data)
+									}
+						})
+					}
+				},
+				{title:"服务环境",name:"profile"},
+				{title:"版本",name:"serverVersion"},
+				{title:"url",name:"matchUrl"},
+				{title:"count",name:"count"},
+				{title:"区间",name:"priod"},
+				{title:"是否全局",name:"isGlobal",type:'checkbox',size:2,
+					isChecked:function(data){return data.value==1;},
+					event:{
+						click:function(ele){
+							var isd=$(ele).prop("checked")?1:0
+							$(ele).val(isd)
+						}
+					}
+				},
+			]
+	$("#btn_limit_modify").on("click",function(){
+		var row=getSelctRow("#limit-table");
+		if(row){
+			col=getColums(col,row)
+			windowAction({
+				title:"修改限流配置",
+				table:"#limit-table",
+				columns:col,
+				actionUrl:'/project/limit/update',
+			})
+		}
+	})
+	$("#btn_limit_add").on("click",function(){
+		windowAction({
+			title:"新建限流配置",
+			table:"#limit-table",
+			columns:col,
+			actionUrl:'/project/limit/add',
+		})
+	})
+	
+	$("#btn_limit_global").on("click",function(){
+		var row=getSelctRow("#limit-table");
+		if(row){
+			row.isGlobal=1;
+			updatOrAddPostRequest({url:'/project/limit/update',data:row,table:"#limit-table"})
+		}
+	})
+	$("#btn_limit_del").on("click",function(){
+		var row=getSelctRow("#limit-table");
+		if(row){
+			updatOrAddPostRequest({url:'/project/limit/delete',data:row,table:"#limit-table"})
+		}
+	})
+	
+	$("#btn_limit_query").click(function(){
+		selectWindow({
+			title:'选择项目',
+			table:{
+				url:"/project/querylike",
+				showColumns:true,
+				showRefresh:true,
+				showToggle:true,
+				isPage:false,
+				columns :[
+					{
+						field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+						formatter: function (value,row,index){return index+1; }
+					},
+					{ field : "serviceName", title : "serviceName",align: 'center'},
+					{ field : "profile", title : "profile",align: 'center'},
+					{ field : "version", title : "version",align: 'center'},
+					{ field : "versions",  visible: false},
+				]
+			},
+			tabletool:[
+				{title:"服务",name:"serviceName",size:4},
+				{title:"服务环境",name:"profile",size:4}
+			],
+			success:function(data){
+				console.log(data)
+			}
+		})
+	})
+	
+}
+
+</script>
+<body>
+	<div id="page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left">限流</h4>
+				<div class="page-tool pull-right">
+						<button class="btn btn-primary" id="btn_limit_search">查询</button>
+						<button class="btn btn-primary" id="btn_limit_add">添加</button>
+						<button class="btn btn-primary" id="btn_limit_modify">修改</button>
+						<button class="btn btn-primary" id="btn_limit_global">全局化</button>
+						<button class="btn btn-primary btn-status" id="btn_limit_del">删除</button>
+						<button class="btn btn-primary btn-status" id="btn_limit_query">选择</button>
+				</div> 
+			</div>
+			<div id="page-contain" class="panel-body">
+				<div id="limit-page-query-tool" class="page-tool form-inline"></div>
+				<div class="page-table">
+					<table id="limit-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('属性配置主页','/bootstrap/css/bootstrap-table.css,/css/page-tool.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/bootstrap/js/bootstrap-treeview.js,/js/com/dialog-table.js,/js/page-project-select.js,/js/page-dialog-action.js')"></head>
+<script type="text/javascript">
+$(function(){
+	initEvent();
+	
+	$("#property-table").jTable({
+		url:"/property/page",
+		uniqueId:'id',
+		method:"post",
+		ispost:true,
+		getParam:getQueryParam,
+		showColumns:true,
+		showRefresh:true,
+		showToggle:true,
+		toolbar:'#property-page-query-tool',
+		columns :[
+			{field: 'radio', radio: true}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "id", title : "id",align: 'center'},
+			{ field : "key", title : "key",align: 'center'},
+			{ field : "value", title : "value",align: 'center'},
+			{ field : "project", title : "项目名称",align: 'center'},
+			{ field : "profile", title : "项目环境分支",align: 'center'},
+			{ field : "versionCode", title : "项目版本",align: 'center'},
+			{ field : "isGrobal", title : "项目",align: 'center',formatter:function(value,row){return value !=1?'私有':'全局'}},
+			{ field : "version", title : "版本号", visible: false},
+			{ field : "ts", title : "时间",align: 'center',formatter:function(value,row){return value !=null?new Date(value).toLocaleString():'-'}},
+		],
+	})
+})
+
+function getQueryParam(){
+	return $("#property-page-query-tool").pageQuery()
+}
+
+function initEvent(){
+	var match={
+			'projectLike':'serviceName',
+			'profileLike':'profile',
+			'versionCodeLike':'version',
+	}
+	var matchp={
+			'project':'serviceName',
+			'profile':'profile',
+			'versionCode':'version',
+	}
+	$("#property-page-query-tool").pageQueryTool({
+		columns:[
+			{title:"服务名称",name:"projectLike",Exact:'project',size:2,init:function(ele){
+				inputSelectInit({'ele':ele,'match':match,'parent':"#property-page-query-tool"})
+			}},
+			{title:"服务环境",name:"profileLike",Exact:'profile',size:2},
+			{title:"服务版本",name:"versionCodeLike",Exact:'versionCode',size:2},
+			{title:"key",name:"keyLike",Exact:'key',size:2},
+			{title:"是否全局",name:"showGlobal",type:'checkbox',size:1},
+		]
+	})
+	$("#btn_property_search").on("click",function(){
+		$("#property-table").jmTable("refresh")
+	})
+	$("#btn_property_global").on("click",function(){
+		var row=getSelctRow("#property-table");
+		if(row){
+			row.isGrobal=1;
+			updatOrAddPostRequest({url:'/property/update',data:row,table:"#property-table"})
+		}
+	})
+	
+	var col=[
+				{title:"服务",name:"project",require:true,
+					init:function(ele){
+						inputSelectInit({'ele':ele,'match':matchp,'parent':".item-content"})
+					}
+				},
+				{title:"服务环境",name:"profile"},
+				{title:"版本",name:"versionCode"},
+				{title:"key",name:"key"},
+				{title:"value",name:"value"},
+				{title:"是否全局",name:"isGrobal",type:'checkbox',size:2,
+					isChecked:function(data){return data.value==1;},
+					event:{
+						click:function(ele){
+							var isd=$(ele).prop("checked")?1:0
+							$(ele).val(isd)
+						}
+					}
+				},
+			]
+	$("#btn_property_modify").on("click",function(){
+		var row=getSelctRow("#property-table");
+		if(row){
+			col=getColums(col,row)
+			windowAction({
+				title:"修改属性配置",
+				table:"#property-table",
+				columns:col,
+				actionUrl:'/property/update',
+			})
+		}
+	})
+	$("#btn_property_add").on("click",function(){
+		windowAction({
+			title:"新建属性配置",
+			table:"#property-table",
+			columns:col,
+			actionUrl:'/property/add',
+		})
+	})
+	
+}
+
+</script>
+<body>
+	<div id="page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left">属性控制</h4>
+				<div class="page-tool pull-right">
+						<button class="btn btn-primary" id="btn_property_search">查询</button>
+						<button class="btn btn-primary" id="btn_property_add">添加</button>
+						<button class="btn btn-primary" id="btn_property_modify">修改</button>
+						<button class="btn btn-primary" id="btn_property_global">全局化</button>
+					<!-- 	<button class="btn btn-primary btn-status" id="btn_property_del">删除</button> -->
+				</div> 
+			</div>
+			<div id="page-contain" class="panel-body">
+				<div id="property-page-query-tool" class="page-tool form-inline"></div>
+				<div class="page-table">
+					<table id="property-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
