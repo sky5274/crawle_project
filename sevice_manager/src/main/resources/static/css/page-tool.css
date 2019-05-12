@@ -1,0 +1,6 @@
+.page-tool{margin-bottom: 5px}
+.page-tool .input-group{height: 26px ; display: inline-flex; clear: both; padding-right: 3px;}
+.page-tool .input-group span{height: 25px ; display: block; float: left;width: auto;}
+.page-tool .input-group input[type=text]{height: 25px ;  float: left}
+.page-tool .input-group input[type=checkbox]{height: 14px ; width: 14px ; float: left;margin-left: 5px} 
+.page-tool .switch{min-width: 80px;margin-bottom: -10px !important;height: 25px;}
