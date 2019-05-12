@@ -46,7 +46,7 @@ sky:
       config:
          location: http://127.0.0.1:9000
          profile: test
-         enablelimit: false
+         enablelimit: true
          version: 1.0.0
 
 logging:
