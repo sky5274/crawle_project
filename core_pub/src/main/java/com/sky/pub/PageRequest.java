@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class PageRequest<T> implements Serializable{
 	/***/
 	private static final long serialVersionUID = 1L;
-	private Integer current;
-	private Integer pageSize;
+	private Integer current=0;
+	private Integer pageSize=10;
 	private boolean isInit=false;
 	private T data;
 	public PageRequest() {}
