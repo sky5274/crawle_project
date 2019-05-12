@@ -1,5 +1,6 @@
 package com.sky.pub.service.impl;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -95,7 +96,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * @author  王帆
 	 * 2017年10月1日下午6:43:23
 	 */
-	private HashOperations<String, String, V> getHashOptions() {
+	private HashOperations<String, String, String> getHashOptions() {
 		return this.getRedisTemplate().opsForHash();
 	}
 	
@@ -330,7 +331,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 */
 	protected void doHashSet(String key, V value) {
 		log.debug("===> redis action: HSET key="+this.getExtendClass().getSimpleName()+", field="+key+", value ="+value);
-		this.getHashOptions().put(this.getExtendClass().getSimpleName(), key, value);
+		this.getHashOptions().put(this.getExtendClass().getSimpleName(), key, JSON.toJSONString(value));
 	}
 	/**
 	 * 仅当字段不存在时，才设置散列字段的值
@@ -342,7 +343,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 */
 	protected void doHashSetIfAbsent(String key, V value) {
 		log.debug("===> redis action: HSET key="+this.getExtendClass().getSimpleName()+", field="+key+", value ="+value);
-		this.getHashOptions().putIfAbsent(this.getExtendClass().getSimpleName(), key, value);
+		this.getHashOptions().putIfAbsent(this.getExtendClass().getSimpleName(), key, JSON.toJSONString(value));
 	}
 
 	/**
@@ -354,7 +355,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 */
 	protected V doHashGet(String key) {
 		log.debug("===> redis action: HGET key="+this.getExtendClass().getSimpleName()+", field="+key);
-		return this.getHashOptions().get(this.getExtendClass().getSimpleName(), key);
+		return JSON.parseObject(this.getHashOptions().get(this.getExtendClass().getSimpleName(), key),getExtendClass());
 	}
 	/**
 	 * 获取所有给field对应的值
@@ -397,7 +398,12 @@ public abstract class BaseRedisServiceImpl<V> {
 	 */
 	protected List<V> doHashGetValues() {
 		log.debug("===> redis action: HVALS key="+this.getExtendClass().getSimpleName());
-		return this.getHashOptions().values(this.getExtendClass().getSimpleName());
+		List<String> list = this.getHashOptions().values(this.getExtendClass().getSimpleName());
+		List<V> results=new LinkedList<>();
+		for(String s:list) {
+			results.add(JSON.parseObject(s,getExtendClass()));
+		}
+		return results;
 	}
 	
 	/**
