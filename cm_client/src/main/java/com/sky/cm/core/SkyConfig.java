@@ -76,16 +76,20 @@ public class SkyConfig {
 	}
 	@SuppressWarnings("unchecked")
 	public <T> T getProperty(String key,Class<T> type,T defaultValue) {
-		SkyConfigRequest dump = SkyConfigRequest.property;
+		SkyConfigRequest propertyInfo = SkyConfigRequest.property;
 		Map<String, Object> body = JSON.parseObject(JSON.toJSONString(configValue),Map.class);
 		body.put("key", key);
-		String result = httpCache(dump.getUrl(), dump.getMethod(), body);
+		String result = httpCache(propertyInfo.getUrl(), propertyInfo.getMethod(), body);
 		if(result!=null) {
-			Result<T> res_result = JSON.parseObject(result, Result.class);
-			if(res_result.isSuccess()) {
-				return res_result.getData();
-			}else {
-				log.warn(res_result.getMessage());
+			try {
+				Result<T> res_result = JSON.parseObject(result, Result.class);
+				if(res_result.isSuccess()) {
+					return res_result.getData();
+				}else {
+					log.warn(res_result.getMessage());
+				}
+			} catch (Exception e) {
+				return null;
 			}
 		}
 		return defaultValue;
@@ -130,17 +134,16 @@ public class SkyConfig {
 
 	/**
 	 * 	获取url对应的属性配置
-	 * @param url
+	 * @param tempLimit
 	 * @return
 	 * @author 王帆
 	 * @date 2019年3月12日 下午5:22:03
 	 */
-	public LimitBean getLimit(String url) {
-		Map<String, Object> params=new HashMap<>();
-		params.put("url", url);
+	@SuppressWarnings("unchecked")
+	public LimitBean getLimit(LimitBean tempLimit) {
+		Map<String, Object> params=JSON.parseObject(JSON.toJSONString(tempLimit), Map.class);
 		String result = httpCache(SkyConfigRequest.limit.getUrl(),SkyConfigRequest.limit.getMethod(),params);
 		if(result!=null) {
-			@SuppressWarnings("unchecked")
 			Result<LimitBean> res_result = JSON.parseObject(result, Result.class);
 			if(res_result.isSuccess()) {
 				return res_result.getData();
