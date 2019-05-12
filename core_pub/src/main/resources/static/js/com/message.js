@@ -42,7 +42,7 @@
 	Message.prototype={
 			initModalEvent:function(dialog,id){
 				var _this=this;
-				$(dialog).find("button[type=button]").click(function(){
+				$(dialog).find(".modal-footer button[type=button]").click(function(){
 					var flag
 					try {
 						var win=dialog
@@ -83,7 +83,7 @@
 					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
 				},200)
 				if(this.settings.width){
-					$(dialog).find(".modal-content").css({"width":this.settings.width,"margin-left":(600-this.settings.width)/2+"px"})
+					$(dialog).find(".modal-content").css({"width":parseInt(this.settings.width)+"px","margin-left":(600-parseInt(this.settings.width))/2+"px"})
 				}
 				$(dialog).find(".modal-body").css({"max-height":"500px","overflow-y": "auto"})
 				$(dialog).find(".modal-content").resize(function(){
@@ -104,7 +104,7 @@
 				'     <button class="close" data-dismiss="modal" aria-hidden="true">&times;</button>'+
 				'    <h4 class="modal-title" id="myModalLabel">'+this.settings.title+'</h4>'+
 				' </div>'+
-				' <div class="modal-body">'+this.settings.con+'</div>'+
+				' <div id="modal_body_content" class="modal-body"></div>'+
 				'<div class="modal-footer">';
 					if(i==1){
 						con+='<button type="button" data-type="cancle" class="btn btn-default" data-dismiss="modal">'+this.settings.cancel+'</button>'
@@ -115,6 +115,7 @@
 				'</div>'+
 				'</div>'
 				var dialog=$(con)
+				dialog.find("#modal_body_content").append(this.settings.con)
 				var _this=this;
 				this.parent.append(dialog);
 					if(this.settings.src.length>0){
