@@ -23,11 +23,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableCaching
 public class RedisConfig extends CachingConfigurerSupport{
 
-    @Value("${spring.redis.host}")
+    @Value("${spring.redis.host:127.0.0.1}")
     private String host;
-    @Value("${spring.redis.port}")
+    @Value("${spring.redis.port:6379}")
     private int port;
-    @Value("${spring.redis.timeout}")
+    @Value("${spring.redis.timeout:5000}")
     private int timeout;
     
     //自定义缓存key生成策略
