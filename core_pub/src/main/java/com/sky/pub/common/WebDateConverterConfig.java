@@ -56,7 +56,9 @@ public class WebDateConverterConfig{
 			if ("".equals(value)) {
 				return null;
 			}
-			if(source.matches("^\\d{4}-\\d{1,2}$")){
+			if(source.matches("[0-9]+")) {
+				return new Timestamp(Long.valueOf(source));
+			}else if(source.matches("^\\d{4}-\\d{1,2}$")){
 				return parseDate(source, formarts.get(0));
 			}else if(source.matches("^\\d{4}-\\d{1,2}-\\d{1,2}$")){
 				return parseDate(source, formarts.get(1));
