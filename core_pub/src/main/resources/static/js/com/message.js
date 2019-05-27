@@ -20,6 +20,8 @@
 		}
 		var id="Modal_"+Math.round(Math.random()*100);
 		this.settings.eleId=id;
+		
+		
 		switch (this.settings.type) {
 		case "alert":
 			var _this=this;
@@ -38,6 +40,7 @@
 		default:
 			break;
 		}
+		this.initEVENT()
 	}
 	Message.prototype={
 			initModalEvent:function(dialog,id){
@@ -57,10 +60,10 @@
 						console.error(e)
 						throw 'dialog err'
 					}
-					flag=flag==undefined?true:flag
-							if(flag){
-								$(dialog).modal('toggle')
-							}
+					flag= flag==undefined?true:flag
+					if(flag){
+						$(dialog).modal('toggle')
+					}
 				})
 				$(dialog).on('hide.bs.modal',function(){
 					$(this).remove()
@@ -81,9 +84,17 @@
 					var h=$(dialog).find(".modal-body").height()
 					var con_w=$(dialog).find(".modal-content").width();
 					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
-				},200)
+				},500)
 				if(this.settings.width){
-					$(dialog).find(".modal-content").css({"width":parseInt(this.settings.width)+"px","margin-left":(600-parseInt(this.settings.width))/2+"px"})
+					//根据百分比适配宽度
+					if((this.settings.width+"").indexOf('%')>-1){
+						window.setTimeout(function(){
+							$(dialog).find(".modal-dialog").css("width", "100%")
+							$(dialog).find(".modal-content").css({"width":_this.settings.width,"margin-left":((100-parseInt(_this.settings.width))/2)+"%"})
+						},300)
+					}else{
+						$(dialog).find(".modal-content").css({"width":parseInt(this.settings.width)+"px","margin-left":(600-parseInt(this.settings.width))/2+"px"})
+					}
 				}
 				$(dialog).find(".modal-body").css({"max-height":"500px","overflow-y": "auto"})
 				$(dialog).find(".modal-content").resize(function(){
@@ -115,13 +126,14 @@
 				'</div>'+
 				'</div>'
 				var dialog=$(con)
+				this.settings.content=dialog
 				dialog.find("#modal_body_content").append(this.settings.con)
 				var _this=this;
 				this.parent.append(dialog);
 					if(this.settings.src.length>0){
 //						$.loading().show()
-						dialog.find(".modal-body").css("height","500px")
-						dialog.find(".modal-body").append("<iframe id='iframe_"+id+"' style='width:100%;height:100%'></iframe>")
+						dialog.find(".modal-body").css("height",this.settings.height?this.settings.height:"500px")
+						dialog.find(".modal-body").append("<iframe id='iframe_"+id+"' frameborder='no' border='0'  style='width:100%;height:98%'></iframe>")
 						var iframe=dialog.find(".modal-body iframe")
 						iframe.attr("src",this.settings.src)
 						_this.initModalEvn(dialog,id);
@@ -154,6 +166,24 @@
 			},
 			getDom:function(){
 				return $('#'+this.settings.eleId)
+			},
+			getContent:function(){
+				return this.content;
+			},
+			callFrame:function(key,param){
+				 $(this.content).find("iframe")[0].contentWindow[key](param);
+			},
+			initEVENT:function(){
+				/**默认事件*/
+				this.settings.getDom=function(){
+					return $('#'+this.eleId)
+				}
+				this.settings.getContent=function(){
+					return this.content;
+				},
+				this.settings.callFrame=function(key,param){
+					 return this.content.find("iframe").eq(0)[0].contentWindow[key](param);
+				}
 			}
 	}
 	var loading=function(tar){
