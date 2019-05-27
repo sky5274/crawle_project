@@ -52,6 +52,7 @@ function updatOrAddPostRequest(obj){
 			url:obj.url,
 			data:obj.data,
 			async:false,
+			loadding:obj.loadding,
 			success:function(res){
 				$.diaLog({
 					con:"操作成功"
@@ -66,6 +67,7 @@ function updatOrAddPostRequest(obj){
 			url:obj.url,
 			data:obj.data,
 			async:false,
+			loadding:obj.loadding,
 			success:function(res){
 				$.diaLog({
 					con:"操作成功"
