@@ -332,6 +332,7 @@
 		})
 	}
 	
+	
 	$.fn.extend({
 		jTable:function(param){
 			return new jTable($(this),param)
@@ -342,6 +343,7 @@
 		inputSelect:function(param){
 			return new inputSelect($(this),param)
 		},
+		
 	})
 	$.extend({
 		cartPage:function(param){
