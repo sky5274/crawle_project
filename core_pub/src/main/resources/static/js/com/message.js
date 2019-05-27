@@ -20,8 +20,6 @@
 		}
 		var id="Modal_"+Math.round(Math.random()*100);
 		this.settings.eleId=id;
-		
-		
 		switch (this.settings.type) {
 		case "alert":
 			var _this=this;
