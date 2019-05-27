@@ -135,6 +135,10 @@
 						var iframe=dialog.find(".modal-body iframe")
 						iframe.attr("src",this.settings.src)
 						_this.initModalEvn(dialog,id);
+						//快捷调用
+						this.settings.callFrame=function(key,param){
+							 return dialog.find("iframe").eq(0)[0].contentWindow[key](param);
+						}
 //						$(iframe).load(function() { 
 //							console.log("page load")
 //							$.loading().close();
@@ -178,9 +182,6 @@
 				}
 				this.settings.getContent=function(){
 					return this.content;
-				},
-				this.settings.callFrame=function(key,param){
-					 return this.content.find("iframe").eq(0)[0].contentWindow[key](param);
 				}
 			}
 	}
