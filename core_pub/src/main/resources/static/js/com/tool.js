@@ -350,9 +350,68 @@
 		doAjax:doAjax,
 		doJsonAjax:doJsonAjax,
 		doPostJsonAjax:doPostJsonAjax,
-		doUpdateFileAjax:doUpdateFileAjax
+		doUpdateFileAjax:doUpdateFileAjax,
 	})
-	
+	$.storage={
+		put:function(key,value){
+			this.init();
+			if(value instanceof  Object){
+				value=JSON.stringify(value)
+			}
+			localStorage.setItem(key,value);
+		},
+		get:function(key){
+			this.init();
+			var value=localStorage.getItem(key)
+			try {
+				value=JSON.parse(value)
+			} catch (e) {}
+			return value;
+		},
+		remove:function(key){
+			this.init();
+			localStorage.removeItem(key);
+		},
+		clear:function(){
+			this.init();
+			localStorage.clear();
+		},
+		init:function(){
+			if(typeof(Storage)==="undefined"){
+				return false;
+			}
+		}
+	};
+	$.session={
+			put:function(key,value){
+				this.init();
+				if(value instanceof  Object){
+					value=JSON.stringify(value)
+				}
+				sessionStorage.setItem(key,value);
+			},
+			get:function(key){
+				this.init();
+				var value=sessionStorage.getItem(key)
+				try {
+					value=JSON.parse(value)
+				} catch (e) {}
+				return value;
+			},
+			remove:function(key){
+				this.init();
+				sessionStorage.removeItem(key);
+			},
+			clear:function(){
+				this.init();
+				sessionStorage.clear();
+			},
+			init:function(){
+				if(typeof(Storage)==="undefined"){
+					return false;
+				}
+			}
+	};
 })(jQuery,document,window)
 
 $(function(){
