@@ -1,2 +1,8 @@
-# pro_Pic_manager
-a simple web project ,it has the walker ,show panel and manager panel
+# simple crawle project 
+1:爬虫控制平台
+
+1.1  支持模块前端拓展与配置
+
+1.2  支持简单的前端sql测试与结果输出
+
+1.3  支持爬虫配置与调用，输出爬取日志

@@ -2,15 +2,25 @@
 1：该客户端使用web HandlerInterceptor  作为请求监听的限流全局监听，提供两种限流措施：1. 注解模式，2.服务限流enable，使用服务限流
 
 服务配置信息
+
 	sky:
+	
 	   client:
+	   
 	      config:
+	      
 	         location: http://127.0.0.1:9000    -- 链路-限流服务请求地址
+	         
 	         profile: test						-- 环境
+	         
 	         enablelimit: false					-- 是否启动服务限流
+	         
 	         version: 1.0.0						-- 版本
+	         
 	         readTimeout: 60*1000				-- 链路-限流服务请求超时
+	         
 	         serviceName: project-name			-- 项目名称
+	         
 	         desc: 描述							-- 项目描述
 
 2：链路请求记录设计：使用aop记录所有的http请求，以及使用httputil时自动添加到链路记录中
