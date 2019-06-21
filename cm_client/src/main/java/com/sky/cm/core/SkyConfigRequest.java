@@ -4,9 +4,13 @@ import org.springframework.http.HttpMethod;
 
 public enum SkyConfigRequest {
 	regist("/project/regist",HttpMethod.PUT),
-	property("/project/property"),
-	properties("/project/query/properties"),
-	load_off("/project/dump");
+	load_off("/project/dump"),
+	property("/property/get"),
+	properties("/property/by/project"),
+	limit("/http/limit"),
+	trace_start("/http/trace/start",HttpMethod.POST),
+	trace_end("/http/trace/end",HttpMethod.POST)
+	;
 	private String url;
 	private HttpMethod method;
 	SkyConfigRequest(String url) {

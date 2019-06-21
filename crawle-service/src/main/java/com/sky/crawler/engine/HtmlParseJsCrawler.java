@@ -14,6 +14,8 @@ import com.alibaba.fastjson.JSON;
 import com.sky.crawler.core.CrawlerJsContant;
 import com.sky.pub.ResultCode;
 import com.sky.pub.common.exception.ResultException;
+import com.sky.pub.contant.PubFileContant;
+
 import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
 import cn.edu.hfut.dmic.webcollector.model.Page;
 import okhttp3.OkHttpClient;
@@ -25,6 +27,7 @@ import okhttp3.Response;
  * @author 王帆
  * @date  2019年1月18日 下午1:35:48
  */
+@SuppressWarnings("restriction")
 public class HtmlParseJsCrawler extends BaseHTMLCrawlerBreadth{
 	private String initJsPath=CrawlerJsContant.initJs;
 	private String jsContents=null;
@@ -58,10 +61,10 @@ public class HtmlParseJsCrawler extends BaseHTMLCrawlerBreadth{
 			engine.setContext(getJsContext());
 		}
 		try {
-			if(path.matches(CrawlerJsContant.urlRegex)) {
+			if(path.matches(PubFileContant.urlRegex)) {
 				engine.eval(loadRemoteFile(path));
 			}else {
-				engine.eval(new InputStreamReader(CrawlerJsContant.getFilePathStream(path)));
+				engine.eval(new InputStreamReader(PubFileContant.getFilePathStream(path)));
 			}
 		} catch ( ScriptException | IOException e) {
 			engine=null;

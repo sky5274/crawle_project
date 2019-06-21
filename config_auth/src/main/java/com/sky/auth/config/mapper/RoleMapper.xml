@@ -56,55 +56,101 @@
 	 </insert>
  	<update id="updateByPrimaryKey" parameterType="com.sky.auth.config.entity.RoleEntity" >
 	    update config_role
-	    set code 	= 	#{code,jdbcType=VARCHAR},
+	    set 
 	        name	=	#{name},
 	      	version = 	${version)+1,
 	      	createid = 	#{createid,jdbcType=INTEGER},
 	     	ts = now()
-	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	    where id = #{id,jdbcType=INTEGER} and version=${version} and code = #{code,jdbcType=VARCHAR}
 	  </update>
  	<update id="updateByPrimaryKeySelective" parameterType="com.sky.auth.config.entity.RoleEntity" >
 	    update config_role
 	    	<trim prefix="set"  suffixOverrides=",">
-	    		<if test="code">		code 		= #{code,jdbcType=VARCHAR},		</if>
 	    		<if test="name">		name		= #{name},						</if>
 	    		<if test="createid">	createid 	= #{createid,jdbcType=INTEGER},	</if>
 	    								version 	= ${version)+1,
 	    								ts 			= now()
 	    	</trim>
-	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	    where id = #{id,jdbcType=INTEGER} and version=${version} and code = #{code,jdbcType=VARCHAR}
 	</update>
  	
- 	<select id="queryRoleByPage" parameterType="com.sky.pub.BasePageRequest" resultMap="baseMap">
- 		select  config_role.id,config_role.code,config_role.name,config_role.createid,config_role.version,config_role.ts,user.username as create_name
- 		from config_role
- 		left join user_base user on user.id=config_role.createid
- 		order by config_role.id
- 		limit #{current},#{pageSize}
+ 	<!-- 通用查询条件 -->
+ 	<sql id="base_query_condition">
+ 		<if test="role !=null">
+	 		<trim prefix="where " suffixOverrides="and">
+	 			<if test="role.username != null">	user_r.username like concat('%',#{role.username},'%') and	</if>
+	 			<if test="role.userId != null">	 	user_r.id 	=#{role.userId} and								</if>
+	 			<if test="role.code !=null">    	role.code	=#{role.code} and								</if>
+	 			<if test="role.name !=null">    	role.name like concat('%',#{role.code},'%') and				</if>
+	 		</trim>
+ 		</if>
+ 	</sql>
+ 	
+ 	<select id="queryRoleByPage"  resultMap="baseMap">
+ 		select  role.id,role.code,role.name,role.createid,role.version,role.ts,user.username as create_name
+ 		from config_role role
+ 		left join user_base user on user.id=role.createid
+ 		left join config_user_role_relate u_r on role.code=u_r.role_code
+ 		left join user_base user_r on user_r.id=u_r.user_id
+ 		<include refid="base_query_condition"/>
+ 		order by role.id
+ 		<if test="page !=null and page.current !=null">
+	 		limit #{page.current},#{page.pageSize}
+ 		</if>
+ 	</select>
+ 	
+ 	<select id="accountRole" resultType="java.lang.Integer">
+ 		select  count(role.id)
+ 		from config_role role
+ 		left join config_user_role_relate u_r on role.code=u_r.role_code
+ 		left join user_base user_r on user_r.id=u_r.user_id
+ 		<include refid="base_query_condition"/>
  	</select>
  	
  	<select id="queryRoleDetailsByRole" parameterType="java.lang.String" resultMap="RoleMap">
  		select  
- 			config_role.id,config_role.code,config_role.name,config_role.createid,config_role.version,config_role.ts,
+ 			role.id,role.code,role.name,role.createid,role.version,role.ts,
  			user.username as create_name,
  			auth.auth_code,auth.auth_name
- 		from config_role
- 		left join user_base user on user.id=config_role.createid
- 		left join config_auth_relate ar on config_role.code=ar.role_code
+ 		from config_role role
+ 		left join user_base user on user.id=role.createid
+ 		left join config_auth_relate ar on role.code=ar.role_code and ar.vail_flag='Y'
  		left join config_auth auth on auth.auth_code=ar.auth_code
- 		where config_role.code=#{code}
+ 		where role.code=#{code}
+ 	</select>
+ 	<select id="queryByRoleCodes" parameterType="java.util.List" resultType="com.sky.auth.config.entity.AuthorityBean">
+ 		select  
+ 			role.code,role.name
+ 		from config_role role
+ 		where concat('ROLE_',role.code) in <foreach collection="list" item="it" open="(" close=")" separator=",">#{it}</foreach> 
+		and vail_flag='Y' 
+ 	</select>
+ 	
+ 	<!-- 根据角色编码查询  关联的权限 -->
+ 	<select id="queryAuthsbyRole" parameterType="java.lang.String" resultType="java.lang.String">
+ 		select  
+ 			auth_code
+ 		from config_auth_relate ar
+ 		where ar.role_code = #{code} and ar.vail_flag='Y' 
  	</select>
  	
  	<!-- 新增用户角色-权限关联 -->
  	<insert id="addRoleAuth">
  		insert into config_auth_relate(role_code,auth_code,createid)
- 		<foreach collection="auths" item="id" open="values" separator=",">(#{code},#{it},#{createid})</foreach>
+ 		<foreach collection="auths" item="it" open="values" separator=",">(#{code},#{it},#{createid})</foreach>
  	</insert>
  	<!-- 删除角色权限关联 -->
  	<delete id="delRoleAuth">
  		delete from config_auth_relate 
- 		where role_coe=#{code}
- 		<foreach collection="auths" item="id" open="and auth_code in (" close=")" separator=",">#{it},</foreach>
+ 		where role_code=#{code}
+ 		<if test="auths !=null">
+ 			<foreach collection="auths" item="id" open="and auth_code not in (" close=")" separator=",">#{it},</foreach>
+ 		</if>
+ 	</delete>
+ 	
+ 	<delete id="deleteRole" parameterType="java.lang.String">
+ 		delete from config_role 
+ 		where code=#{code}
  	</delete>
  	
 </mapper>

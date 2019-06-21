@@ -11,6 +11,10 @@ public class ProjectPropertyBean {
 	private String project;
 	private String profile;
 	private String version;
+	/**
+	 * 项目-环境-版本相似等级
+	 */
+	private String likeLevel;
 	private List<PropertyValueBean> properties;
 	public String getProject() {
 		return project;
@@ -35,5 +39,11 @@ public class ProjectPropertyBean {
 	}
 	public void setProperties(List<PropertyValueBean> properties) {
 		this.properties = properties;
+	}
+	public String getLikeLevel() {
+		return likeLevel;
+	}
+	public void setLikeLevel(String likeLevel) {
+		this.likeLevel = likeLevel;
 	}
 }

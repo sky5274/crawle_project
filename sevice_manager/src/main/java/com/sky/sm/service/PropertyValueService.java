@@ -2,6 +2,7 @@ package com.sky.sm.service;
 
 import java.util.List;
 import com.sky.pub.Page;
+import com.sky.pub.PageRequest;
 import com.sky.pub.common.exception.ResultException;
 import com.sky.sm.bean.ProjectPropertyBean;
 import com.sky.sm.bean.PropertyValueEntity;
@@ -12,12 +13,12 @@ public interface PropertyValueService {
 	
 	/**
 	 * 	分页查询属性配置信息
-	 * @param property
+	 * @param pageProperty
 	 * @return
 	 * @author 王帆
 	 * @date 2019年3月7日 下午2:40:19
 	 */
-	Page<PropertyValueEntity> queryPageOfProperty(PropertyValueReqEntity property);
+	Page<PropertyValueEntity> queryPageOfProperty(PageRequest<PropertyValueReqEntity> pageProperty);
 	
 	/**
 	 * 	新增属性配置
@@ -63,7 +64,7 @@ public interface PropertyValueService {
 	 * @author 王帆
 	 * @date 2019年3月8日 下午2:22:24
 	 */
-	String getPropertyValue(PropertyValueEntity property);
+	String getPropertyValue(PropertyValueReqEntity property);
 	
 	/**
 	 * 根据项目条件查询对应的项目属性数据

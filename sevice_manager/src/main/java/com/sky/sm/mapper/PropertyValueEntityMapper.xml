@@ -9,20 +9,23 @@
     <result column="profile" property="profile" jdbcType="VARCHAR" />
     <result column="version_code" property="versionCode" jdbcType="VARCHAR" />
     <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="is_global" property="isGrobal" jdbcType="INTEGER" />
+    <result column="level" property="likeLevel" jdbcType="VARCHAR" />
     <result column="createid" property="createid" jdbcType="INTEGER" />
     <result column="ts" property="ts" jdbcType="TIMESTAMP" />
   </resultMap>
-  <resultMap id="ProjectProperty" type="com.sky.sm.bean.ProjectPropertyBean" >
+  <resultMap id="ProjectPropertyMap" type="com.sky.sm.bean.ProjectPropertyBean" >
     <result column="project" property="project" jdbcType="VARCHAR" />
     <result column="profile" property="profile" jdbcType="VARCHAR" />
     <result column="version_code" property="version" jdbcType="VARCHAR" />
+    <result column="level" property="likeLevel" jdbcType="VARCHAR" />
     <collection property="properties" ofType="com.sky.sm.bean.PropertyValueBean">
 	    <result column="key" property="key" jdbcType="VARCHAR" />
 	    <result column="value" property="value" jdbcType="VARCHAR" />
     </collection>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, `key`, `value`, project, `profile`, version_code, version, createid, ts
+    pro.id, pro.`key`, pro.`value`, pro.project, pro.`profile`, pro.version_code,pro.is_global, pro.version, pro.createid, pro.ts
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -36,11 +39,11 @@
   </delete>
   <insert id="insert" parameterType="com.sky.sm.bean.PropertyValueEntity" useGeneratedKeys="true" keyProperty="id">
     insert into property_value (id, `key`, `value`, 
-      project, `profile`, version_code, 
+      project, `profile`, version_code, is_global,
       version, createid, ts
       )
     values (#{id,jdbcType=INTEGER}, #{key,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, 
-      #{project,jdbcType=VARCHAR}, #{profile,jdbcType=VARCHAR}, #{versionCode,jdbcType=VARCHAR}, 
+      #{project,jdbcType=VARCHAR}, #{profile,jdbcType=VARCHAR}, #{versionCode,jdbcType=VARCHAR}, #{isGrobal},
       #{version,jdbcType=INTEGER}, #{createid,jdbcType=INTEGER}, now()
       )
   </insert>
@@ -53,6 +56,7 @@
       <if test="profile != null" >      `profile`,     	</if>
       <if test="versionCode != null" >	version_code,	</if>
       <if test="createid != null" >     createid,      	</if>
+      <if test="isGrobal != null" >     is_global,      </if>
       									version,      
               							ts     
     </trim>
@@ -63,6 +67,7 @@
       <if test="profile != null" >      #{profile,jdbcType=VARCHAR},      	</if>
       <if test="versionCode != null" >	#{versionCode,jdbcType=VARCHAR},	</if>
       <if test="createid != null" >     #{createid,jdbcType=INTEGER},      	</if>
+      <if test="isGrobal != null" >     #{isGrobal,jdbcType=INTEGER},      	</if>
       									0,
       									now()
     </trim>
@@ -76,7 +81,8 @@
       <if test="profile != null" >      `profile` 	= #{profile,jdbcType=VARCHAR},      </if>
       <if test="versionCode != null" >	version_code= #{versionCode,jdbcType=VARCHAR},	</if>
       <if test="createid != null" >     createid 	= #{createid,jdbcType=INTEGER},     </if>
-      <if test="version != null" >      version 	= version+1,      					</if>
+      <if test="isGrobal != null" >    	is_global   = #{isGrobal,jdbcType=INTEGER},     </if>
+      									version 	= version+1,      					
       				 					ts 			= now()
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -89,56 +95,190 @@
       `profile`		= #{profile,jdbcType=VARCHAR},
       version_code 	= #{versionCode,jdbcType=VARCHAR},
       createid 		= #{createid,jdbcType=INTEGER},
+      is_global   = #{isGrobal,jdbcType=INTEGER},
       version 		= version+1,
       ts 			= now()
     where id = #{id,jdbcType=INTEGER}
   </update>
   
+  <sql id="query-item">
+  		<include refid="simple-query-item"/>
+	  	<if test="pro.profile !=null and pro.profile !=''">				`profile` =#{pro.profile} and							</if>
+	  	<if test="pro.versionCode !=null and pro.versionCode !=''">		version_code =#{pro.versionCode} and					</if>
+  </sql>
+  <sql id="simple-query-item">
+  		<if test="pro.project !=null and pro.project !=''">				project 		=#{pro.project} and					</if>
+  		<if test="pro.key !=null and pro.key !=''">						`key` 			=#{pro.key} and						</if>
+  </sql>
+  <sql id="simple-query-item-like">
+		<if test="pro.keyLike !=null"> 							
+	  		<if test="pro.keyLike.indexOf(',') &lt; 0">
+	  			`key` like concat('%',#{pro.keyLike},'%') and
+	  		</if>
+	  		<if test="pro.keyLike.indexOf(',') &gt;= 0">
+	  			<foreach collection="pro.keyLike.split(',')" item="it" open="key in (" close=") and" separator=",">#{it}</foreach>
+	  		</if>
+	  	</if>
+	  	<if test="pro.projectLike !=null"> 							
+	  		<if test="pro.projectLike.indexOf(',') &lt; 0">
+	  			project like concat('%',#{pro.projectLike},'%') and	
+	  		</if>
+	  		<if test="pro.projectLike.indexOf(',') &gt;= 0">
+	  			<foreach collection="pro.projectLike.split(',')" item="it" open="project in (" close=") and" separator=",">#{it}</foreach>
+	  		</if>
+	  	</if>
+  </sql>
+  
+  <sql id="query-item-like">
+  			<include refid="query-item"/>
+	  		<include refid="simple-query-item-like"/>
+	  		<if test="pro.profileLike !=null"> 							
+	  			<if test="pro.profileLike.indexOf(',') &lt; 0">
+	  				`profile` like concat('%',#{pro.profileLike},'%') and
+	  			</if>
+	  			<if test="pro.profileLike.indexOf(',') &gt;= 0">
+	  				<foreach collection="pro.profileLike.split(',')" item="it" open="profile in (" close=") and" separator=",">#{it}</foreach>
+	  			</if>
+	  		</if>
+	  		<if test="pro.versionCodeLike !=null"> 							
+	  			<if test="pro.versionCodeLike.indexOf(',') &lt; 0">
+	  				version_code like concat('%',#{pro.versionCodeLike},'%') and
+	  			</if>
+	  			<if test="pro.versionCodeLike.indexOf(',') &gt;= 0">
+	  				<foreach collection="pro.versionCodeLike.split(';')" item="it" open="version_code in (" close=") and" separator=",">#{it}</foreach>
+	  			</if>
+	  		</if>
+  </sql>
+    
+<sql id="base-table-level">
+	SELECT 
+		CASE when project ='${pro.project}' then 2
+			<if test="pro.project !=null and pro.project!=''"> when project like concat('%','${pro.project}','%') then 1</if>
+			<if test="pro.projectLike !=null and pro.projectLike.indexOf(',') &lt; 0">
+			 when project like concat('%','${pro.projectLike}','%') then 1
+		  	</if>
+			<if test="pro.projectLike !=null and pro.projectLike.indexOf(',') &gt; -1">
+			<foreach collection="pro.projectLike.split(',')" item="it" open="project in (" close=") then 2" separator=",">${it}</foreach>
+		  	</if>
+		else 0 end as s_l,
+		CASE when `profile` ='${pro.profile}' then 2
+			 <if test="pro.profile !=null and pro.profile!=''"> when `profile` like concat('%','${pro.profile}','%') then 1</if>
+			<if test="pro.profileLike !=null and  pro.profileLike.indexOf(',') &lt; 0">
+			 when `profile` like concat('%','${pro.profileLike}','%') then 1
+		  	</if>
+			<if test="pro.profileLike !=null and pro.profileLike.indexOf(',') &gt; -1">
+			<foreach collection="pro.profileLike.split(',')" item="it" open="`profile` in (" close=") then 2" separator=",">${it}</foreach>
+		  	</if>
+		else 0 end as p_l,
+		CASE when version_code ='${pro.versionCode}' then 2
+		 	<if test="pro.versionCode !=null and pro.versionCode!=''"> when version_code like concat('%','${pro.versionCode}','%') then 1</if>
+			<if test="pro.versionCodeLike !=null  and pro.versionCodeLike.indexOf(',') &lt; 0">
+			 when version_code concat('%','${pro.versionCodeLike}','%') then 1
+		  	</if>
+			<if test="pro.versionCodeLike !=null and pro.versionCodeLike.indexOf(',') &gt; -1">
+			<foreach collection="pro.versionCodeLike.split(',')" item="it" open="`version_code` in (" close=") then 2" separator=",">${it}</foreach>
+		  	</if>
+		else 0 end as v_l,
+		id
+	FROM property_value 
+</sql>
+  
   <!-- 默认的查询条件 -->
   <sql id="base_query_contation">
   	<trim prefix=" where " suffixOverrides="and | or">
-  		<if test="project !=null and project !=''">		project =#{project} and					</if>
-  		<if test="profile !=null and profile !=''">		`profile` =#{profile} and					</if>
-  		<if test="versionCode !=null and project !=''">	version_code =#{versionCode} and		</if>
-  		<if test="key !=null and key !=''">				`key` =#{key} and							</if>
-  		<if test="keyLike !=null"> 						`key` like concat('%',#{keyLike},'%') and	</if>
+  		<if test="pro !=null and (pro.showGlobal==null or !pro.showGlobal)">
+  			<include refid="query-item-like"/>
+	  		<if test="pro.isGrobal !=null">									is_global   = #{pro.isGrobal} and				</if>
+  		</if>
+  		<if test="pro !=null and pro.showGlobal!=null and pro.showGlobal">
+	  		<trim prefix="(is_global=1 and" suffix=")" suffixOverrides="and | or">
+	  			<include refid="simple-query-item"/>
+	  			<include refid="simple-query-item-like"/>
+	  			lvl.s_l> 0 and  
+		  	</trim>
+	  		<trim prefix="or ( is_global !=1 and" suffix=")" suffixOverrides="and | or">
+	  			<include refid="query-item-like"/>
+	  			lvl.s_l> 0 and 
+		  	</trim>
+  		</if>
   	</trim>
   </sql>
   <sql id="query_contation">
   	<trim prefix=" where " suffixOverrides="and | or">
-  		<if test="project !=null and project !=''">		project =#{project} and					</if>
-  		<if test="profile !=null and profile !=''">		`profile` =#{profile} and					</if>
-  		<if test="versionCode !=null and project !=''">	version_code =#{versionCode} and		</if>
-  		<if test="key !=null and key !=''">				`key` =#{key} and							</if>
+  	<if test="pro!=null and  (pro.showGlobal==null or !pro.showGlobal)">
+  		<include refid="query-item"/>
+  		<if test="pro.isGrobal !=null">									is_global   = #{pro.isGrobal} and				</if>
+  	</if>
+  	<if test="pro !=null and  pro.showGlobal!=null and pro.showGlobal">
+  		<trim prefix="(is_global=1 and" suffix=")" suffixOverrides="and | or">
+  			<include refid="simple-query-item"/>
+  			 lvl.s_l> 0 and 
+  		</trim>
+  		<trim prefix="or ( " suffix=")" suffixOverrides="and | or">
+  			<include refid="query-item"/>
+  			 lvl.s_l> 0 and 
+  		</trim>
+  	</if>
   	</trim>
+  </sql>
+  
+  <sql id="base-change-table">
+  	<if test="pro ==null or pro.showGlobal ==null or !pro.showGlobal">
+  		select  <include refid="Base_Column_List" />
+    	from property_value pro
+  	</if>
+  	<if test="pro !=null and pro.showGlobal !=null and pro.showGlobal">
+  		select  
+  		CONCAT(lvl.s_l,lvl.p_l,lvl.v_l) as level,
+  		case WHEN lvl.s_l=0 then 0
+			else case when lvl.p_l=0 then lvl.s_l*10
+					else lvl.s_l*10+lvl.p_l*5+lvl.v_l end
+		end as leveldata,
+  		<include refid="Base_Column_List" />
+    	from property_value pro
+    	left join (<include refid="base-table-level"></include>) lvl on lvl.id=pro.id
+  	</if>
+  </sql>
+  <sql id="base-change-table-order">
+  	<if test="pro !=null and pro.showGlobal !=null and pro.showGlobal">
+  		order by level
+  	</if>
   </sql>
 
 	<!-- 查询配置属性 -->  
   <select id="queryProperties" resultMap="BaseResultMap" parameterType="com.sky.sm.bean.PropertyValueEntity">
-  	 select  <include refid="Base_Column_List" />
-    from property_value
+    <include refid="base-change-table"/>
     <include refid="query_contation"/>
+    <include refid="base-change-table-order"/>
   </select>
 	<!-- 分页查询配置属性 -->  
-  <select id="queryPropertyList" resultMap="BaseResultMap" parameterType="com.sky.sm.bean.req.PropertyValueReqEntity">
-  	 select  <include refid="Base_Column_List" />
-    from property_value
+  <select id="queryPropertyList" resultMap="BaseResultMap" >
+  	<include refid="base-change-table"/>
     <include refid="base_query_contation"/>
+    <include refid="base-change-table-order"/>
     <if test="page !=null and page.current !=null and page.pageSize !=null">
     	limit #{page.current},#{page.pageSize}
     </if>
   </select>
   <!-- 根据条件统计配置属性数据数量 -->
   <select id="accoutProperty" resultType="java.lang.Integer" parameterType="com.sky.sm.bean.req.PropertyValueReqEntity">
-  	 select  count(1)
-    from property_value
+  	 <if test="pro ==null or pro.showGlobal ==null or !pro.showGlobal">
+  		select  count(1)
+    	from property_value
+  	</if>
+  	<if test="pro !=null and pro.showGlobal !=null and pro.showGlobal">
+  		select  
+  		count(1)
+    	from property_value pro
+    	left join (<include refid="base-table-level"></include>) lvl on lvl.id=pro.id
+  	</if>
     <include refid="base_query_contation"/>
   </select>
   
   <!-- 查询项目的配置属性 -->
-  <select id="queryProjectProperties" resultMap="ProjectProperty" parameterType="com.sky.sm.bean.PropertyValueEntity">
-  	 select  <include refid="Base_Column_List" />
-    from property_value
+  <select id="queryProjectProperties" resultMap="ProjectPropertyMap" parameterType="com.sky.sm.bean.PropertyValueEntity">
+  	 <include refid="base-change-table"/>
     <include refid="query_contation"/>
+    <include refid="base-change-table-order"/>
   </select>
 </mapper>

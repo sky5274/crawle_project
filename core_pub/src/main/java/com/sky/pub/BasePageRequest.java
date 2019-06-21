@@ -10,8 +10,8 @@ public class BasePageRequest extends BaseTableEntity{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Integer current;
-	private Integer pageSize;
+	private Integer current=0;
+	private Integer pageSize=10;
 	private boolean isInit=false;
 	public BasePageRequest() {}
 	public BasePageRequest(int current,int pageSize) {

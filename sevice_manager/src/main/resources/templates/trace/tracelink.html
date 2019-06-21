@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('链路追踪','','/trace-link.js')"></head>
+<style type="text/css">
+.tracelink{position: relative;}
+.glyphicon-chevron-down,.glyphicon-chevron-up{position: absolute;top: 2px;right: 2px;}
+.trace-group-link .progress{width: calc(100% - 200px); height: 15px;}
+.trace-group-link-item,.trace-group-link-url {min-width: 45px; padding-right: 5px; }
+.trace-group-down{display: none}
+.trace-group-links{ width: 90%;    margin: 0 5%;}
+</style>
+<body class="layout">
+<div class="wrap">
+	<div id="trace-link">
+		
+	</div>
+
+    <script th:inline="javascript">
+    	var params=[[${parammap}]];
+    	$.doJsonAjax({
+    		url:"/http/query/trace",
+    		data:params,
+    		success:function(res){
+    			loadTraceLink($("#trace-link"),res.data)
+    		}
+    	})
+    	
+    	$("#trace-link").on('click','.trace-tab',function(){
+    		if($(this).attr('class').indexOf('glyphicon-chevron-down')>-1){
+    			$(this).addClass("glyphicon-chevron-up").removeClass("glyphicon-chevron-down")
+    			$(this).parent().find('.trace-group-link').removeClass("trace-group-down")
+    		}else{
+    			$(this).removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down")
+    			$(this).parent().find('.trace-group-link').addClass("trace-group-down")
+    		}
+    	})
+    	$("#trace-link").on('click','.trace-group-link',function(){
+    		var parent=$(this).parents(".tracelink");
+    		parent.find(".progress,.trace-group-link-item").fadeOut()
+    		parent.find(".trace-group-links").css({'width':'50px'})
+    		showTraceDetail(parent,$(this).data("trace"))
+    	})
+    </script>
+</div>
+</body>
+</html>

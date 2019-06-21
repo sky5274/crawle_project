@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('用户控制主页','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/dialog-table.js')"></head>
+<script type="text/javascript">
+$(function(){
+	initEvent();
+	
+	$("#user-table").jTable({
+		url:"/user/query/page",
+		uniqueId:'id',
+		method:"post",
+		contentType: 'application/json',
+		queryParams:function(param){
+			var params={}
+			params.current=param.offset;
+			params.pageSize=param.limit;
+			params.data=param;
+			return params;
+		},
+		columns :[
+			{field: 'radio', radio: true}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "id", title : "id" ,visible: false},
+			{ field : "code", title : "code" ,visible: false},
+			{ field : "username", title : "账号"},
+			{ field : "phone", title : "电话"},
+			{ field : "mail", title : "邮箱"},
+			{ field : "identityCode", title : "身份证"},
+			{ field : "country", title : "国籍"},
+			{ field : "age", title : "年龄"},
+			{ field : "createName", title : "创建人"},
+			{ field : "version", title : "版本号", visible: false},
+			{ field : "ts", title : "时间",formatter:function(value,row){return value !=null?new Date(value).toLocaleString():'-'}},
+		],
+		onCheck:function(row,ele){
+			var flag=row.vailFlag=='Y';
+			$(".page-tool .disabled").removeClass('disabled').removeAttr("disabled");
+			$(".page-tool .btn-status").each(function(i,e){
+				if($(e).attr("status") != row.vailFlag){
+					$(this).addClass("disabled");
+					$(this).attr("disabled","disabled");
+				}
+			})
+			$("#user-role-table").jmTable("refresh",{url:'/user/role/query?userId='+row.id})
+		}
+	})
+	$("#user-role-table").jTable({
+		uniqueId:'id',
+		method:"post",
+		pagination:false,
+		contentType: 'application/json',
+		responseHandler:function(res){
+			if(res.success ){
+				return {list:res.data};
+			}else{
+				$.alert({type:"warn",content:"请求数据错误,错误编码："+res.code+" 信息："+res.message})
+			}
+		},
+		onLoadSuccess:function(data){
+			$("#user-auth-table").jmTable("removeAll")
+		},
+		columns :[
+			{field: 'radio', radio: true,align: 'center'}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "id", title : "id" ,visible: false},
+			{ field : "code", title : "编码" },
+			{ field : "name", title : "名称"}
+		],
+		onClickRow:function(row,ele){
+			console.log(row)
+			$("#user-auth-table").jmTable("refresh",{url:'/permission/query/authlist?rolecode='+row.code})
+		}
+	})
+	$("#user-auth-table").jTable({
+			uniqueId:'id',
+			method:"post",
+			pagination:false,
+			contentType: 'application/json',
+			queryParams:function(param){
+				var params={}
+				params.current=param.offset;
+				params.pageSize=param.limit;
+				params.data=param;
+				return params;
+			},
+			responseHandler:function(res){
+				if(res.success ){
+					return {list:res.data};
+				}else{
+					$.alert({type:"warn",content:"请求数据错误,错误编码："+res.code+" 信息："+res.message})
+				}
+			},
+			columns :[
+				{
+					field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+					formatter: function (value,row,index){return index+1; }
+				},
+				{ field : "name", title : "名称"},
+				{ field : "code", title : "编码"}
+			],
+			
+		})
+})
+
+function initEvent(){
+	$("#btn_user_set_role").on("click",function(){
+		var row=$("#user-table").bootstrapTable('getSelections')[0];
+		if(row){
+			var _this=this;
+			$.diaLog({
+				title:"角色关联",
+				type:"confrim",
+				heigth:'500px',
+				con:'<div class="role-choses-content clearfix">'+
+						'<div class="role-selected-box clearfix"></div>'+
+						'<div class="auth-table"><table id="role-page-table"></table></div>'+
+					'</div>',
+				init:function(content){
+					queryRolesToTable($(content).find("#role-page-table"),$(content).find(".role-selected-box"),row.id)
+				},
+				func:function(type,content){
+					row.roleCodes=[]
+					if(type='sure'){
+						$(content).find(".role_code_panel").each(function(i,ele){
+							row.roleCodes.push($(this).attr("code"))
+						})
+						if(row.roleCodes.length == 0){
+							$.alert({content:"请选择权限",type:"warn"})
+							return false;
+						}
+						$.doPostJsonAjax({
+							url:"/user/role/change",
+							data:row,
+							async:false,
+							success:function(res){
+								$.diaLog({
+									con:"操作成功"
+								})
+								$("#user-role-table").jmTable("refresh")
+							}
+						})
+					}
+				}
+			})
+		}else{
+			$.diaLog({con:"请选择条数据"})
+		}
+	})
+	
+	
+	$("#btn_user_passwd_reset").on("click",function(){
+		var row=$("#user-table").bootstrapTable('getSelections')[0];
+		if(row){
+			useresPasswdDialog(row.id)
+		}else{
+			$.diaLog({con:"请选择条数据"})
+		}
+	})
+	$("#btn_user_add").on("click",function(){
+		userActionDialog()
+	})
+	$("#btn_user_modify").on("click",function(){
+		var row=$("#user-table").bootstrapTable('getSelections')[0];
+		if(row){
+			userActionDialog(row)
+		}else{
+			$.diaLog({con:"请选择条数据"})
+		}
+	})
+	
+}
+
+function userActionDialog(obj){
+    var userurl='/user/add';
+    var usertitle='新增用户';
+    
+    var content=[
+		{title:'账号',name:"username",attr:'requrie=true'},
+		{title:'年龄',name:"age"},
+		{title:'国籍',name:"country"},
+		{title:'电话',name:"phone"},
+		{title:'邮箱',name:"mail"},
+		{title:'身份证',name:"identityCode"},
+	]
+	if(obj){
+		userurl='/user/modify';
+		usertitle='修改用户';
+		$.each(content,function(i,e){
+			if(obj[e.name]){
+				e.value=obj[e.name]
+			}
+		})
+		content.push({hide:true,name:'id',value:obj.id})
+		content.push({hide:true,name:'code',value:obj.code})
+		content.push({hide:true,name:'version',value:obj.version})
+		content.push({hide:true,name:'ts',value:obj.ts})
+		
+	}
+	
+	$.diaLog({
+		title:usertitle,
+		type:"confrim",
+		con:getTableContent(content),
+		func:function(type,content){
+			$(content).find('input').parent().css("border",'')
+			var data={}
+			var flag=true;
+			var code=$(content).find("input").each(function(i,ele){
+				var val=$(this).val();
+				if(val !=''){
+					data[$(this).attr("name")]=val;
+				}else if($(this).attr("requrie")=='true'){
+					$.alert({content:$(this).parents('.form-group').text()+"不能为空",type:"warn"})
+					$(this).parent().css('border',"1px solid red")
+					flag=false;
+				}
+			})
+			if(flag){
+				if(type='sure'){
+					$.doPostJsonAjax({
+						url:userurl,
+						data:data,
+						loadding:true,
+						async:false,
+						success:function(res){
+							$.diaLog({
+								con:"操作成功"
+							})
+							$("#user-table").jmTable("refresh")
+						}
+					})
+				}
+			}
+			return flag;
+		}
+	})
+}
+
+function useresPasswdDialog(id){
+	$.diaLog({
+		title:"重置密码",
+		type:"confrim",
+		con:getTableContent([
+			{name:"id",value:id,hide:true},
+			{title:'旧密码',name:"password",attr:"requrie='true'"},
+			{title:'新密码',name:"newPassword",attr:"requrie='true'"},
+			{title:'确认密码',name:"rnewPassword",attr:"requrie='true'"},
+		]),
+		func:function(type,content){
+			$(content).find('input').parent().css("border",'')
+			var data={}
+			var flag=true;
+			var code=$(content).find("input").each(function(i,ele){
+				var val=$(this).val();
+				if(val !=''){
+					data[$(this).attr("name")]=val;
+				}else if($(this).attr("requrie")=='true'){
+					$.alert({content:$(this).parents('.form-group').text()+"不能为空",type:"warn"})
+					$(this).parent().css('border',"1px solid red")
+					flag=false;
+				}
+			})
+			if(flag){
+				if(data.newPassword !=data.rnewPassword){
+					$.alert({content:"新的密码输入不一致",type:"warn"})
+					flag=false'
+				}
+			}
+			if(flag){
+				if(type='sure'){
+					$.doPostJsonAjax({
+						url:"/user/modify/password",
+						data:data,
+						loadding:true,
+						async:false,
+						success:function(res){
+							$.diaLog({
+								con:"操作成功"
+							})
+							$("#user-table").jmTable("refresh")
+						}
+					})
+				}
+			}
+			return flag;
+		}
+	})
+}
+
+function queryRolesToTable(id,select,userId){
+	$.doJsonAjax({
+		url:"/user/role/query?userId="+userId,
+		alert:"查询用户 对应的角色数据失败",
+		success:function(res){
+			var data=[]
+			if(res.data.length>0){
+				$.each(res.data,function(i,d){
+					data.push(d.code)
+				})
+			}
+			initRolePageTable(id,select,data)
+		}
+	})
+}
+function initRolePageTable(id,select,roles){
+	$(select).on("click",".roleclose",function(){
+		var code=$(this).parent().attr("code");
+		var datas=$(id).jmTable("getData");
+		$.each(datas,function(i,d){
+			if(d.code==code){
+				$(id).jmTable("uncheck",i);
+			}
+		})
+	})
+	$(id).jTable({
+		url:"/permission/role/page",
+		uniqueId:'id',
+		method:"post",
+		contentType: 'application/json',
+		queryParams:function(param){
+			var params={}
+			params.current=param.offset;
+			params.pageSize=param.limit;
+			params.data=param;
+			return params;
+		},
+		columns :[
+			{field: 'radio', checkbox: true,align: 'center'}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "name", title : "名称"},
+			{ field : "code", title : "编码"}
+		],
+		onLoadSuccess:function(data){
+			if(roles==undefined){
+				roles=[]
+			}
+			$(select).find(".auth_code_panel").each(function(i,ele){
+				roles.push($(this).attr("code"))
+			})
+			$.each(data.list,function(i,a){
+				if($.inArray(a.code,roles)>-1){
+					$(id).jmTable("check",i);
+				}
+			})
+		},
+		onCheck:function(row,ele){
+			$(select).append('<div class="role_code_panel pull-left" style="margin-left:10px;position: relative;" code="'+row.code+'"><span>'+row.name+'</span><span class="role-close" style="position: absolute; top: -2px;cursor: pointer;">&times;</span></div>')
+		},
+		onUncheck:function(row,ele){
+			$(select).find(".auth_code_panel[code="+row.code+"]").remove()
+		}
+	})
+}
+
+</script>
+<body>
+	<div id="page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left">用户控制</h4>
+				<div class="page-tool pull-right">
+						<button class="btn btn-primary" id="btn_user_add">添加</button>
+						<button class="btn btn-primary btn-status" id="btn_user_modify">修改</button>
+						<button class="btn btn-primary btn-status" id="btn_user_passwd_reset">重置密码</button>
+						<button class="btn btn-primary btn-status" id="btn_user_set_role">设置权限</button>
+						<button class="btn btn-primary btn-status" id="btn_user_del">删除</button>
+				</div> 
+			</div>
+			<div id="page-contain" class="panel-body">
+				<div class="page-user-table">
+					<table id="user-table"></table>
+				</div>
+				<div class="page-table-content clearfix">
+					<div class="page-userrole-table pull-left" style="width:48%;margin:0 1%">
+						<h4>用户角色</h4>
+						<table id="user-role-table"></table>
+					</div>
+					<div class="page-userrole-table pull-left" style="width:48%;margin:0 1%">
+						<h4>角色权限</h4>
+						<table id="user-auth-table"></table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

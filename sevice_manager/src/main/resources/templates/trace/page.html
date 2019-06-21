@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('链路查询主页','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/bootstrap/js/bootstrap-treeview.js,/js/com/dialog-table.js')"></head>
+<script type="text/javascript">
+$(function(){
+	initEvent();
+	
+	$("#trace-table").jTable({
+		url:"/permission/auth/page",
+		uniqueId:'id',
+		method:"post",
+		ispost:true,
+		columns :[
+			{field: 'radio', radio: true}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "id", title : "id"},
+			{ field : "authname", title : "名称"},
+			{ field : "authcode", title : "编码"},
+			{ field : "createName", title : "创建人"},
+			{ field : "vailFlag", title : "有效符",formatter:function(value,row){return value=='Y'?'有效':'无效'}},
+			{ field : "version", title : "版本号", visible: false},
+			{ field : "ts", title : "时间",formatter:function(value,row){return value !=null?new Date(value).toLocaleString():'-'}},
+		],
+		onCheck:function(row,ele){
+			var flag=row.vailFlag=='Y';
+			$(".page-tool .disabled").removeClass('disabled').removeAttr("disabled");
+			$(".page-tool .btn-status").each(function(i,e){
+				if($(e).attr("status") != row.vailFlag){
+					$(this).addClass("disabled");
+					$(this).attr("disabled","disabled");
+				}
+			})
+		}
+	})
+})
+
+function initEvent(){
+	$(".btn-status").on("click",function(){
+			var row=$("#trace-table").bootstrapTable('getSelections')[0];
+			if(row){
+				var _this=this;
+				$.doPostJsonAjax({
+					url:$(this).attr("url"),
+					data:row,
+					success:function(res){
+						$.diaLog({
+							con:"操作成功"
+						})
+						$("#trace-table").jmTable("refresh")
+					}
+				})
+			}else{
+				$.diaLog({con:"请选择条数据"})
+			}
+	})
+	
+	$("#btn_trace_add").on("click",function(){
+		$.diaLog({
+			title:"新建权限",
+			type:"confrim",
+			con:getTableContent([
+				{title:"authcode",name:"authcode"},
+				{title:"authname",name:"authname"},
+			]),
+			func:function(type,content){
+				$(content).find('input').parent().css("border",'')
+				var code=$(content).find("input[name=authcode]").val();
+				var name=$(content).find("input[name=authname]").val();
+				var flag=true;
+				if(code ==''){
+					$.alert({content:"权限编码不能为空",type:"warn"})
+					$(content).find("input[name=authcode]").parent().css('border',"1px solid red")
+					flag=false;
+				}
+				if(name ==''){
+					$.alert({content:"权限名称不能为空",type:"warn"})
+					$(content).find("input[name=authname]").parent().css('border',"1px solid red")
+					flag=false;
+				}
+				if(flag){
+					if(type='sure'){
+						$.doPostJsonAjax({
+							url:'/permission/auth/add',
+							data:{authcode:code,authname:name},
+							success:function(res){
+								$.diaLog({
+									con:"操作成功"
+								})
+								$("#trace-table").jmTable("refresh")				
+							}
+						})
+					}
+				}
+				return flag;
+			}
+		})
+	})
+	
+}
+
+function actionFormatter(){
+	
+}
+	
+</script>
+<body>
+	<div id="page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left">链路 追踪</h4>
+				<div class="page-tool pull-right">
+						<button class="btn btn-primary" id="btn_trace_add">查询</button>
+						<button class="btn btn-primary" id="btn_trace_info">详细</button>
+						<button class="btn btn-primary btn-status" id="btn_trace_del">删除</button>
+				</div> 
+			</div>
+			<div id="page-contain" class="panel-body">
+				<div class="page-table">
+					<table id="trace-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

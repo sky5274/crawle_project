@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.sky.pub.Result;
+import com.sky.pub.ResultCode;
 import com.sky.pub.common.exception.HttpExceptionEnum;
 import com.sky.pub.common.exception.ResultException;
 
@@ -38,10 +39,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
-@SuppressWarnings("deprecation")
 @Configuration
 public class SpringHandlerExceptionResolver implements HandlerExceptionResolver {
 
@@ -53,6 +51,28 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,Object handlerMethod, Exception ex) {
+		boolean isRespondBody=isResponseBody(handlerMethod);
+		ModelAndView mv = null;
+			String message = "系统异常，请联系管理员";
+			//BaseSystemException是我自定义的异常基类，继承自RuntimeException
+			if (ex instanceof ResultException) {
+				ResultException resex = (ResultException)ex;
+				showLog(request,resex);
+				mv = errorResult(resex.getCode(),resex.getMsg(),request.getPathInfo(),resex, request,isRespondBody);
+			}else if("org.springframework.security.authentication.InsufficientAuthenticationException".equals(ex.getClass().getName())) {
+				logger.info("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
+				mv = errorResult("oauth-1","请先授权登录", request.getPathInfo(), ex,request,isRespondBody);
+			}else{
+				logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
+				mv = errorResult(500+"",message, request.getPathInfo(), ex,request,isRespondBody);
+			}
+		if(mv==null) {
+			mv=specialExceptionResolve(ex, request);
+		}
+		return mv;
+	}
+	
+	protected boolean isResponseBody(Object handlerMethod) {
 		boolean isRespondBody=false;
 		if(handlerMethod instanceof HandlerMethod ){
 			if (handlerMethod != null) {
@@ -73,23 +93,10 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 				}
 			}
 		}
-		ModelAndView mv = specialExceptionResolve(ex, request);
-		if (null == mv) {
-			String message = "系统异常，请联系管理员";
-			//BaseSystemException是我自定义的异常基类，继承自RuntimeException
-			if (ex instanceof ResultException) {
-				ResultException resex = (ResultException)ex;
-				showLog(request,resex);
-				mv = errorResult(resex.getCode(),resex.getMsg(),request.getPathInfo(),resex, request,isRespondBody);
-			}else{
-				logger.error(ex.getMessage(),ex);
-				mv = errorResult(500+"",message, request.getPathInfo(), ex,request,isRespondBody);
-			}
-		}
-		return mv;
+		return isRespondBody;
 	}
 
-	private void showLog(HttpServletRequest request, ResultException resex) {
+	protected void showLog(HttpServletRequest request, ResultException resex) {
 		switch (resex.getLevel()) {
 		case TRACE:
 			logger.trace("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+resex.getMsg());
@@ -122,11 +129,8 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 */
 	private ModelAndView specialExceptionResolve(Exception ex, HttpServletRequest request) {
 		try {
-			if (ex instanceof NoSuchRequestHandlingMethodException 
-					|| ex instanceof NoHandlerFoundException) {
-				return result(HttpExceptionEnum.NOT_FOUND_EXCEPTION, request,ex);
-			}
-			else if (ex instanceof HttpRequestMethodNotSupportedException) {
+			logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ ex.getMessage(),ex);
+			if (ex instanceof HttpRequestMethodNotSupportedException) {
 				return result(HttpExceptionEnum.NOT_SUPPORTED_METHOD_EXCEPTION, request,ex);
 			}
 			else if (ex instanceof HttpMediaTypeNotSupportedException) {
@@ -164,6 +168,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 			}
 		} catch (Exception handlerException) {
 			logger.warn("Handling of [" + ex.getClass().getName() + "] resulted in Exception", handlerException);
+			return errorResult(ResultCode.UNKONW_EXCEPTION.getCode(),ResultCode.UNKONW_EXCEPTION.getMsg(),request.getPathInfo(),ex, request,isAjax(request));
 		}
 		return null;
 	}
@@ -185,7 +190,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @return
 	 */
 	private boolean isJson(HttpServletRequest request) {
-		return "application/json".equalsIgnoreCase(request.getHeader("content-Type "));
+		return "application/json".equalsIgnoreCase(request.getHeader("Content-Type"));
 	}
 
 	/**
@@ -197,7 +202,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @param isRespondBody 
 	 * @return 模型视图对象
 	 */
-	private ModelAndView errorResult(String code,String message, String url,Exception ex, HttpServletRequest request, boolean isRespondBody) {
+	protected ModelAndView errorResult(String code,String message, String url,Exception ex, HttpServletRequest request, boolean isRespondBody) {
 		if (isRespondBody || isAjax(request) || isJson(request)) {
 			return jsonResult(code, message,ex);
 		} else {
@@ -213,7 +218,6 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @return 模型视图对象
 	 */
 	private ModelAndView result(HttpExceptionEnum httpException, HttpServletRequest request,Exception ex) {
-		logger.error("请求处理失败，请求url=["+ request.getRequestURI()+"], 失败原因 : "+ httpException.getMessage(),ex);
 		if (isAjax(request)) {
 			return jsonResult(httpException.getCode(), httpException.getMessage(),ex);
 		} else {

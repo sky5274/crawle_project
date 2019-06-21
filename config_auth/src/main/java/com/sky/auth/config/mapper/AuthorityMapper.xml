@@ -5,17 +5,18 @@
 	 	<id column="id" property="id" jdbcType="INTEGER"/>
 	 	<result column="auth_code" property="authcode" jdbcType="VARCHAR"/>
 	 	<result column="auth_name" property="authname" jdbcType="VARCHAR"/>
+	 	<result column="vail_flag" property="vailFlag" jdbcType="VARCHAR"/>
 	 	<result column="createid" property="createid" jdbcType="INTEGER"/>
 	 	<result column="version" property="version" jdbcType="INTEGER"/>
 	 	<result column="ts" property="ts" jdbcType="TIMESTAMP"/>
 	 </resultMap>
 	 <sql id="BASE_COLUMN_SQL">
-	  id,auth_code,auth_name,createid,version,ts
+	  id,auth_code,auth_name,vail_flag,createid,version,ts
 	 </sql>
 	 <insert id="insert" parameterType="com.sky.auth.config.entity.AuthorityEntity" useGeneratedKeys="true" keyProperty="id">
-	 	insert into config_auth( id,auth_code,auth_name,createid,version,ts)
+	 	insert into config_auth( id,auth_code,auth_name,vail_flag,createid,version,ts)
 	 	values(#{id,jdbcType=INTEGER}, #{authcode,jdbcType=VARCHAR}, #{authname,jdbcType=VARCHAR},
-    	 #{createid,jdbcType=INTEGER},#{version,jdbcType=INTEGER}, now())
+    	 #{vailFlag,jdbcType=VARCHAR},#{createid,jdbcType=INTEGER},#{version,jdbcType=INTEGER}, now())
 	 </insert>
 	 <insert id="insertSelective" parameterType="com.sky.auth.config.entity.AuthorityEntity" useGeneratedKeys="true" keyProperty="id">
 	 	insert into config_auth( 
@@ -24,6 +25,7 @@
 		 	<if test="authcode !=null">		auth_code,	</if>
 		 	<if test="authname !=null">		auth_name,	</if>
 		 	<if test="createid !=null">		createid,	</if>
+		 	<if test="vailFlag !=null">		vail_flag,	</if>
 		 									version,
 		 									ts
 	 	</trim>
@@ -34,6 +36,7 @@
 	 		<if test="authcode !=null">		#{authcode,jdbcType=VARCHAR},	</if>
 	 		<if test="authname !=null">		#{authname,jdbcType=VARCHAR},	</if>
 	 		<if test="createid !=null">		#{createid,jdbcType=INTEGER},	</if>
+	 		<if test="vailFlag !=null">		#{vailFlag,jdbcType=INTEGER},	</if>
 	 										0,
 	 										now()
 	 	</trim>
@@ -41,22 +44,71 @@
 	 </insert>
  	<update id="updateByPrimaryKey" parameterType="com.sky.auth.config.entity.AuthorityEntity" >
 	    update config_auth
-	    set auth_code = #{authcode,jdbcType=VARCHAR},
-	        auth_name=#{authname},
-	      	version = ${version)+1,
-	      	createid = #{createid,jdbcType=INTEGER},
+	    set 
+	        auth_name = #{authname},
+	      	version   = #{version}+1,
+	      	vail_flag = #{vailFlag,jdbcType=VARCHAR},
+	      	createid  = #{createid,jdbcType=INTEGER},
 	     	ts = now()
-	    where id = #{id,jdbcType=INTEGER} and version=${version}
-	  </update>
+	    where id = #{id,jdbcType=INTEGER} and version = #{version} and auth_code = #{authcode,jdbcType=VARCHAR}
+	</update>
  	<update id="updateByPrimaryKeySelective" parameterType="com.sky.auth.config.entity.AuthorityEntity" >
 	    update config_auth
 	    	<trim prefix="set"  suffixOverrides=",">
-	    		<if test="authcode">	auth_code 	= #{authcode,jdbcType=VARCHAR},	</if>
-	    		<if test="authname">	auth_name	= #{authname},					</if>
-	    		<if test="createid">	createid 	= #{createid,jdbcType=INTEGER},	</if>
-	    								version 	= ${version)+1,
-	    								ts 			= now()
+	    		<if test="authname !=null">	auth_name	= #{authname},					</if>
+	    		<if test="vailFlag !=null">	vail_flag	= #{vailFlag},					</if>
+	    		<if test="createid !=null">	createid 	= #{createid,jdbcType=INTEGER},	</if>
+	    									version 	= #{version}+1,
+	    									ts 			= now()
 	    	</trim>
-	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	    where id = #{id,jdbcType=INTEGER} and version = #{version} and auth_code = #{authcode,jdbcType=VARCHAR}
 	</update>
+	
+	<!-- 根据权限更新角色与权限关联的数据 -->
+	<update id="updateAuthorityRelateRole" parameterType="com.sky.auth.config.entity.AuthorityEntity" >
+		update config_auth_relate
+			set vail_flag=#{vailFlag},
+				ts= now()
+			where auth_code = #{authcode}
+	</update>
+	<!-- 删除权限编码对应的角色关联数据 -->
+	<delete id="deleteAuthorityRelateRole" parameterType="java.lang.String" >
+		delete from config_auth_relate
+		where auth_code = #{authcode}
+	</delete>
+	
+	<delete id="deleteAuthority" parameterType="java.lang.Integer" >
+		delete from config_auth
+		where id = #{id}
+	</delete>
+	
+	<select id="queryByPrimaryKey" parameterType="java.lang.Integer" resultMap="BASEMAP">
+		select <include refid="BASE_COLUMN_SQL"/>
+		from config_auth
+		where id = #{id}
+	</select>
+	<select id="queryByCode" parameterType="java.lang.String" resultMap="BASEMAP">
+		select <include refid="BASE_COLUMN_SQL"/>
+		from config_auth
+		where auth_code = #{code}
+	</select>
+	<select id="queryByCodes" parameterType="java.util.Collection" resultType="com.sky.auth.config.entity.AuthorityBean">
+		select auth_code as  code,auth_name as name
+		from config_auth
+		where auth_code in <foreach collection="list" item="it" open="(" close=")" separator=",">#{it}</foreach> 
+		and vail_flag='Y' 
+	</select>
+	<select id="queryAuthsByPage"  resultMap="BASEMAP">
+		select <include refid="BASE_COLUMN_SQL"/>
+		from config_auth
+		<if test="auth !=null">
+			<trim prefix="where " suffixOverrides="and">
+				<if test='auth.authcode !=null'>auth_code = #{auth.authcode} </if>
+			</trim>
+			
+		</if>
+		<if test="page !=null">
+		limit #{page.current},#{page.pageSize}
+		</if>
+	</select>
 </mapper>

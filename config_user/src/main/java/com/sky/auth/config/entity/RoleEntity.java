@@ -36,4 +36,5 @@ public class RoleEntity extends BaseTableEntity{
 	public void setAuths(List<AuthorityEntity> auths) {
 		this.auths = auths;
 	}
+	
 }

@@ -23,13 +23,14 @@ public class BaseTableEntity implements Serializable{
 		this.id = id;
 	}
 	public Integer getCreateid() {
-		return createid==null?-1:createid;
+		return createid;
 	}
 	public void setCreateid(Integer createid) {
 		this.createid = createid;
 	}
 	public String getCreateName() {
-		return createName==null? ((createid==null|| createid!=-1)? "管理员":null):createName;
+//		return createName==null? ((createid==null|| createid!=-1)? "管理员":null):createName;
+		return createName;
 	}
 	public void setCreateName(String createName) {
 		this.createName = createName;

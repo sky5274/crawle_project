@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import com.alibaba.fastjson.JSON;
 import com.sky.cm.core.SkyConfig;
 
 /**
@@ -40,7 +38,6 @@ public class ApplicationRequestMappingRegistListener  implements ApplicationList
 		
 		Map<RequestMappingInfo, HandlerMethod> mappers = requestMappingHandlerMapping.getHandlerMethods();
 		config.registProject(mappers);
-		System.err.println(JSON.toJSONString(config.getProperties()));
 	}
 
 }

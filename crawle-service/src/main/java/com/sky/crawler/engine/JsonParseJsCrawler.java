@@ -15,6 +15,8 @@ import com.sky.crawler.core.CrawlerJsContant;
 import com.sky.crawler.core.CrawlerUrlDatum;
 import com.sky.pub.ResultCode;
 import com.sky.pub.common.exception.ResultException;
+import com.sky.pub.contant.PubFileContant;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -24,6 +26,7 @@ import okhttp3.Response;
  * @author 王帆
  * @date  2019年1月24日 上午10:14:19
  */
+@SuppressWarnings("restriction")
 public class JsonParseJsCrawler extends BaseJsonCrawlerBreath{
 	private String initJsPath=CrawlerJsContant.initJs;
 	private String jsContents=null;
@@ -48,16 +51,17 @@ public class JsonParseJsCrawler extends BaseJsonCrawlerBreath{
 		loadJsFile(initJsPath);
 	}
 	
+	
 	public void loadJsFile(String path) throws ResultException {
 		if(engine==null) {
 			engine = new ScriptEngineManager().getEngineByName("javascript");
 			engine.setContext(getJsContext());
 		}
 		try {
-			if(path.matches(CrawlerJsContant.urlRegex)) {
+			if(path.matches(PubFileContant.urlRegex)) {
 				engine.eval(loadRemoteFile(path));
 			}else {
-				engine.eval(new InputStreamReader(CrawlerJsContant.getFilePathStream(path)));
+				engine.eval(new InputStreamReader(PubFileContant.getFilePathStream(path)));
 			}
 		} catch ( ScriptException | IOException e) {
 			engine=null;

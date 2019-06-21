@@ -60,7 +60,7 @@ public class ConfigTableServiceImpl implements ConfigTableService{
 				col.setCreateid(table.getCreateid());
 				col.setTableId(table.getId());
 			}
-			ResultAssert.isFalse( configTableColumnMapper.insetBatch(list)<=0,ResultCode.DATA_OPT_FAIL,"表属性添加失败");
+			ResultAssert.isTure( configTableColumnMapper.insetBatch(list)<=0,ResultCode.DATA_OPT_FAIL,"表属性添加失败");
 		}
 		return size>0? table:null;
 	}
@@ -73,12 +73,12 @@ public class ConfigTableServiceImpl implements ConfigTableService{
 		int size=configTableMapper.updateByPrimaryKeySelective(table);
 		List<ConfigTableColumnEntity> list = table.getColumns();
 		if(list!=null && list.isEmpty()) {
-			ResultAssert.isFalse(configTableColumnMapper.delByTableId(table.getId())<=0,ResultCode.DATA_OPT_FAIL,"表属性删除失败");
+			ResultAssert.isTure(configTableColumnMapper.delByTableId(table.getId())<=0,ResultCode.DATA_OPT_FAIL,"表属性删除失败");
 			for(ConfigTableColumnEntity col:list) {
 				col.setCreateid(table.getCreateid());
 				col.setTableId(table.getId());
 			}
-			ResultAssert.isFalse( configTableColumnMapper.insetBatch(list)<=0,ResultCode.DATA_OPT_FAIL,"表属性更新失败");
+			ResultAssert.isTure( configTableColumnMapper.insetBatch(list)<=0,ResultCode.DATA_OPT_FAIL,"表属性更新失败");
 		}
 		return size>0? table:null;
 	}
@@ -88,7 +88,7 @@ public class ConfigTableServiceImpl implements ConfigTableService{
 		ResultAssert.isEmpty(table, "表数据不允许为空");
 		ResultAssert.isEmpty(table.getId(), "请提交表对应id");
 		int size=configTableColumnMapper.delByTableId(table.getId());
-		ResultAssert.isFalse(size<=0,ResultCode.DATA_OPT_FAIL,"表属性删除失败");
+		ResultAssert.isTure(size<=0,ResultCode.DATA_OPT_FAIL,"表属性删除失败");
 		
 		return configTableMapper.deleteByPrimaryKey(table)>0;
 	}

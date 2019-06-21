@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.sm.dao.TraceRecordEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.sm.bean.TraceRecordEntity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="trace_id" property="traceId" jdbcType="VARCHAR" />
+    <result column="trace_pid" property="tracePId" jdbcType="VARCHAR" />
+    <result column="group_id" property="groupId" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="request_body" property="requestBody" jdbcType="VARCHAR" />
+    <result column="response_body" property="responseBody" jdbcType="VARCHAR" />
+    <result column="headers" property="headers" jdbcType="VARCHAR" />
+    <result column="session_id" property="sessionId" jdbcType="VARCHAR" />
+    <result column="cost" property="cost" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="TraceBaseResultMap" type="com.sky.sm.bean.TraceRecordBean" >
+    <result column="trace_id" property="traceId" jdbcType="VARCHAR" />
+    <result column="trace_pid" property="tracePId" jdbcType="VARCHAR" />
+    <result column="group_id" property="groupId" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="request_body" property="requestBody" jdbcType="VARCHAR" />
+    <result column="response_body" property="responseBody" jdbcType="VARCHAR" />
+    <result column="headers" property="headers" jdbcType="VARCHAR" />
+    <result column="session_id" property="sessionId" jdbcType="VARCHAR" />
+    <result column="cost" property="cost" jdbcType="INTEGER" />
+    <result column="ts" property="time" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="TraceResultMap" type="com.sky.sm.bean.TraceRecordBean" >
+    <result column="trace_id" property="traceId" jdbcType="VARCHAR" />
+    <result column="trace_pid" property="tracePId" jdbcType="VARCHAR" />
+    <result column="group_id" property="groupId" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="request_body" property="requestBody" jdbcType="VARCHAR" />
+    <result column="response_body" property="responseBody" jdbcType="VARCHAR" />
+    <result column="headers" property="headers" jdbcType="VARCHAR" />
+    <result column="session_id" property="sessionId" jdbcType="VARCHAR" />
+    <result column="cost" property="cost" jdbcType="INTEGER" />
+    <result column="ts" property="time" jdbcType="TIMESTAMP" />
+    <collection property="traces" ofType="java.util.List" select="queryTraceRecordByGroup" column="{groupId=group_id}"></collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, trace_id,trace_pid, group_id, url, type,status, request_body,response_body, headers, session_id, cost, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from trace_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from trace_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.sky.sm.bean.TraceRecordEntity"  useGeneratedKeys="true" keyProperty="id">
+    insert into trace_record (id, trace_id,trace_pid, group_id, 
+      url, type, request_body, response_body,
+      headers, session_id, cost, status,
+      ts)
+    values (#{id,jdbcType=INTEGER}, #{traceId,jdbcType=VARCHAR}, #{tracePId,jdbcType=VARCHAR}, #{groupId,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{requestBody,jdbcType=VARCHAR}, #{responseBody,jdbcType=VARCHAR},
+      #{headers,jdbcType=VARCHAR}, #{sessionId,jdbcType=VARCHAR}, #{cost,jdbcType=INTEGER}, #{status,jdbcType=INTEGER},
+      #{ts,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertBatch" parameterType="java.util.List"  useGeneratedKeys="true" keyProperty="id">
+    insert into trace_record (id, trace_id,trace_pid, group_id, 
+      url, type, request_body,  response_body, 
+      headers, session_id, cost, status,
+      ts)
+    <foreach collection="list" item="it" open="values " separator=",">
+    	(#{it.id,jdbcType=INTEGER}, #{it.traceId,jdbcType=VARCHAR}, #{it.tracePId,jdbcType=VARCHAR},#{it.groupId,jdbcType=VARCHAR}, 
+      	#{it.url,jdbcType=VARCHAR}, #{it.type,jdbcType=VARCHAR}, #{it.requestBody,jdbcType=VARCHAR},  #{it.responseBody,jdbcType=VARCHAR},
+      	#{it.headers,jdbcType=VARCHAR}, #{it.sessionId,jdbcType=VARCHAR}, #{it.cost,jdbcType=INTEGER},  #{it.status,jdbcType=INTEGER},
+      	#{it.ts,jdbcType=TIMESTAMP})
+    </foreach>
+      ON DUPLICATE KEY UPDATE trace_id = VALUES(trace_id),trace_pid = VALUES(trace_pid),group_id = VALUES(group_id),
+						    url = VALUES(url),type = VALUES(type),request_body = VALUES(request_body),
+						    session_id = VALUES(session_id), cost = VALUES(cost)
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.sm.bean.TraceRecordEntity" useGeneratedKeys="true" keyProperty="id">
+    insert into trace_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >        	id,      			</if>
+      <if test="traceId != null" >      trace_id,      		</if>
+      <if test="tracePId != null" >     trace_pid,      	</if>
+      <if test="groupId != null" >      group_id,      		</if>
+      <if test="url != null" >        	url,      			</if>
+      <if test="type != null" >        	type,      			</if>
+      <if test="requestBody != null" >	request_body,      	</if>
+      <if test="responseBody != null" > response_body,		</if>
+      <if test="headers != null" >      headers,      		</if>
+      <if test="sessionId != null" >    session_id,      	</if>
+      <if test="cost != null" >        	cost,      			</if>
+      <if test="status != null" >       status,      		</if>
+      <if test="ts != null" >        	ts,      			</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >        	#{id,jdbcType=INTEGER},      		</if>
+      <if test="traceId != null" >      #{traceId,jdbcType=VARCHAR},      	</if>
+      <if test="tracePId != null" >     #{tracePId,jdbcType=VARCHAR},      	</if>
+      <if test="groupId != null" >      #{groupId,jdbcType=VARCHAR},      	</if>
+      <if test="url != null" >        	#{url,jdbcType=VARCHAR},      		</if>
+      <if test="type != null" >        	#{type,jdbcType=VARCHAR},      		</if>
+      <if test="requestBody != null" >  #{requestBody,jdbcType=VARCHAR},	</if>
+      <if test="responseBody != null" >	#{responseBody,jdbcType=VARCHAR},  	</if>
+      <if test="headers != null" >      #{headers,jdbcType=VARCHAR},      	</if>
+      <if test="sessionId != null" >    #{sessionId,jdbcType=VARCHAR},      </if>
+      <if test="cost != null" >        	#{cost,jdbcType=INTEGER},      		</if>
+      <if test="status != null" >       #{status,jdbcType=INTEGER},      	</if>
+      <if test="ts != null" >        	#{ts,jdbcType=TIMESTAMP},      		</if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.sm.bean.TraceRecordEntity" >
+    update trace_record
+    <set >
+      <if test="traceId != null" >        	trace_id 		= #{traceId,jdbcType=VARCHAR},  	</if>
+      <if test="tracePId != null" >        	trace_pid 		= #{tracePId,jdbcType=VARCHAR},  	</if>
+      <if test="groupId != null" >        	group_id 		= #{groupId,jdbcType=VARCHAR},      </if>
+      <if test="url != null" >        		url 			= #{url,jdbcType=VARCHAR},      	</if>
+      <if test="type != null" >        		type 			= #{type,jdbcType=VARCHAR},      	</if>
+      <if test="requestBody != null" >      request_body 	= #{requestBody,jdbcType=VARCHAR},  </if>
+      <if test="responseBody != null" >     response_body 	= #{responseBody,jdbcType=VARCHAR}, </if>
+      <if test="headers != null" >        	headers 		= #{headers,jdbcType=VARCHAR},      </if>
+      <if test="sessionId != null" >        session_id 		= #{sessionId,jdbcType=VARCHAR},    </if>
+      <if test="cost != null" >        		cost 			= #{cost,jdbcType=INTEGER},      	</if>
+      <if test="status != null" >       	status			= #{status,jdbcType=INTEGER},      	</if>
+      <if test="ts != null" >        		ts 				= #{ts,jdbcType=TIMESTAMP},      	</if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.sm.bean.TraceRecordEntity" >
+    update trace_record
+    set trace_id 	= #{traceId,jdbcType=VARCHAR},
+      trace_pid 	= #{tracePId,jdbcType=VARCHAR},
+      group_id 		= #{groupId,jdbcType=VARCHAR},
+      url 			= #{url,jdbcType=VARCHAR},
+      type 			= #{type,jdbcType=VARCHAR},
+      request_body 	= #{requestBody,jdbcType=VARCHAR},
+      response_body = #{responseBody,jdbcType=VARCHAR},
+      headers 		= #{headers,jdbcType=VARCHAR},
+      session_id 	= #{sessionId,jdbcType=VARCHAR},
+      cost 			= #{cost,jdbcType=INTEGER},
+      status		= #{status,jdbcType=INTEGER},
+      ts 			= #{ts,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="queryTraceRecordByGroup" parameterType="java.lang.String" resultMap="TraceBaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from trace_record
+    where  group_id 		= #{groupId,jdbcType=VARCHAR}
+  </select>
+  
+  <sql id="base_query_contion">
+  	<trim prefix="where " suffixOverrides="and">
+  		<if test="traceId !=null">trace_id 		= #{traceId,jdbcType=VARCHAR} and</if>
+  		<if test="groupId !=null">group_id 		= #{groupId,jdbcType=VARCHAR} and</if>
+  		<if test="url !=null and (isLike =null or isLike !=1)">trace_id = #{url,jdbcType=VARCHAR} and</if>
+  		<if test="url !=null and (isLike !=null or isLike =1)">trace_id = concat('%',#{url,jdbcType=VARCHAR},'%') and</if>
+  		<if test="sessionId !=null">session_id 		= #{sessionId,jdbcType=VARCHAR} and</if>
+  	</trim>
+  </sql>
+  <!-- 查询分组链路分组信息 -->
+  <select id="queryTraceGroup" resultMap="TraceResultMap" parameterType="com.sky.sm.bean.TraceRecordEntity" >
+    select 
+    <include refid="Base_Column_List" />
+    from trace_record
+    <include refid="base_query_contion"/>
+    order by ts
+  </select>
+  
+  <!-- 查询分组链路信息 -->
+  <select id="queryTraceList" resultMap="BaseResultMap" parameterType="com.sky.sm.bean.TraceRecordEntity" >
+    select 
+    <include refid="Base_Column_List" />
+    from trace_record
+    <include refid="base_query_contion"/>
+    order by ts
+  </select>
+</mapper>

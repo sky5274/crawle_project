@@ -29,7 +29,7 @@
  		<result column="version" property="version" jdbcType="INTEGER"/>
  		<result column="ts" property="ts" jdbcType="TIMESTAMP"/>
  		<collection property="roles" ofType="java.lang.String" select="queryRolesByUser" column="id" ></collection>
- 		<collection property="authorities" ofType="com.sky.auth.config.entity.AuthorityEntity" select="queryAuthsByUser" column="id" ></collection>
+ 		<collection property="permissions" ofType="com.sky.auth.config.entity.AuthorityEntity" select="queryAuthsByUser" column="id" ></collection>
  	</resultMap>
 	
 	<sql id="BASE_COLUMN_SQL">
@@ -90,7 +90,7 @@
 			age				=#{age,jdbcType=INTEGER},				
 		 	version			=version+1,
 		 	ts				=now()
-	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	    where id = #{id,jdbcType=INTEGER} and version=	#{version}
 	  </update>
  	<update id="updateByPrimaryKeySelective" parameterType="com.sky.auth.config.entity.UserEntity" >
 	    update user_base
@@ -107,7 +107,7 @@
 		 										version			=version+1,
 		 										ts				=now()
 	    	</trim>
-	    where id = #{id,jdbcType=INTEGER} and version=${version}
+	    where id = #{id,jdbcType=INTEGER} and version= #{version}
 	</update>
 	
 	<select id="queryById" parameterType="java.lang.Integer" resultMap="UserDetailMap">
@@ -117,6 +117,11 @@
 	<select id="queryByCode" parameterType="java.lang.String" resultMap="UserDetailMap">
 		select <include refid="BASE_COLUMN_SQL"></include>
 		from user_base where code=#{code}
+	</select>
+	<select id="queryUserByPhoneOrMailOrCode" parameterType="com.sky.auth.config.entity.UserEntity" resultMap="baseMap">
+		select <include refid="BASE_COLUMN_SQL"/>
+		from user_base 
+		where username=#{code} or (phone=#{code} and phone !=null) or (identity_code =#{code} and identity_code !=null) or (mail =#{code} and mail !=null)
 	</select>
 	<select id="queryDetailByPhoneOrMailOrCode" parameterType="java.lang.String" resultMap="UserDetailMap">
 		select <include refid="BASE_COLUMN_SQL"></include>
@@ -140,28 +145,80 @@
 		where mail =#{code}
 	</select>
 	
+	<sql id="BASE_QUERY_PARAMS">
+		<trim prefix="where " suffixOverrides="and">
+			<if test="username !=null"> 		username like concat('%',#{username},'%') and			</if>
+			<if test="code !=null">    			code =	#{code} and										</if>
+			<if test="mail !=null">    			mail =	#{mail} and										</if>
+			<if test="phone !=null">    		phone =	#{phone} and									</if>
+			<if test="identityCode !=null">    	identity_code like concat('%',#{identityCode},'%') and	</if>
+		</trim>
+	</sql>
+	
+	<select id="queryUserListByParams" parameterType="com.sky.auth.config.entity.UserEntity" resultMap="baseMap">
+		select <include refid="BASE_COLUMN_SQL"></include>
+		from user_base 
+		<include refid="BASE_QUERY_PARAMS"/>
+	</select>
+	
+	<select id="countUserListByParams" parameterType="com.sky.auth.config.entity.UserEntity" resultType="java.lang.Integer">
+		select count(1)
+		from user_base 
+		<include refid="BASE_QUERY_PARAMS"/>
+	</select>
+	
+	<select id="queryUserListByPageParams" resultMap="baseMap">
+		select <include refid="BASE_COLUMN_SQL"></include>
+		from user_base 
+		<if test="user !=null">
+			<trim prefix="where " suffixOverrides="and">
+				<if test="user.username !=null"> 		username like concat('%',#{user.username},'%') and			</if>
+				<if test="user.code !=null">    		code =	#{user.code} and									</if>
+				<if test="user.mail !=null">    		mail =	#{user.mail} and									</if>
+				<if test="user.phone !=null">    		phone =	#{user.phone} and									</if>
+				<if test="user.identityCode !=null">    identity_code like concat('%',#{user.identityCode},'%') and	</if>
+			</trim>
+		</if>		
+		<if test="page !=null">
+			limit #{page.current},#{page.pageSize}
+		</if>
+	</select>
+	<delete id="deleteUser" parameterType="com.sky.auth.config.entity.UserEntity">
+		delete from user_base
+		where id=#{id}    and version=#{version}
+	</delete>
 	
 	<!-- 增加用户的角色 -->
 	<insert id="addUserRoles">
-		insert int user_role_relate(user_id,role_code,createid)
+		insert into config_user_role_relate(user_id,role_code,createid)
 		<foreach collection="rolecodes" item="it" open="values" separator=",">(#{userId},#{it},#{createId})</foreach>
 	</insert>
-	<!-- 增加用户的角色 -->
+	<!-- 删除用户的角色 -->
 	<delete id="delUserRoles">
-		delete from user_role_relate
-		where user_id=#{userId}
-		role_code <foreach collection="rolecodes" item="it" open=" in (" close=")" separator=",">#{it}</foreach>
+		delete from config_user_role_relate
+		<trim prefix="where " suffixOverrides="and">
+			<if test="userId !=null"> user_id=#{userId} and</if>
+			<if test="rolecodes !=null">
+				role_code <foreach collection="rolecodes" item="it" open=" in (" close=")" separator=",">#{it}</foreach>
+			</if>
+		</trim>
 	</delete>
 	
+	<select id="queryRoleInfoByUser" parameterType="java.lang.String" resultType="com.sky.auth.config.entity.RoleEntity">
+		select role.code,		role.name
+		from config_role role
+		left join config_user_role_relate ur on ur.role_code=role.code
+		where ur.user_id=#{userId}
+	</select>
 	<select id="queryRolesByUser" parameterType="java.lang.String" resultType="java.lang.String">
-		select role_code		from user_role_relate
+		select role_code		from config_user_role_relate
 		where user_id=#{userId}
 	</select>
 	<select id="queryAuthsByUser" parameterType="java.lang.String" resultType="com.sky.auth.config.entity.AuthorityEntity">
 		select auth.auth_code,auth.auth_name
 		from config_auth auth
-		left join config_auth_relate aurel on auth.auth_code=aurel.auth_code
-		left join user_role_relate rolet on rolet.role_code=aurel.role_code
+		left join config_auth_relate aurel on auth.auth_code=aurel.auth_code and aurel.vail_flag='Y'
+		left join config_user_role_relate rolet on rolet.role_code=aurel.role_code
 		where rolet.user_id=#{userId}
 	</select>
 </mapper>

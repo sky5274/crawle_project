@@ -1,12 +1,16 @@
 package com.sky.pub;
 
-public class PageRequest{
-	private Integer current;
-	private Integer pageSize;
+import java.io.Serializable;
+
+public class PageRequest<T> implements Serializable{
+	/***/
+	private static final long serialVersionUID = 1L;
+	private Integer current=0;
+	private Integer pageSize=10;
 	private boolean isInit=false;
+	private T data;
 	public PageRequest() {}
 	public PageRequest(int current,int pageSize) {
-		super();
 		this.current=current;
 		this.pageSize=pageSize;
 	}
@@ -24,7 +28,7 @@ public class PageRequest{
 		this.pageSize = pageSize;
 	}
 	
-	public PageRequest initPage() {
+	public PageRequest<T> initPage() {
 		if(!isInit) {
 			if(hasPageData()) {
 				if(current<1) {
@@ -51,5 +55,11 @@ public class PageRequest{
 	}
 	public Boolean hasPageData() {
 		return current !=null && pageSize !=null;
+	}
+	public T getData() {
+		return data;
+	}
+	public void setData(T data) {
+		this.data = data;
 	}
 }

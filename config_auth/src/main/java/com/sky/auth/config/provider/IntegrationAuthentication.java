@@ -12,6 +12,9 @@ public class IntegrationAuthentication {
     private Map<String,String[]> authParameters;//请求登录认证参数集合
 
     public String getAuthParameter(String paramter){
+    	if(this.authParameters ==null) {
+    		return null;
+    	}
         String[] values = this.authParameters.get(paramter);
         if(values != null && values.length > 0){
             return values[0];
