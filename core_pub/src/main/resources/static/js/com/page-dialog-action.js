@@ -47,6 +47,7 @@ function getSelctRow(table,alert){
 }
 
 function updatOrAddPostRequest(obj){
+	var flag=false;
 	if(obj.isPost ==undefined||obj.isPost){
 		$.doPostJsonAjax({
 			url:obj.url,
@@ -60,6 +61,7 @@ function updatOrAddPostRequest(obj){
 				if(obj.table){
 					$(obj.table).jmTable("refresh")	
 				}
+				flag=true;
 			}
 		})
 	}else{
@@ -75,8 +77,10 @@ function updatOrAddPostRequest(obj){
 				if(obj.table){
 					$(obj.table).jmTable("refresh")	
 				}
+				flag=true;
 			}
 		})
 	}
+	return flag;
 	
 }

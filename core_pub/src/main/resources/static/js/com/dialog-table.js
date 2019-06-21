@@ -117,7 +117,7 @@ function getElement(e){
 		ele=$('<select class="pull-left  form-control" '+attr+' name="'+e.name+'" value="'+(e.value==undefined || e.value==null?'':e.value)+'"></select>"=')
 		if(e.data){
 			$.each(e.data,function(i,d){
-				ele.append('<option data="'+JSON.stringfiy(d)+'" value="'+d.value+'">'+d.name+'</option>')
+				ele.append('<option data="'+JSON.stringify(d)+'" value="'+d.value+'">'+d.name+'</option>')
 			})
 		}
 	}else {
