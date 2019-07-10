@@ -1,4 +1,4 @@
-package com.sky.rpc.core;
+package com.sky.rpc.core.cilent.netty;
 
 import java.net.InetSocketAddress;
 import java.util.LinkedList;
@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sky.rpc.base.Result;
 import com.sky.rpc.base.RpcRequest;
+import com.sky.rpc.core.cilent.RpcClientHandel;
 import com.sky.rpc.core.cilent.netty.NettyClientMessageHandler;
 
 import io.netty.bootstrap.Bootstrap;
@@ -63,7 +64,7 @@ public class RpcNettyClientHandel implements RpcClientHandel{
     }
     
    
-    public Channel doConnect(InetSocketAddress address) throws InterruptedException {
+    public Channel doConnect(InetSocketAddress address,int timout) throws InterruptedException {
     	if(bootstrap==null) {
     		initBoot();
 //    		bootstrap.remoteAddress(address);
@@ -73,6 +74,7 @@ public class RpcNettyClientHandel implements RpcClientHandel{
     	clearChannel(nowtime);
     	
     	ChannelFuture future = bootstrap.connect(address);
+    	future.await(timout);
     	Channel channel = future.sync().channel();
         channelMap.put(nowtime, channel);
         return channel;
@@ -92,8 +94,8 @@ public class RpcNettyClientHandel implements RpcClientHandel{
     
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T invoke(RpcRequest request, InetSocketAddress addr) throws Throwable {
-		Channel channel = doConnect(addr);
+	public <T> T invoke(RpcRequest request, InetSocketAddress addr,int timeout) throws Throwable {
+		Channel channel = doConnect(addr,timeout);
 		if (channel!=null && channel.isActive()) {
             SynchronousQueue<Result<?>> queue = clientHandler.sendRequest(request,channel);
             Result<?> result = queue.take();
