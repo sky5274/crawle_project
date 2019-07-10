@@ -7,6 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * rpc consumer annotation
+ */
 @Documented
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

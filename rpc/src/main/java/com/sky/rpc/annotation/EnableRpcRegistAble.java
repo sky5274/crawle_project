@@ -10,6 +10,9 @@ import org.springframework.context.annotation.Import;
 
 import com.sky.rpc.config.RpcRegistConfigration;
 
+/**
+ * rpc auto regist config annotations
+ */
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
