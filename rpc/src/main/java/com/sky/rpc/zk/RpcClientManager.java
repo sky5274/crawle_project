@@ -59,8 +59,8 @@ public class RpcClientManager {
 	 */
 	public ZooKeeper getZookeeper() throws IOException, KeeperException, InterruptedException {
 		if(zkClient==null) {
-			String zookeeper_url = ResouceProperties.getProperty("rpc.provider.server.port");
-			if(zookeeper_url==null) {
+			String zookeeper_url = ResouceProperties.getProperty("zookeeper.url");
+			if(zookeeper_url!=null) {
 				url=zookeeper_url;
 			}
 			zkClient=new ZooKeeper(url, sessionTimeout, new Watcher() {

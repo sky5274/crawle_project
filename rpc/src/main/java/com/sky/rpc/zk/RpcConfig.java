@@ -202,6 +202,7 @@ public class RpcConfig {
 		return path;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public static class nodeData {
 		private String ip;
 		private int port;
