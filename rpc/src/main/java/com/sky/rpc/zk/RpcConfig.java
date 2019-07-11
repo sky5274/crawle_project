@@ -116,14 +116,7 @@ public class RpcConfig {
 		List<String> list = new LinkedList<String>();
 			try {
 				list = getManager().getChildrenPath(url, null);
-			} catch (KeeperException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+			} catch (KeeperException | InterruptedException | IOException e) {
 				e.printStackTrace();
 			}
 		return list;
@@ -136,14 +129,7 @@ public class RpcConfig {
 			for(String s:nodes) {
 				list.add(Long.valueOf(s));
 			}
-		} catch (KeeperException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (KeeperException | InterruptedException | IOException e) {
 			e.printStackTrace();
 		}
 		return getNullIndex(list);
@@ -284,8 +270,7 @@ public class RpcConfig {
 		try {
 			list = getManager().getChildrenPath(url, null);
 		} catch (KeeperException |InterruptedException |IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			//e1.printStackTrace();
 		}
 		if(!list.isEmpty()) {
 			int randInt = (int) Math.abs(Math.random()*list.size());
@@ -300,8 +285,7 @@ public class RpcConfig {
 				log.debug(String.format("rpc config get random client node:[path:%s,data:%s]",upath,data));
 				return JSON.parseObject(data,nodeData.class);
 			} catch (KeeperException | InterruptedException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		return null;
@@ -332,7 +316,7 @@ public class RpcConfig {
 						}
 					}
 				} catch (KeeperException | InterruptedException | IOException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 			if(!nodes.isEmpty()) {
@@ -367,7 +351,7 @@ public class RpcConfig {
 						nodes.add(node);
 					}
 				} catch (KeeperException | InterruptedException | IOException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		}
