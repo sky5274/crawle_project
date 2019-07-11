@@ -47,6 +47,7 @@ public class FileController {
 		medieType.put("jpeg", MediaType.IMAGE_JPEG_VALUE);
 		medieType.put("png", MediaType.IMAGE_PNG_VALUE);
 		medieType.put("txt", MediaType.TEXT_PLAIN_VALUE);
+		medieType.put("svg", MediaType.TEXT_PLAIN_VALUE);
 		medieType.put("html", MediaType.TEXT_HTML_VALUE);
 	}
 	
