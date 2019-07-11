@@ -6,8 +6,10 @@ import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.sky.pub.Result;
 import com.sky.pub.ResultCode;
+import com.sky.pub.ResultMData;
 import com.sky.pub.common.exception.HttpExceptionEnum;
 import com.sky.pub.common.exception.ResultException;
+import com.sky.pub.common.exception.ResultMsgException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -256,7 +258,13 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 		ModelAndView mv = new ModelAndView();
 		FastJsonJsonView view = new FastJsonJsonView();
 		view.setFastJsonConfig(new FastJsonConfig());
-		if(ex instanceof ResultException) {
+		if(ex instanceof ResultMsgException) {
+			ResultMsgException resex = (ResultMsgException)ex;
+			Object value = resex.getData()==null?(definedType.equals(monitorType)?getExceptionStrace(ex):null):resex.getData();
+			ResultMData<Object> result=new ResultMData<Object>(code, resex.getMsgDatas());
+			result.setData(value);
+			view.setAttributesMap((JSONObject) JSON.toJSON(result.fail()));
+		}else if(ex instanceof ResultException) {
 			ResultException resex = (ResultException)ex;
 			view.setAttributesMap((JSONObject) JSON.toJSON(new Result<>(code, message,resex.getData()==null?(definedType.equals(monitorType)?getExceptionStrace(ex):null):resex.getData(),false)));
 		}else {
