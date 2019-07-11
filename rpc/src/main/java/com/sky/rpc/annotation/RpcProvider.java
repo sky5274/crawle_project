@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Component
-public @interface RpcProducter {
+public @interface RpcProvider {
 	
 	String version() default "";
 	String group() default "";
