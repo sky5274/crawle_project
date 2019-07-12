@@ -9,7 +9,13 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sky.rpc.base.RpcException;
 import com.sky.rpc.base.RpcRequest;
+import com.sky.rpc.util.RpcSpringBeanUtil;
 
+/**
+ * provider handel the method relection
+ * @author 王帆
+ * @date  2019年7月12日 下午5:27:46
+ */
 public class ProviderMethodInvoker {
 	private static Log log=LogFactory.getLog(ProviderMethodInvoker.class);
 	
@@ -26,11 +32,36 @@ public class ProviderMethodInvoker {
 	}
 	
 	private static Object invokeMethod(SocketAddress addr,Class<?> serviceClass, RpcRequest request) throws Throwable {
-		return invokeMethod(addr,serviceClass, serviceClass.newInstance(),request);
+		//获取bean
+		Object obj=null;
+		try {
+			//同class的bean随机获取
+			String[] beans = RpcSpringBeanUtil.getApplicationContext().getBeanNamesForType(serviceClass);
+			if(beans!=null && beans.length>0) {
+				Integer index=0;
+				if(beans.length>1) {
+					index = Integer.valueOf(Math.random()*beans.length+"");
+					if(index>=beans.length) {
+						index--;
+					}
+				}
+				obj=RpcSpringBeanUtil.getBean(beans[0]);
+			}
+		} catch (Exception e) {
+		}
+		// object is null and object class is interface
+		if(obj==null && !serviceClass.isInterface()) {
+			obj= serviceClass.newInstance();
+		}
+		if(obj==null) {
+			throw new Exception("无法获取："+serviceClass.getName()+" 的对象");
+		}
+		return invokeMethod(addr,serviceClass, obj,request);
 	}
+	
 	private static Object invokeMethod(SocketAddress addr,Class<?> serviceClass,Object bean, RpcRequest request) throws Throwable {
 		try {
-			Method method = serviceClass.getMethod(request.getMethodName(), request.getParameterTypes());
+			Method method = bean.getClass().getMethod(request.getMethodName(), request.getParameterTypes());
 			method.setAccessible(true);
 			long starttime = System.currentTimeMillis();
 			Object result=null;
@@ -44,7 +75,6 @@ public class ProviderMethodInvoker {
 			log.info(String.format(serviceClass.getName()+"."+method.getName()+" cost time: %dms",(endtime-starttime)));
 			return result;
 		} catch (NoSuchMethodException |SecurityException e) {
-			e.printStackTrace();
 			throw new RpcException("["+addr+"] server can not find method: "+request.getMethodName()+" in class:"+request.getClassName());
 		} catch (Throwable e) {
 			Throwable ce=e.getCause();
