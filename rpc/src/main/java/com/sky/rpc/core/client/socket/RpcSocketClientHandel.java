@@ -33,13 +33,15 @@ public class RpcSocketClientHandel implements RpcClientHandel{
             // 3.将远程服务调用所需的接口类、方法名、参数列表等编码后发送给服务提供者
             output = new ObjectOutputStream(socket.getOutputStream());
             Object[] args = request.getArgs();
-        	for(int i=0;i<args.length;i++) {
-        		Object arg = args[i];
-        		if(arg!=null && arg instanceof RpcCallBack) {
-					argMape.put(request.getRequestId()+"_"+request.getParameterTypes()[i].getName()+"_"+i, arg);
-        			args[i] = RpcCallBack.call;
-        		} 
-        	}
+            if(args !=null) {
+            	for(int i=0;i<args.length;i++) {
+            		Object arg = args[i];
+            		if(arg!=null && arg instanceof RpcCallBack) {
+    					argMape.put(request.getRequestId()+"_"+request.getParameterTypes()[i].getName()+"_"+i, arg);
+            			args[i] = RpcCallBack.call;
+            		} 
+            	}
+            }
         	request.setArgs(args);
             output.writeObject(request);
             logger.debug("rpt client send msg:"+JSON.toJSONString(request));

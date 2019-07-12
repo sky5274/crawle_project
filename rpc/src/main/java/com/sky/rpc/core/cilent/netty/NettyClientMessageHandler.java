@@ -50,12 +50,14 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter{
     	queue = new SynchronousQueue<>();
     	Object[] args = request.getArgs();
     	argMape.clear();
-    	for(int i=0;i<args.length;i++) {
-    		Object arg = args[i];
-    		if(arg!=null && isRpcCallBack(arg)) {
-    			argMape.put(request.getRequestId()+"_"+request.getParameterTypes()[i].getName()+"_"+i, arg);
-    			args[i] = RpcCallBack.call;
-    		} 
+    	if(args!=null) {
+    		for(int i=0;i<args.length;i++) {
+        		Object arg = args[i];
+        		if(arg!=null && isRpcCallBack(arg)) {
+        			argMape.put(request.getRequestId()+"_"+request.getParameterTypes()[i].getName()+"_"+i, arg);
+        			args[i] = RpcCallBack.call;
+        		} 
+        	}
     	}
     	request.setArgs(args);
     	reuestId = request.getRequestId();
