@@ -2,7 +2,6 @@ package com.sky.rpc.core.cilent;
 
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-
 import com.sky.rpc.base.RpcRequest;
 import com.sky.rpc.core.cilent.netty.RpcNettyClientHandel;
 import com.sky.rpc.core.client.socket.RpcSocketClientHandel;
@@ -21,7 +20,7 @@ public class RpcClient <T>{
 	}
 	
 	public T request(Class<T> serviceInterface, Method method, Object[] args,String interfaceImpl) throws Throwable {
-		 RpcRequest request=new RpcRequest(interfaceImpl==null?serviceInterface.getClass().getName():interfaceImpl,method,args);
+		RpcRequest request=new RpcRequest(interfaceImpl==null?serviceInterface.getName():interfaceImpl,method,args);
 		return request(request);
 	}
 	public T request(RpcRequest request) throws Throwable {
@@ -31,11 +30,6 @@ public class RpcClient <T>{
 		}else {
 			rpcClientHandel=new RpcNettyClientHandel();
 		}
-		try {
-			return  rpcClientHandel.invoke(request,addr,timeout);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			throw e;
-		}
+		return  rpcClientHandel.invoke(request,addr,timeout);
 	}
 }
