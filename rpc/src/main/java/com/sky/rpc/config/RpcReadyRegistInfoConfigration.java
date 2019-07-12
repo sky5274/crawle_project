@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -21,6 +22,7 @@ import com.sky.rpc.annotation.RpcComsumer;
 import com.sky.rpc.annotation.RpcProvider;
 import com.sky.rpc.core.RpcBeanProxyFactory;
 import com.sky.rpc.core.RpcElement;
+import com.sky.rpc.provider.ProviderContant;
 import com.sky.rpc.provider.ProviderServer;
 import com.sky.rpc.resource.ResouceProperties;
 import com.sky.rpc.zk.RpcConfig;
@@ -66,6 +68,7 @@ public class RpcReadyRegistInfoConfigration {
 	private void registRpcProviderNode(Class<?> clazz) {
 		RpcProvider anno = clazz.getAnnotation(RpcProvider.class);
 		if(anno!=null) {
+			ProviderContant.setHasProvider(true);
 			// get the interfaces from the clazz, and set nodedata into zookeeper with the interface 
 			RpcElement ele = getRpcProviderElement(clazz,anno);
 			Class<?>[] interfaces = clazz.getInterfaces();
@@ -133,6 +136,7 @@ public class RpcReadyRegistInfoConfigration {
 		definition.getPropertyValues().add("node", ele);
 		definition.setBeanClass(RpcBeanProxyFactory.class);
 		definition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_TYPE);
+		definition.setScope(ConfigurableBeanFactory.SCOPE_PROTOTYPE);
 		registry.registerBeanDefinition(ele.getId(),definition);
 	}
 	

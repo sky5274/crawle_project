@@ -47,6 +47,8 @@ public class RpcProxy{
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				try {
 					return new RpcClient<T>(addr,timeout).request(serviceInterface,method,args,interfaceImpl);
+				} catch (InterruptedException e){
+					return null;
 				} catch (InvocationTargetException e){
 					//抛出造成的异常
 					throw e.getCause();
