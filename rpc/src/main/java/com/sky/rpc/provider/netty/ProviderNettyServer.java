@@ -31,7 +31,10 @@ public class ProviderNettyServer extends ProviderServer{
 	ServerBootstrap bootstrap = new ServerBootstrap();
 
 	public void run() {
-
+		if(isOpen()) {
+			return;
+		}
+		setOpen(true);
 		bootstrap.group(workerGroup,group).
 		channel(NioServerSocketChannel.class).
 		option(ChannelOption.SO_BACKLOG,1024).
@@ -65,6 +68,7 @@ public class ProviderNettyServer extends ProviderServer{
 	@Override
 	public void close() {
 		stop();
+		setOpen(false);
 	}
 
 }

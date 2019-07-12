@@ -17,6 +17,9 @@ public class ProviderSocketServer extends ProviderServer{
 	}
 	
 	public void run() {
+		if(ProviderServer.isOpen()) {
+			return;
+		}
 		try {
 			isOpen=true;
 			server=new ServerSocket(getPort());
@@ -36,6 +39,7 @@ public class ProviderSocketServer extends ProviderServer{
 	public void close() {
 		try {
 			server.close();
+			isOpen=false;
 		} catch (IOException e) {
 			log.error("rpc privoder close error");
 		}finally {
