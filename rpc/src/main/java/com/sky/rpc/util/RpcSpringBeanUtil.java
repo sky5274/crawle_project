@@ -10,7 +10,6 @@ public class RpcSpringBeanUtil {
  
     public static void setApplicationContext(ApplicationContext applicationContext){
         if(RpcSpringBeanUtil.applicationContext == null){
-        	System.err.println(applicationContext);
         	RpcSpringBeanUtil.applicationContext  = applicationContext;
         }
     }
