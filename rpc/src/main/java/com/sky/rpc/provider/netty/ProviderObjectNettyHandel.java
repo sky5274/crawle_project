@@ -69,13 +69,15 @@ public class ProviderObjectNettyHandel extends ChannelInboundHandlerAdapter{
 				RpcConnectCallFactory.addConnectCall(new ProviderNettyCallBack(ctx, request.getRequestId()));
 				int i=0;
 				Object[] args  =request.getArgs();
-				for(Object arg:args) {
-					if(arg!=null) {
-						if(arg instanceof RpcCallBack) {
-							args[i]=getArgCallProxy(request.getParameterTypes()[i],ctx,i,request.getRequestId());
+				if(args!=null) {
+					for(Object arg:args) {
+						if(arg!=null) {
+							if(arg instanceof RpcCallBack) {
+								args[i]=getArgCallProxy(request.getParameterTypes()[i],ctx,i,request.getRequestId());
+							}
 						}
+						i++;
 					}
-					i++;
 				}
 				request.setArgs(args);
 				try {
@@ -84,11 +86,13 @@ public class ProviderObjectNettyHandel extends ChannelInboundHandlerAdapter{
 					result=new Result<>(request.getRequestId(),e);
 				}
 				i=0;
-				for(Object arg:request.getArgs()) {
-					if(arg instanceof RpcCallBack) {
-						clearObjectMap(request.getParameterTypes()[i],i,request.getRequestId());
+				if(request.getArgs() !=null) {
+					for(Object arg:request.getArgs()) {
+						if(arg instanceof RpcCallBack) {
+							clearObjectMap(request.getParameterTypes()[i],i,request.getRequestId());
+						}
+						i++;
 					}
-					i++;
 				}
 				
 				ctx.writeAndFlush(result);

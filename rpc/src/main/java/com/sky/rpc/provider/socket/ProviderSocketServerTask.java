@@ -42,13 +42,15 @@ public class ProviderSocketServerTask implements Runnable{
 			RpcConnectCallFactory.addConnectCall(new ProviderSocketCallBack(input, output, request.getRequestId(),client.getRemoteSocketAddress()));
 			int i=0;
 			Object[] args  =request.getArgs();
-			for(Object arg:args) {
-				if(arg!=null) {
-					if(arg instanceof RpcCallBack) {
-						args[i]=getArgCallProxy(request.getParameterTypes()[i],input,output,i,request.getRequestId());
+			if(args!=null) {
+				for(Object arg:args) {
+					if(arg!=null) {
+						if(arg instanceof RpcCallBack) {
+							args[i]=getArgCallProxy(request.getParameterTypes()[i],input,output,i,request.getRequestId());
+						}
 					}
+					i++;
 				}
-				i++;
 			}
 			request.setArgs(args);
 			log.info(">>get request:"+JSON.toJSONString(request));
