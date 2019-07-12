@@ -20,7 +20,8 @@ public abstract class ProviderServer extends Thread {
 	protected static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	protected Log log=LogFactory.getLog(getClass());
 	protected static Integer port;
-	protected boolean isOpen=true;
+	/**provider server is open flag*/
+	protected volatile static boolean isOpen=false;
 	public static String portKey="rpc.server.port";
 	
 	public ProviderServer() {
@@ -56,11 +57,11 @@ public abstract class ProviderServer extends Thread {
 		} catch (Exception e) {
 		}
 	}
-	public boolean isOpen() {
+	public synchronized static boolean isOpen() {
 		return isOpen;
 	}
-	public void setOpen(boolean isOpen) {
-		this.isOpen = isOpen;
+	public synchronized static void setOpen(boolean isOpen) {
+		ProviderServer.isOpen = isOpen;
 	}
 	
 	public abstract void close();
