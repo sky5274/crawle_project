@@ -39,7 +39,6 @@ public class RpcClientManager {
 		if(!StringUtils.isEmpty(node)) {
 			defaut_pref=node;
 		}
-		
 	}
 	public RpcClientManager(String path) throws IOException, KeeperException, InterruptedException {
 		initDefNod();
@@ -65,7 +64,9 @@ public class RpcClientManager {
 			}
 			zkClient=new ZooKeeper(url, sessionTimeout, new Watcher() {
 				public void process(WatchedEvent watch) {
-					log.debug("rpc config get watch:"+watch.getPath());
+					if(log.isDebugEnabled()) {
+						log.debug("rpc config get watch:"+watch.getPath());
+					}
 				}
 			});
 			iniNode();
@@ -73,7 +74,9 @@ public class RpcClientManager {
 		return zkClient;
 	}
 	private void iniNode() throws KeeperException, InterruptedException, IOException {
-		log.debug(tipTitle+" init node");
+		if(log.isDebugEnabled()) {
+			log.debug(tipTitle+" init node");
+		}
 		if( getZookeeper().exists("/"+defaut_pref, true)==null) {
 			 getZookeeper().create("/"+defaut_pref,defaut_desc.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);
 		}
@@ -108,7 +111,9 @@ public class RpcClientManager {
 	* @throws Exception
 	 */
 	public String create(String path,String data) throws KeeperException, InterruptedException, IOException {
-		log.info(tipTitle+"add node:"+path);
+		if(log.isDebugEnabled()) {
+		log.debug(tipTitle+"add node:"+path);
+		}
 		path=intPath(path);
 		Stat state = getZookeeper().exists(path, true);
 		if( state==null) {
@@ -131,7 +136,9 @@ public class RpcClientManager {
 	* @throws IOException
 	 */
 	public String createTemp(String path,String data) throws KeeperException, InterruptedException, IOException {
-		log.info(tipTitle+"add node:"+path);
+		if(log.isDebugEnabled()) {
+			log.debug(tipTitle+"add node:"+path);
+		}
 		path=intPath(path);
 		Stat state = getZookeeper().exists(path, true);
 		if( state==null) {
@@ -155,7 +162,9 @@ public class RpcClientManager {
 	 * @throws IOException 
 	 */
 	public Stat setData(String path,byte[]data ,int version) throws KeeperException, InterruptedException, IOException {
-		log.info(tipTitle+"update node:"+path);
+		if(log.isDebugEnabled()) {
+			log.debug(tipTitle+"update node:"+path);
+		}
 		path=intPath(path);
 		if(exists(path)!=null) {
 			return  getZookeeper().setData(path, data, version);
@@ -175,7 +184,9 @@ public class RpcClientManager {
 	 * @throws IOException 
 	 */
 	public Stat exists(String path) throws KeeperException, InterruptedException, IOException {
-		log.info(tipTitle+"check node is exist:"+path);
+		if(log.isDebugEnabled()) {
+			log.debug(tipTitle+"check node is exist:"+path);
+		}
 		path=intPath(path);
 		return getZookeeper().exists(path, true);
 	}
@@ -220,7 +231,9 @@ public class RpcClientManager {
 	
 	public List<String> getChildrenNode(String path,Watcher watcher) throws KeeperException, InterruptedException, IOException {
 		path=intPath(path);
-		log.debug(tipTitle+" get child node in path:"+path);
+		if(log.isDebugEnabled()) {
+			log.debug(tipTitle+" get child node in path:"+path);
+		}
 		List<String> children = getZookeeper().getChildren(path, watcher);
 		return children;
 	}
