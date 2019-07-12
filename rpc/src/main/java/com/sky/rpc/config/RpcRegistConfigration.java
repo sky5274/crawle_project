@@ -17,6 +17,8 @@ public class RpcRegistConfigration implements ImportBeanDefinitionRegistrar{
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		 // 注册rpc netty  closed listener
 		 registBean(ApplicationNettyClosedListener.class,registry);
+		 //注册  rpc provider server start listener
+		 registBean(ApplicationStartWithProviderServerListener.class,registry);
 		 
 		 //rpc provider\consumer  regist aciotn
 		 RpcReadyRegistInfoConfigration config=new RpcReadyRegistInfoConfigration();
