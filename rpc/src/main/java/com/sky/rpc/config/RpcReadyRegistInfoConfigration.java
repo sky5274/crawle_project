@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -121,22 +120,20 @@ public class RpcReadyRegistInfoConfigration {
 				if(registry.getBeanDefinition(ele.getId())==null) {
 					registRpcConsumerBeanOption(clazz,ele);
 				}
-				
 			} catch (Exception e) {
 				registRpcConsumerBeanOption(clazz,ele);
 			}
-			
 		}
 	}
 	
 	private void registRpcConsumerBeanOption(Class clazz, RpcElement ele) {
+		//rpc consemer  不可以设置scope 为   SCOPE_PROTOTYPE
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
 		GenericBeanDefinition definition = (GenericBeanDefinition) builder.getRawBeanDefinition();
-		definition.getPropertyValues().add("interfaceClass", definition.getBeanClassName());
+		definition.getPropertyValues().add("interfaceClass", clazz);
 		definition.getPropertyValues().add("node", ele);
 		definition.setBeanClass(RpcBeanProxyFactory.class);
 		definition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_TYPE);
-		definition.setScope(ConfigurableBeanFactory.SCOPE_PROTOTYPE);
 		registry.registerBeanDefinition(ele.getId(),definition);
 	}
 	
