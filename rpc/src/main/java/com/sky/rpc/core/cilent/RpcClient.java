@@ -10,7 +10,7 @@ import com.sky.rpc.resource.ResouceProperties;
 public class RpcClient <T>{
 	
 	private InetSocketAddress addr;
-	private int timeout=3000;
+	private int timeout=30000;
 	public RpcClient(InetSocketAddress addr){
 		this.addr=addr;
 	}
