@@ -24,6 +24,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter{
 	SynchronousQueue<Result<?>> queue=null;
     Log logger = LogFactory.getLog(this.getClass());
 	private String reuestId;
+	private int timeout;
 	private Map<String, Object> argMape=new ConcurrentHashMap<>();
 
     public void channelInactive(ChannelHandlerContext ctx) throws InterruptedException   {
@@ -46,8 +47,9 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter{
     	}
     	ctx.flush();
     }
-    public SynchronousQueue<Result<?>> sendRequest(RpcRequest request,Channel channel) throws Exception {
+    public SynchronousQueue<Result<?>> sendRequest(RpcRequest request,Channel channel, int timeout) throws Exception {
     	queue = new SynchronousQueue<>();
+    	this.timeout=timeout;
     	Object[] args = request.getArgs();
     	argMape.clear();
     	if(args!=null) {
@@ -77,10 +79,10 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter{
     	if (evt instanceof IdleStateEvent){
 			IdleStateEvent event = (IdleStateEvent)evt;
 			if (event.state()== IdleState.ALL_IDLE){
-				String info = "客户端已超过60秒未读写数据,关闭连接"+ctx.channel().remoteAddress();
+				String info = "客户端已超过"+timeout+"秒未读写数据,关闭连接"+ctx.channel().remoteAddress();
 				//logger.debug(info);
 				queue.put(new Result<>(reuestId,new Exception(info)));
-				ctx.channel().close();
+				//ctx.channel().close();
 			}
 		}else{
 			super.userEventTriggered(ctx,evt);
@@ -89,6 +91,6 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter{
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws InterruptedException{
         //logger.info("RPC通信服务器发生异常."+cause);
         queue.put(new Result<>(reuestId,cause));
-        ctx.channel().close();
+        //ctx.channel().close();
     }
 }
