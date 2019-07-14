@@ -1,7 +1,6 @@
 package com.sky.rpc.provider.netty;
 
 
-import java.util.concurrent.TimeUnit;
 
 import com.sky.rpc.provider.ProviderServer;
 
@@ -17,7 +16,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import io.netty.handler.timeout.IdleStateHandler;
 
 
 /**
@@ -44,7 +42,7 @@ public class ProviderNettyServer extends ProviderServer{
 			//创建NIOSocketChannel成功后，在进行初始化时，将它的ChannelHandler设置到ChannelPipeline中，用于处理网络IO事件
 			protected void initChannel(SocketChannel channel) throws Exception {
 				ChannelPipeline pipeline = channel.pipeline();
-				pipeline.addLast(new IdleStateHandler(60, 20, 60 * 10,TimeUnit.SECONDS));
+				//pipeline.addLast(new IdleStateHandler(60, 20, 60 * 10,TimeUnit.SECONDS));
 				pipeline.addLast(new ObjectEncoder());
 				pipeline.addLast(new ObjectDecoder(Integer.MAX_VALUE,ClassResolvers.cacheDisabled(null)));
 				//pipeline.addLast(applicationContext.getBean(ProviderStringNettyHandel.class));
@@ -58,7 +56,6 @@ public class ProviderNettyServer extends ProviderServer{
 			//等待服务端监听端口关闭
 			cf.channel().closeFuture().sync();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

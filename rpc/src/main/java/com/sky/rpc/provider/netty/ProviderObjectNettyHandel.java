@@ -38,7 +38,7 @@ public class ProviderObjectNettyHandel extends ChannelInboundHandlerAdapter{
 	public void channelInactive(ChannelHandlerContext ctx) throws InterruptedException   {
 		logger.info("客户端断开连接!"+ctx.channel().remoteAddress());
 		setThrowableInfo(new Throwable(ctx.channel().localAddress()+"连接关闭"));
-//		ctx.channel().close();
+		ctx.channel().close();
 	}
 	public void channelRead( ChannelHandlerContext ctx, Object msg) throws InterruptedException   {
 		if(msg instanceof RpcRequest) {
