@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('任务主页','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/com/dialog-table.js,/js/com/page-dialog-action.js')"></head>
+<script type="text/javascript">
+$(function(){
+	$("#flow-table").jTable({
+		url:"/task/query/page",
+		uniqueId:'id',
+		method:"post",
+		contentType: 'application/json',
+		showColumns:true,
+		showRefresh:true,
+		showToggle:true,
+		queryParams:function(param){
+			var params={}
+			params.data=getQueryParam()
+			params.current=param.offset;
+			params.pageSize=param.limit;
+			return params;
+		},
+		responseHandler:function(res){
+			if(res.success ){
+				return res.data;
+			}else{
+				$.alert({type:"warn",content:"请求数据错误,错误编码："+res.code+" 信息："+res.message})
+			}
+		},
+		columns :[
+			{field: 'radio', radio: true,cellStyle:function(){return {classes:"flow-def"}}}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "id", title : "id"},
+			{ field : "name", title : "名称",formatter:function(value,row){
+				console.log(row)
+				return '<div>'+value+(row.inNowTaskNode?'<i class="glyphicon glyphicon-certificate"></i><i class="glyphicon glyphicon-flag task-now-node"></i>':'')+'</div>'
+			}},
+			{ field : "message", title : "信息"},
+			{ field : "desc", title : "描述"},
+			{ field : "status", title : "状态",},
+			{ field : "createName", title : "创建人",},
+			{ field : "version", title : "版本号", visible: false},
+			{ field : "ts", title : "时间",formatter:function(value,row){return value !=null?new Date(value).toLocaleString():'-'}},
+		],
+		onDblClickRow:function(row,ele){
+			$.cartPage({parent:"#page-panel",src:'/page/task/detail?id='+row.id})
+		}
+	})
+	
+	$("#property-page-query-tool").pageQueryTool({
+		columns:[
+			{title:"id",name:"id",size:2},
+			{title:"名称",name:"name",size:2},
+			{title:"描述",name:"desc",size:2},
+			{title:"状态",name:"status",size:2,data:[
+				{name:"异常","value":-1},
+				{name:"开启","value":0},
+				{name:"运行中","value":1},
+				{name:"回滚","value":2},
+				{name:"结束","value":3}
+			]},
+		]
+	})
+	
+	initAddTaskBtn();
+})
+
+function getQueryParam(){
+	return $("#property-page-query-tool").pageQuery()
+}
+
+function initAddTaskBtn(){
+	$(".btn-item").addClass('disabled')
+	$.doJsonAjax({
+		url:"/flow/query/bygroup?groupId",
+		success:function(res){
+			initAddTaskEvent(res.data)
+		}
+	})
+}
+
+function initAddTaskEvent(flows){
+	var col=[
+		{title:"任务名称",name:"name"},
+		{title:"任务说明",name:"desc"},
+		{title:"任务记录",name:"message"},
+	]
+	if(flows.length>0){
+		var list=[]
+		for(var i in flows){
+			list.push({name:flows[i].name,value:flows[i].id})
+		}
+		var fc={title:"流程",name:"flowId",ele:"select",data:list}
+		col.push(fc)
+	}else{
+		$.alert({type:"warn",content:"未查到相关流程"})
+		$("#add-task").remove()
+		return;
+	}
+	
+	$("#add-task").removeClass("disabled")
+	$("#add-task").click(function(){
+		windowAction({
+			title:"创建任务",
+			table:"#flow-table",
+			columns:col,
+			extendData:function(data){
+				return  {task:data};
+			},
+			actionUrl:'/task/start',
+		})
+	})
+}
+</script>
+<style type="text/css">
+	.glyphicon-certificate{color: green;}
+	.task-now-node{top: -4px;  color: red; transform: rotate(25deg); margin-left: 2px;}
+</style>
+<body>
+	<div id="page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left">任务</h4>
+				<button class="btn btn-primary pull-right btn-item" id="add-task">创建任务</button>
+			</div>
+			<div id="page-contain" class="panel-body">
+				<div id="property-page-query-tool" class="page-tool form-inline"></div>
+				<div class="page-table">
+					<table id="flow-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
