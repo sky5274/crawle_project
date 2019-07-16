@@ -57,7 +57,7 @@
       <if test="flowId != null" >       flow_id,      	</if>
       <if test="flowName != null" >     flow_name,      </if>
       <if test="message != null" >      message,   		</if>
-      <if test="desc != null" >        	desc_con,      		</if>
+      <if test="desc != null" >        	desc_con,      	</if>
       <if test="params != null" >       params,      	</if>
       <if test="createCode != null" >   create_code,    </if>
       <if test="createName != null" >   create_name,    </if>
@@ -85,7 +85,7 @@
       <if test="flowId != null" >       flow_id = #{flowId,jdbcType=VARCHAR},      		</if>
       <if test="flowName != null" >     flow_name=#{flowName,jdbcType=VARCHAR},      	</if>
       <if test="message != null" >      message = #{message,jdbcType=VARCHAR},      	</if>
-      <if test="desc != null" >        	desc_con = #{desc,jdbcType=VARCHAR},      			</if>
+      <if test="desc != null" >        	desc_con = #{desc,jdbcType=VARCHAR},      		</if>
       <if test="params != null" >       params = #{params ,jdbcType=OTHER,typeHandler=com.sky.flow.typehandler.MybatisJsonTypeHandler},      		</if>
       <if test="createCode != null" >   create_code = #{createCode,jdbcType=VARCHAR},   </if>
       <if test="createName != null" >   create_name = #{createName,jdbcType=VARCHAR},   </if>

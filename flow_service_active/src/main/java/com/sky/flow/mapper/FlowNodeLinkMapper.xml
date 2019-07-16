@@ -58,8 +58,8 @@
     insert into flow_node_link
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >        	id,      		</if>
-      <if test="key != null" >        	l_key,      		</if>
-      <if test="condition != null" >    condition_con,      </if>
+      <if test="key != null" >        	l_key,      	</if>
+      <if test="condition != null" >    condition_con,  </if>
       <if test="flowId != null" >    	flow_id,      	</if>
       <if test="upNodeId != null" >     up_node_id,     </if>
       <if test="downNodeId != null" >   down_node_id,   </if>
@@ -81,7 +81,7 @@
     update flow_node_link
     <set >
       <if test="key != null" >        		l_key = #{key,jdbcType=VARCHAR},      			</if>
-      <if test="condition != null" >        condition_con = #{condition,jdbcType=VARCHAR},      </if>
+      <if test="condition != null" >        condition_con = #{condition,jdbcType=VARCHAR},  </if>
        <if test="flowId != null" >    		flow_id = #{flowId,jdbcType=VARCHAR},  			</if>
       <if test="upNodeId != null" >        	up_node_id = #{upNodeId,jdbcType=VARCHAR},      </if>
       <if test="downNodeId != null" >       down_node_id = #{downNodeId,jdbcType=VARCHAR},  </if>

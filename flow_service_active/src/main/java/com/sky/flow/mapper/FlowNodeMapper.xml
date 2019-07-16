@@ -156,7 +156,7 @@
     insert into flow_node
     <trim prefix="(" suffix=")" suffixOverrides="," >
         								id,
-      <if test="key != null" >        	n_key,      		</if>
+      <if test="key != null" >        	n_key,      	</if>
       <if test="name != null" >        	name,      		</if>
       <if test="type != null" >        	type,      		</if>
       <if test="flowId != null" >       flow_id,      	</if>
@@ -185,14 +185,14 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.sky.flow.bean.FlowNodeBean" >
     update flow_node
     <set >
-      <if test="key != null" >        	n_key = #{key,jdbcType=VARCHAR},      </if>
-      <if test="name != null" >        	name = #{name,jdbcType=VARCHAR},      </if>
-      <if test="type != null" >        	type = #{type,jdbcType=VARCHAR},      </if>
-      <if test="flowId != null" >       flow_id = #{flowId,jdbcType=VARCHAR},      </if>
+      <if test="key != null" >        	n_key = #{key,jdbcType=VARCHAR},      			</if>
+      <if test="name != null" >        	name = #{name,jdbcType=VARCHAR},      			</if>
+      <if test="type != null" >        	type = #{type,jdbcType=VARCHAR},      			</if>
+      <if test="flowId != null" >       flow_id = #{flowId,jdbcType=VARCHAR},      		</if>
       <if test="status != null" >       status= #{status,jdbcType=INTEGER},     		</if>
-      <if test="authCodes != null" >    auth_codes = #{authCodes,jdbcType=VARCHAR},      </if>
-      <if test="createCode != null" >   create_code = #{createCode,jdbcType=VARCHAR},      </if>
-      <if test="createName != null" >   create_name = #{createName,jdbcType=VARCHAR},      </if>
+      <if test="authCodes != null" >    auth_codes = #{authCodes,jdbcType=VARCHAR},     </if>
+      <if test="createCode != null" >   create_code = #{createCode,jdbcType=VARCHAR},   </if>
+      <if test="createName != null" >   create_name = #{createName,jdbcType=VARCHAR},   </if>
               							version = version+1,     
               							ts = now(),      
     </set>

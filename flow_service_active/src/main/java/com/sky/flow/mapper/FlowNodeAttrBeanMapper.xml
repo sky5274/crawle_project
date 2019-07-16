@@ -49,34 +49,34 @@
   <insert id="insertSelective" parameterType="com.sky.flow.bean.FlowNodeAttrBean" keyProperty="id" useGeneratedKeys="true">
     insert into flow_node_attr
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >        id,      </if>
-      <if test="key != null" >        a_key,      </if>
-      <if test="name != null" >        name,      </if>
-      <if test="value != null" >        value,      </if>
-      <if test="flowId != null" >        flow_id,      </if>
-      <if test="nodeId != null" >       node_id,      </if>
+      <if test="id != null" >        	id,      					</if>
+      <if test="key != null" >        	a_key,      				</if>
+      <if test="name != null" >        	name,      					</if>
+      <if test="value != null" >        value,      				</if>
+      <if test="flowId != null" >       flow_id,      				</if>
+      <if test="nodeId != null" >       node_id,      				</if>
             							version,      
 								        ts,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >        #{id,jdbcType=INTEGER},      </if>
-      <if test="key != null" >       #{key,jdbcType=VARCHAR},      </if>
-      <if test="name != null" >       #{name,jdbcType=VARCHAR},      </if>
-      <if test="value != null" >        #{value,jdbcType=VARCHAR},      </if>
-      <if test="flowId != null" >        #{flowId,jdbcType=VARCHAR},      </if>
-      <if test="nodeId != null" >        #{nodeId,jdbcType=VARCHAR},      </if>
-     									 0,
+      <if test="id != null" >        	#{id,jdbcType=INTEGER},     </if>
+      <if test="key != null" >       	#{key,jdbcType=VARCHAR},    </if>
+      <if test="name != null" >       	#{name,jdbcType=VARCHAR},   </if>
+      <if test="value != null" >        #{value,jdbcType=VARCHAR},  </if>
+      <if test="flowId != null" >       #{flowId,jdbcType=VARCHAR}, </if>
+      <if test="nodeId != null" >       #{nodeId,jdbcType=VARCHAR}, </if>
+     									0,
        									now(),
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.sky.flow.bean.FlowNodeAttrBean" >
     update flow_node_attr
     <set >
-      <if test="key != null" >        a_key = #{key,jdbcType=VARCHAR},      </if>
-      <if test="name != null" >        name = #{name,jdbcType=VARCHAR},      </if>
-      <if test="value != null" >       value = #{value,jdbcType=VARCHAR},      </if>
-      <if test="flowId != null" >        flow_id = #{flowId,jdbcType=VARCHAR},      </if>
-      <if test="nodeId != null" >        node_id = #{nodeId,jdbcType=VARCHAR},      </if>
+      <if test="key != null" >        	a_key = #{key,jdbcType=VARCHAR},      	</if>
+      <if test="name != null" >        	name = #{name,jdbcType=VARCHAR},      	</if>
+      <if test="value != null" >       	value = #{value,jdbcType=VARCHAR},      </if>
+      <if test="flowId != null" >       flow_id = #{flowId,jdbcType=VARCHAR},   </if>
+      <if test="nodeId != null" >       node_id = #{nodeId,jdbcType=VARCHAR},   </if>
              							version = version+1,      
         								ts = now(),
     </set>

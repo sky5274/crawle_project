@@ -99,16 +99,16 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.sky.flow.bean.FlowNodeEventBean" >
     update flow_node_event
     <set >
-      <if test="flowId != null" >       flow_id = #{flowId,jdbcType=VARCHAR},     </if>
-      <if test="nodeId != null" >       node_id = #{nodeId,jdbcType=VARCHAR},     </if>
-      <if test="key != null" >        	e_key = #{key,jdbcType=VARCHAR},      </if>
-      <if test="name != null" >        	name = #{name,jdbcType=VARCHAR},      </if>
-      <if test="order != null" >        order_index = #{order,jdbcType=INTEGER},      </if>
-      <if test="type != null" >        	type = #{type,jdbcType=VARCHAR},      </if>
-      <if test="eventType != null" >    event_type = #{eventType,jdbcType=VARCHAR},      </if>
-      <if test="content != null" >      content = #{content,jdbcType=VARCHAR},      </if>
-      <if test="createCode != null" >   create_code = #{createCode,jdbcType=VARCHAR},      </if>
-      <if test="createName != null" >   create_name = #{createName,jdbcType=VARCHAR},      </if>
+      <if test="flowId != null" >       flow_id = #{flowId,jdbcType=VARCHAR},     		</if>
+      <if test="nodeId != null" >       node_id = #{nodeId,jdbcType=VARCHAR},     		</if>
+      <if test="key != null" >        	e_key = #{key,jdbcType=VARCHAR},      			</if>
+      <if test="name != null" >        	name = #{name,jdbcType=VARCHAR},      			</if>
+      <if test="order != null" >        order_index = #{order,jdbcType=INTEGER},      	</if>
+      <if test="type != null" >        	type = #{type,jdbcType=VARCHAR},      			</if>
+      <if test="eventType != null" >    event_type = #{eventType,jdbcType=VARCHAR},     </if>
+      <if test="content != null" >      content = #{content,jdbcType=VARCHAR},      	</if>
+      <if test="createCode != null" >   create_code = #{createCode,jdbcType=VARCHAR},   </if>
+      <if test="createName != null" >   create_name = #{createName,jdbcType=VARCHAR},   </if>
              							version = version+1,      
         								ts = now(),
     </set>
