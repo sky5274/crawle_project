@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.flow.dao.FlowNodeBeanMapper" >
+  <resultMap id="simpleResultMap" type="com.sky.flow.bean.FlowNodeContainerBean" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="n_key" property="key" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="container_id" property="containerId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="auth_codes" property="authCodes" jdbcType="VARCHAR" />
+    <result column="create_code" property="createCode" jdbcType="VARCHAR" />
+    <result column="create_name" property="createName" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="com.sky.flow.bean.FlowNodeBean" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="n_key" property="key" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+     <result column="container_id" property="containerId" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="auth_codes" property="authCodes" jdbcType="VARCHAR" />
+    <result column="create_code" property="createCode" jdbcType="VARCHAR" />
+    <result column="create_name" property="createName" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+    <collection property="attrs" ofType="com.sky.flow.bean.FlowNodeAttrBean" select="com.sky.flow.dao.FlowNodeAttrBeanMapper.selectByNode" column="{flowId=flow_id,nodeId=id}"></collection>
+  </resultMap>
+  <resultMap id="ResultMap" type="com.sky.flow.bean.FlowNodeContainerBean" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="n_key" property="key" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="container_id" property="containerId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="auth_codes" property="authCodes" jdbcType="VARCHAR" />
+    <result column="create_code" property="createCode" jdbcType="VARCHAR" />
+    <result column="create_name" property="createName" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+    <collection property="attrs" ofType="com.sky.flow.bean.FlowNodeAttrBean">
+    	<result column="attr_id" property="id" jdbcType="VARCHAR" />
+	    <result column="attr_key" property="key" jdbcType="VARCHAR" />
+	    <result column="attr_name" property="name" jdbcType="VARCHAR" />
+	    <result column="attr_value" property="value" jdbcType="VARCHAR" />
+	    <result column="attr_flow_id" property="flowId" jdbcType="VARCHAR" />
+	    <result column="attr_node_id" property="nodeId" jdbcType="VARCHAR" />
+	    <result column="attr_version" property="version" jdbcType="INTEGER" />
+	    <result column="attr_ts" property="ts" jdbcType="TIMESTAMP" />
+    </collection>
+    <collection property="links" ofType="com.sky.flow.bean.FlowNodeLinkBean">
+    	<result column="link_id" property="id" jdbcType="VARCHAR" />
+	    <result column="link_key" property="key" jdbcType="VARCHAR" />
+	    <result column="link_flow_id" property="flowId" jdbcType="VARCHAR" />
+	    <result column="link_condition" property="condition" jdbcType="VARCHAR" />
+	    <result column="link_up_node_id" property="upNodeId" jdbcType="VARCHAR" />
+	    <result column="link_down_node_id" property="downNodeId" jdbcType="VARCHAR" />
+	    <result column="link_version" property="version" jdbcType="INTEGER" />
+	    <result column="link_ts" property="ts" jdbcType="TIMESTAMP" />
+    </collection>
+    <collection property="events" ofType="com.sky.flow.bean.FlowNodeEventBean">
+    	<result column="evt_id" property="id" jdbcType="VARCHAR" />
+	    <result column="evt_flow_id" property="flowId" jdbcType="VARCHAR" />
+	    <result column="evt_node_id" property="nodeId" jdbcType="VARCHAR" />
+	    <result column="evt_key" property="key" jdbcType="VARCHAR" />
+	    <result column="evt_name" property="name" jdbcType="VARCHAR" />
+	    <result column="evt_order" property="order" jdbcType="INTEGER" />
+	    <result column="evt_type" property="type" jdbcType="VARCHAR" />
+	    <result column="evt_event_type" property="eventType" jdbcType="VARCHAR" />
+	    <result column="evt_content" property="content" jdbcType="VARCHAR" />
+	    <result column="evt_create_code" property="createCode" jdbcType="VARCHAR" />
+	    <result column="evt_create_name" property="createName" jdbcType="VARCHAR" />
+	    <result column="evt_version" property="version" jdbcType="INTEGER" />
+	    <result column="evt_ts" property="ts" jdbcType="TIMESTAMP" />
+    </collection>
+    <!-- <collection property="container" ofType="com.sky.flow.bean.FlowNodeContainerBean" select="selectBaseNodeByContianerFlow" column="{containerId=id,flowId=flow_id}"></collection> -->
+  </resultMap>
+  <resultMap id="BaseContainerResultMap" type="com.sky.flow.bean.FlowNodeContainerBean" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="n_key" property="key" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="auth_codes" property="authCodes" jdbcType="VARCHAR" />
+    <result column="create_code" property="createCode" jdbcType="VARCHAR" />
+    <result column="create_name" property="createName" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+     <collection property="attrs" ofType="com.sky.flow.bean.FlowNodeAttrBean" select="com.sky.flow.dao.FlowNodeAttrBeanMapper.selectByNode" column="{flowId=flow_id,nodeId=id}"></collection>
+  </resultMap>
+  <resultMap id="containerSimpleResultMap" type="com.sky.flow.bean.FlowNodeContainerBean" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="n_key" property="key" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="auth_codes" property="authCodes" jdbcType="VARCHAR" />
+    <result column="create_code" property="createCode" jdbcType="VARCHAR" />
+    <result column="create_name" property="createName" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+    <collection property="attrs" ofType="com.sky.flow.bean.FlowNodeAttrBean" select="com.sky.flow.dao.FlowNodeAttrBeanMapper.selectByNode" column="{flowId=flow_id,nodeId=id}"></collection>
+    <collection property="events" ofType="com.sky.flow.bean.FlowNodeEventBean" select="com.sky.flow.dao.FlowNodeEventBeanMapper.selectByNode" column="{flowId=flow_id,id=id}"></collection>
+    <collection property="links" ofType="com.sky.flow.bean.FlowNodeLinkBean" select="com.sky.flow.dao.FlowNodeLinkBeanMapper.selectByUpNode" column="{flowId=flow_id,nodeId=id}"></collection>
+    <collection property="next" ofType="com.sky.flow.bean.FlowNodeContainerBean" select="selectNextNode" column="{flowId=flow_id,nodeId=id}"></collection>
+  </resultMap>
+  <resultMap id="containerResultMap" type="com.sky.flow.bean.FlowNodeContainerBean" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="n_key" property="key" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="auth_codes" property="authCodes" jdbcType="VARCHAR" />
+    <result column="create_code" property="createCode" jdbcType="VARCHAR" />
+    <result column="create_name" property="createName" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+    <collection property="attrs" ofType="com.sky.flow.bean.FlowNodeAttrBean" select="com.sky.flow.dao.FlowNodeAttrBeanMapper.selectByNode" column="{flowId=flow_id,nodeId=id}"></collection>
+    <collection property="events" ofType="com.sky.flow.bean.FlowNodeEventBean" select="com.sky.flow.dao.FlowNodeEventBeanMapper.selectByNode" column="{flowId=flow_id,id=id}"></collection>
+    <collection property="links" ofType="com.sky.flow.bean.FlowNodeLinkBean" select="com.sky.flow.dao.FlowNodeLinkBeanMapper.selectByUpNode" column="{flowId=flow_id,nodeId=id}"></collection>
+    <collection property="container" ofType="com.sky.flow.bean.FlowNodeContainerBean" select="selectBaseNodeByContianerFlow" column="{containerId=id,flowId=flow_id}"></collection>
+    <collection property="next" ofType="com.sky.flow.bean.FlowNodeContainerBean" select="selectNextNode" column="{flowId=flow_id,nodeId=id}"></collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name,n_key, type, flow_id,status, auth_codes, create_code, create_name, version, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from flow_node
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from flow_node
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.sky.flow.bean.FlowNodeBean" useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_node (id, name, n_key,type, status,
+      flow_id, auth_codes, create_code, 
+      create_name, version, ts
+      )
+    values (UUID_SHORT(), #{name,jdbcType=VARCHAR},#{key,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},#{status,jdbcType=INTEGER} 
+      #{flowId,jdbcType=VARCHAR}, #{authCodes,jdbcType=VARCHAR}, #{createCode,jdbcType=VARCHAR}, 
+      #{createName,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER}, #{ts,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.flow.bean.FlowNodeBean" useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_node
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        								id,
+      <if test="key != null" >        	n_key,      		</if>
+      <if test="name != null" >        	name,      		</if>
+      <if test="type != null" >        	type,      		</if>
+      <if test="flowId != null" >       flow_id,      	</if>
+      <if test="status != null" >       status 			</if>
+      <if test="authCodes != null" >    auth_codes,     </if>
+      <if test="createCode != null" >   create_code,    </if>
+      <if test="createName != null" >   create_name,    </if>
+        								version,
+        								ts,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id == ''" >        		UUID_SHORT(),      					</if>
+      <if test="id != ''" >        		IFNULL(#{id},UUID_SHORT()),      	</if>
+      <if test="key != null" >        	#{key,jdbcType=VARCHAR},      		</if>
+      <if test="name != null" >        	#{name,jdbcType=VARCHAR},      		</if>
+      <if test="type != null" >        	#{type,jdbcType=VARCHAR},      		</if>
+      <if test="flowId != null" >       #{flowId,jdbcType=VARCHAR},      	</if>
+      <if test="status != null" >      	#{status,jdbcType=INTEGER},      	</if>
+      <if test="authCodes != null" >    #{authCodes,jdbcType=VARCHAR},      </if>
+      <if test="createCode != null" >   #{createCode,jdbcType=VARCHAR},     </if>
+      <if test="createName != null" >   #{createName,jdbcType=VARCHAR},     </if>
+       									0,
+        								now(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.flow.bean.FlowNodeBean" >
+    update flow_node
+    <set >
+      <if test="key != null" >        	n_key = #{key,jdbcType=VARCHAR},      </if>
+      <if test="name != null" >        	name = #{name,jdbcType=VARCHAR},      </if>
+      <if test="type != null" >        	type = #{type,jdbcType=VARCHAR},      </if>
+      <if test="flowId != null" >       flow_id = #{flowId,jdbcType=VARCHAR},      </if>
+      <if test="status != null" >       status= #{status,jdbcType=INTEGER},     		</if>
+      <if test="authCodes != null" >    auth_codes = #{authCodes,jdbcType=VARCHAR},      </if>
+      <if test="createCode != null" >   create_code = #{createCode,jdbcType=VARCHAR},      </if>
+      <if test="createName != null" >   create_name = #{createName,jdbcType=VARCHAR},      </if>
+              							version = version+1,     
+              							ts = now(),      
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.flow.bean.FlowNodeBean" >
+    update flow_node
+    set name = #{name,jdbcType=VARCHAR},
+      n_key = #{key,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      flow_id = #{flowId,jdbcType=VARCHAR},
+      auth_codes = #{authCodes,jdbcType=VARCHAR},
+      create_code = #{createCode,jdbcType=VARCHAR},
+      create_name = #{createName,jdbcType=VARCHAR},
+      version = version+1,
+      ts = now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectBaseNodeByContianerFlow" resultMap="ResultMap">
+  	select 
+  		node.id, node.name,node.n_key,CASE WHEN node.flow_id &lt;&gt; '${flowId}' then CONCAT('container_',node.type)else node.type end as type,
+  		'${flowId}' flow_id,case when node.flow_id!='${flowId}' then node.flow_id else '' end as container_id,
+  		node.status, node.auth_codes, node.create_code, node.create_name, node.version, node.ts
+  		,case WHEN node.type='end' then 2 when node.type='start' then 0	else 1 end as nindex
+  		,attr.id attr_id, attr.a_key attr_key, attr.flow_id attr_flow_id,attr.node_id attr_node_id, attr.name attr_name, attr.value attr_value, attr.version attr_version, attr.ts attr_ts
+  		,link.id link_id, link.l_key link_key, link.flow_id link_flow_id, link.condition_con link_condition,link.up_node_id link_up_node_id, link.down_node_id link_down_node_id, link.version link_version, link.ts link_ts
+  		,evt.id evt_id,evt.node_id evt_node_id,evt.e_key evt_key, evt.name evt_name, evt.flow_id evt_flow_id, evt.order_index evt_order, evt.type evt_type, evt.event_type evt_event_type, evt.content evt_content, evt.create_code evt_create_code, evt.create_name evt_create_name, evt.version evt_version,   evt.ts evt_ts
+    from flow_node node
+    INNER JOIN (SELECT flow_container('${flowId}') container_id ) cont on   cont.container_id LIKE CONCAT('%',node.flow_id,'%')
+    left join flow_node_attr attr on (node.flow_id=attr.flow_id or cont.container_id like CONCAT('%',attr.flow_id,'%')) and node.id=attr.node_id 
+    left join flow_node_link link on (node.flow_id=link.flow_id or cont.container_id like CONCAT('%',link.flow_id,'%')) and node.id=link.up_node_id
+    left join flow_node_event evt on (node.flow_id=evt.flow_id or cont.container_id like CONCAT('%',evt.flow_id,'%')) and node.id=evt.node_id
+    where node.flow_id = #{containerId,jdbcType=VARCHAR} 
+    	
+    ORDER BY nindex,ts
+  </select>
+  <select id="selectNodeByFlow" parameterType="java.lang.String" resultMap="containerResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    ,case WHEN type='end' then 2 when type='start' then 0	else 1 end as nindex
+    from flow_node
+    where flow_id = #{flowId,jdbcType=VARCHAR}
+    order  by nindex,ts
+  </select>
+  <select id="selectNode"  resultMap="containerResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from flow_node
+    where (SELECT flow_container( #{flowId})) like CONCAT('%',flow_id,'%') and id = #{nodeId,jdbcType=VARCHAR}
+  </select>
+  <!-- 简要流程节点 -->
+  <select id="selectSimpleNodes" parameterType="java.lang.String"  resultMap="simpleResultMap">
+  	select 
+    id, name,n_key,CASE WHEN flow_id &lt;&gt; '${flowId}' then CONCAT('container_',type)else type end as type, 
+     '${flowId}' flow_id,case when flow_id  &lt;&gt;'${flowId}' then flow_id else '' end as container_id,
+     status, auth_codes, create_code, create_name, version, ts
+    from flow_node
+    where (SELECT flow_container( #{flowId})) like CONCAT('%',flow_id,'%') and type !="container"
+  </select>
+  
+  <!-- 简要流程节点包含节点信息 -->
+  <select id="selectSimpleWithInfoNodes" parameterType="java.lang.String"  resultMap="containerSimpleResultMap">
+  	select 
+    id, name,n_key,CASE WHEN flow_id &lt;&gt; '${flowId}' then CONCAT('container_',type)else type end as type, 
+     '${flowId}' flow_id,case when flow_id  &lt;&gt;'${flowId}' then flow_id else '' end as container_id,
+     status, auth_codes, create_code, create_name, version, ts
+    from flow_node
+    where (SELECT flow_container( #{flowId})) like CONCAT('%',flow_id,'%') and type !="container"
+  </select>
+  
+  <select id="selectNextNode" resultMap="ResultMap">
+  	select 
+  		node.id, node.name,node.n_key, CASE WHEN node.flow_id &lt;&gt; '${flowId}' then CONCAT('container_',node.type)else node.type end as type,
+  		 '${flowId}' flow_id,case when node.flow_id!='${flowId}' then node.flow_id else '' end as container_id,
+  		 node.status, node.auth_codes, node.create_code, node.create_name, node.version, node.ts
+  		,attr.id attr_id, attr.a_key attr_key,attr.flow_id attr_flow_id, attr.node_id attr_node_id, attr.name attr_name, attr.value attr_value, attr.version attr_version, attr.ts attr_ts
+  		,link.id link_id, link.l_key link_key,link.flow_id link_flow_id, link.condition_con link_condition,link.up_node_id link_up_node_id, link.down_node_id link_down_node_id, link.version link_version, link.ts link_ts
+  		,evt.id evt_id, evt.node_id evt_node_id, evt.e_key evt_key, evt.name evt_name,evt.flow_id evt_flow_id, evt.order_index evt_order, evt.type evt_type, evt.event_type evt_event_type, evt.content evt_content, evt.create_code evt_create_code, evt.create_name evt_create_name, evt.version evt_version,   evt.ts evt_ts
+    from flow_node node
+   	INNER JOIN (SELECT flow_container('${flowId}') container_id ) cont on   cont.container_id LIKE CONCAT('%',node.flow_id,'%')
+    left join flow_node_attr attr on (node.flow_id=attr.flow_id or cont.container_id like CONCAT('%',attr.flow_id,'%')) and node.id=attr.node_id 
+    left join flow_node_link link on (node.flow_id=link.flow_id or cont.container_id like CONCAT('%',link.flow_id,'%')) and node.id=link.up_node_id
+    left join flow_node_event evt on (node.flow_id=evt.flow_id or cont.container_id like CONCAT('%',evt.flow_id,'%')) and node.id=evt.node_id
+    where node.id in ( select down_node_id from flow_node_link where up_node_id=#{nodeId} and (SELECT flow_container( #{flowId})) like CONCAT('%',flow_id,'%'))
+  </select>
+</mapper>

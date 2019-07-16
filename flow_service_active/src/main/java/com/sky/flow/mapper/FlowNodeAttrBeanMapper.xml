@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.flow.dao.FlowNodeAttrBeanMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.flow.bean.FlowNodeAttrBean" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="a_key" property="key" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="node_id" property="nodeId" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, a_key, name, value, flow_id, node_id, version, ts
+  </sql>
+  <select id="selectByPrimarya_key" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from flow_node_attr
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from flow_node_attr
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByNode" >
+    delete from flow_node_attr
+    where flow_id = #{flowId} and node_id=#{nodeId}
+  </delete>
+  <insert id="insert" parameterType="com.sky.flow.bean.FlowNodeAttrBean"  keyProperty="id" useGeneratedKeys="true">
+    insert into flow_node_attr (id, a_key, name, 
+      value, flow_id, node_id, 
+      version, ts)
+    values (#{id,jdbcType=INTEGER}, #{key,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{value,jdbcType=VARCHAR}, #{flowId,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR}, 
+      0, now())
+  </insert>
+  <insert id="insertBatch" parameterType="java.util.List" keyProperty="id" useGeneratedKeys="true">
+    insert into flow_node_attr (id, a_key, name, 
+      value, flow_id, node_id, 
+      version, ts)
+    <foreach collection="list" item="it" open="values " separator=",">
+    (#{it.id,jdbcType=INTEGER}, #{it.key,jdbcType=VARCHAR}, #{it.name,jdbcType=VARCHAR}, 
+      #{it.value,jdbcType=VARCHAR}, #{it.flowId,jdbcType=VARCHAR}, #{it.nodeId,jdbcType=VARCHAR}, 
+      0, now())
+    </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.flow.bean.FlowNodeAttrBean" keyProperty="id" useGeneratedKeys="true">
+    insert into flow_node_attr
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >        id,      </if>
+      <if test="key != null" >        a_key,      </if>
+      <if test="name != null" >        name,      </if>
+      <if test="value != null" >        value,      </if>
+      <if test="flowId != null" >        flow_id,      </if>
+      <if test="nodeId != null" >       node_id,      </if>
+            							version,      
+								        ts,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >        #{id,jdbcType=INTEGER},      </if>
+      <if test="key != null" >       #{key,jdbcType=VARCHAR},      </if>
+      <if test="name != null" >       #{name,jdbcType=VARCHAR},      </if>
+      <if test="value != null" >        #{value,jdbcType=VARCHAR},      </if>
+      <if test="flowId != null" >        #{flowId,jdbcType=VARCHAR},      </if>
+      <if test="nodeId != null" >        #{nodeId,jdbcType=VARCHAR},      </if>
+     									 0,
+       									now(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.flow.bean.FlowNodeAttrBean" >
+    update flow_node_attr
+    <set >
+      <if test="key != null" >        a_key = #{key,jdbcType=VARCHAR},      </if>
+      <if test="name != null" >        name = #{name,jdbcType=VARCHAR},      </if>
+      <if test="value != null" >       value = #{value,jdbcType=VARCHAR},      </if>
+      <if test="flowId != null" >        flow_id = #{flowId,jdbcType=VARCHAR},      </if>
+      <if test="nodeId != null" >        node_id = #{nodeId,jdbcType=VARCHAR},      </if>
+             							version = version+1,      
+        								ts = now(),
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.sky.flow.bean.FlowNodeAttrBean" >
+    update flow_node_attr
+    set a_key = #{key,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      value = #{value,jdbcType=VARCHAR},
+      flow_id = #{flowId,jdbcType=VARCHAR},
+      node_id = #{nodeId,jdbcType=VARCHAR},
+      version = version+1,
+      ts = now()
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectByNode"  resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from flow_node_attr
+  	where (SELECT flow_container( #{flowId})) like CONCAT('%',flow_id,'%') and node_id=#{nodeId}
+  </select>
+  
+  <delete id="deleteByIds" parameterType="java.util.List">
+  delete from flow_node_attr
+    where id in <foreach collection="list" item="it" open="(" close=")" separator=",">#{it}</foreach>
+  </delete>
+</mapper>

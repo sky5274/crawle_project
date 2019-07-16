@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.flow.dao.FlowBeanMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.flow.bean.FlowBean" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="start_id" property="startId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="group_id" property="groupId" jdbcType="VARCHAR" />
+    <result column="create_code" property="createCode" jdbcType="VARCHAR" />
+    <result column="create_name" property="createName" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, start_id, group_id, status,create_code, create_name, version, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from flow_main
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from flow_main
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.sky.flow.bean.FlowBean"  useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_main (id, name, start_id, 
+      group_id, status,create_code, create_name, 
+      version, ts)
+    values (UUID_SHORT(), #{name,jdbcType=VARCHAR}, #{startId,jdbcType=VARCHAR}, 
+      #{groupId,jdbcType=VARCHAR},#{status,jdbcType=INTEGER}, #{createCode,jdbcType=VARCHAR}, #{createName,jdbcType=VARCHAR}, 
+      0,now())
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.flow.bean.FlowBean"  useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_main
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+             							id,      
+      <if test="name != null" >        	name,      		</if>
+      <if test="startId != null" >      start_id,      	</if>
+      <if test="groupId != null" >      group_id,      	</if>
+      <if test="status != null" >       status,      	</if>
+      <if test="createCode != null" >   create_code,    </if>
+      <if test="createName != null" >   create_name,    </if>
+              							version,      
+             							ts,      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+            							UUID_SHORT(),     
+      <if test="name != null" >        	#{name,jdbcType=VARCHAR},      	</if>
+      <if test="startId != null" >      #{startId,jdbcType=VARCHAR},    </if>
+      <if test="groupId != null" >      #{groupId,jdbcType=VARCHAR},    </if>
+      <if test="status != null" >       #{status,jdbcType=INTEGER},     </if>
+      <if test="createCode != null" >   #{createCode,jdbcType=VARCHAR}, </if>
+      <if test="createName != null" >   #{createName,jdbcType=VARCHAR}, </if>
+              							0,     
+             							now(),      
+    </trim>
+ </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.flow.bean.FlowBean" >
+    update flow_main
+    <set >
+      <if test="name != null" >     	name = #{name,jdbcType=VARCHAR},      			</if>
+      <if test="startId != null" >      start_id = #{startId,jdbcType=VARCHAR},      	</if>
+      <if test="groupId != null" >      group_id = #{groupId,jdbcType=VARCHAR},      	</if>
+      <if test="status != null" >       status= #{status,jdbcType=INTEGER},      		</if>
+      <if test="createCode != null" >   create_code = #{createCode,jdbcType=VARCHAR},  	</if>
+      <if test="createName != null" >   create_name = #{createName,jdbcType=VARCHAR},   </if>
+         								version = version+1,      	
+            							ts = now(),      			
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.flow.bean.FlowBean" >
+    update flow_main
+    set name = #{name,jdbcType=VARCHAR},
+      start_id = #{startId,jdbcType=VARCHAR},
+      status= #{status,jdbcType=INTEGER},
+      group_id = #{groupId,jdbcType=VARCHAR},
+      create_code = #{createCode,jdbcType=VARCHAR},
+      create_name = #{createName,jdbcType=VARCHAR},
+      version = version+1,
+      ts = now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectByGroupId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from flow_main
+    <trim prefix="where" suffixOverrides="and">
+    	<if test="groupId !=null and groupId !=''">group_id = #{groupId,jdbcType=VARCHAR} and</if>
+    </trim>
+  </select>
+</mapper>
