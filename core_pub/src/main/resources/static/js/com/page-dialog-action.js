@@ -9,6 +9,12 @@ function windowAction(obj){
 			var flag=tabledata.isOk;
 			if(flag){
 				if(type=='sure'){
+					if(obj.extendData){
+						var d=obj.extendData(tabledata.data)
+						if(d){
+							tabledata.data=d;
+						}
+					}
 					updatOrAddPostRequest({url:obj.actionUrl,data:tabledata.data,table:obj.table,isPost:obj.isPost})
 				}
 			}
