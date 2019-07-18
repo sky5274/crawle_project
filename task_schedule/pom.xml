@@ -10,7 +10,7 @@
 	<groupId>com.sky.task</groupId>
 	<artifactId>task_schedule</artifactId>
 	<version>0.0.3-SNAPSHOT</version>
-	<name>config_auth</name>
+	<name>task_schedule</name>
 	<packaging>jar</packaging>
 	<description>task_schedule</description>
 
