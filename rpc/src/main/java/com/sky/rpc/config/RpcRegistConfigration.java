@@ -6,6 +6,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
+import com.sky.rpc.regist.RpcConsumerRegistNodeHandel;
+import com.sky.rpc.regist.RpcProviderRegistNodeHande;
+import com.sky.rpc.util.RpcSpringBeanUtil;
 
 /**
  * rpc 配置服务
@@ -20,6 +23,11 @@ public class RpcRegistConfigration implements ImportBeanDefinitionRegistrar{
 		 //注册  rpc provider server start listener
 		 registBean(ApplicationStartWithProviderServerListener.class,registry);
 		 
+		 //regist rpc node handel
+		 registBean(RpcSpringBeanUtil.class,registry);
+		 
+		 registBean(RpcConsumerRegistNodeHandel.class,registry);
+		 registBean(RpcProviderRegistNodeHande.class,registry);
 		 //rpc provider\consumer  regist aciotn
 		 RpcReadyRegistInfoConfigration config=new RpcReadyRegistInfoConfigration();
 		 config.setRegistry(registry);
@@ -36,5 +44,4 @@ public class RpcRegistConfigration implements ImportBeanDefinitionRegistrar{
 		registry.registerBeanDefinition(id,definition);
 		return definition;
 	}
-
 }
