@@ -17,8 +17,8 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.util.StringUtils;
-
 import com.sky.rpc.resource.ResouceProperties;
+import com.sky.rpc.util.RpcSpringBeanUtil;
 
 public class RpcClientManager {
 	private static  Log log=LogFactory.getLog(RpcClientManager.class);
@@ -29,22 +29,42 @@ public class RpcClientManager {
 	private int sessionTimeout=3000;
 	private static String ip="";
 	private String tipTitle="rpc center ";
+	private boolean isSpringStart=false;
 	
 	public RpcClientManager() throws IOException, KeeperException, InterruptedException {
 		initDefNod();
 		zkClient=getZookeeper();
 	}
-	private void initDefNod() {
-		String node = ResouceProperties.getProperty("rpc.provide.node.prefix");
-		if(!StringUtils.isEmpty(node)) {
-			defaut_pref=node;
-		}
-	}
+	
 	public RpcClientManager(String path) throws IOException, KeeperException, InterruptedException {
 		initDefNod();
 		log.debug(tipTitle+"init");
 		this.url=path;
 		zkClient=getZookeeper();
+	}
+	
+	private void initDefNod() {
+		String node = ResouceProperties.getProperty("rpc.node.prefix");
+		if(!StringUtils.isEmpty(node)) {
+			isSpringStart=true;
+			defaut_pref=node;
+		}
+		String node_desc = ResouceProperties.getProperty("rpc.node.desc");
+		if(!StringUtils.isEmpty(node_desc)) {
+			isSpringStart=true;
+			defaut_desc=node_desc;
+		}
+	}
+	private String getDefPrefix() {
+		if(!isSpringStart) {
+			isSpringStart=RpcSpringBeanUtil.getApplicationContext()!=null;
+			initDefNod();
+			try {
+				iniNode();
+			} catch (KeeperException | InterruptedException | IOException e) {
+			}
+		}
+		return defaut_pref;
 	}
 
 	/**
@@ -58,7 +78,7 @@ public class RpcClientManager {
 	 */
 	public ZooKeeper getZookeeper() throws IOException, KeeperException, InterruptedException {
 		if(zkClient==null) {
-			String zookeeper_url = ResouceProperties.getProperty("zookeeper.url");
+			String zookeeper_url = ResouceProperties.getProperty("rpc.zookeeper.url");
 			if(zookeeper_url!=null) {
 				url=zookeeper_url;
 			}
@@ -77,8 +97,15 @@ public class RpcClientManager {
 		if(log.isDebugEnabled()) {
 			log.debug(tipTitle+" init node");
 		}
-		if( getZookeeper().exists("/"+defaut_pref, true)==null) {
-			 getZookeeper().create("/"+defaut_pref,defaut_desc.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);
+		String[] initnodes = getDefPrefix().split("/");
+		String node_prefix="";
+		for(String node:initnodes) {
+			if(!StringUtils.isEmpty(node)) {
+				node_prefix += "/"+node;
+				if( getZookeeper().exists(node_prefix, true)==null) {
+					 getZookeeper().create(node_prefix,defaut_desc.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);
+				}
+			}
 		}
 	}
 	
@@ -91,11 +118,11 @@ public class RpcClientManager {
 	* @return
 	 */
 	private String intPath(String path) {
-		if(!path.startsWith("/"+defaut_pref)) {
+		if(!path.startsWith("/"+getDefPrefix())) {
 			if(path.startsWith("/")){
 				path="/"+path;
 			}
-			path="/"+defaut_pref+path;
+			path="/"+getDefPrefix()+path;
 		}
 		return path.replace("//", "/");
 	}
