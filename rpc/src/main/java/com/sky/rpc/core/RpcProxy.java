@@ -67,14 +67,16 @@ public class RpcProxy{
 				nodeData ip = getRandomIp(node);
 				if(ip!=null) {
 					try {
-						System.err.println(ip.getIp()+":"+ip.getPort());
 						return new RpcClient<T>(new InetSocketAddress(ip.getIp(), ip.getPort()),node.getTimeout()).request(serviceInterface,method,args,ip.getClassName());
 					} catch (InvocationTargetException e){
 						//抛出造成的异常
 						throw e.getCause();
 					}
 				}else {
-					throw new Exception("rpc client get no server provider for class:"+serviceInterface.getName());
+					if(method.getName().equals("equals")) {
+						return serviceInterface.getName().equals(args[0].getClass().getName());
+					}
+					throw new Exception("rpc client get no server provider for class:"+node.getGroup()+":"+node.getVersion()+">>"+serviceInterface.getName());
 				}
 			}
 
