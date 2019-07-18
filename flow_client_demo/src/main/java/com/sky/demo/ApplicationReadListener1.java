@@ -19,7 +19,7 @@ import com.sky.demo.test.RpcConsumerTest;
  * @author 王帆
  * @date  2019年6月7日 下午11:47:09
  */
-//@Component
+@Component
 @Order(Integer.MAX_VALUE)
 public class ApplicationReadListener1  implements ApplicationListener<ContextRefreshedEvent>,ApplicationContextAware{
 	ApplicationContext applicationContext;
@@ -32,10 +32,29 @@ public class ApplicationReadListener1  implements ApplicationListener<ContextRef
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-//		MethodInterFace method = applicationContext.getBean(MethodInterFace.class);
-//		method.invoker("sdfse");
-//		RpcConsumerTest interf = applicationContext.getBean(RpcConsumerTest.class);
-//		interf.test();
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(90*1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.err.println("start bean test");
+				String[] methodNames = applicationContext.getBeanNamesForType(MethodInterFace.class);
+				for(String name:methodNames) {
+					MethodInterFace m = (MethodInterFace)applicationContext.getBean(name);
+					m.invoker("bean test");
+				}
+				
+				RpcConsumerTest interf = applicationContext.getBean(RpcConsumerTest.class);
+				interf.test();
+				MethodInterFace method2 = (MethodInterFace) applicationContext.getBean("rpc_"+MethodInterFace.class.getSimpleName());
+				method2.invoker("bean test2");
+			}
+		}).start();;
+
 	}
 
 }

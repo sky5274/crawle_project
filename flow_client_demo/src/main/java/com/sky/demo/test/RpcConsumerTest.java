@@ -2,11 +2,12 @@ package com.sky.demo.test;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.sky.rpc.annotation.RpcComsumer;
 
-//@Component
+@Component
 public class RpcConsumerTest {
 	
 //	@RpcComsumer
@@ -15,6 +16,7 @@ public class RpcConsumerTest {
 //	private MethodInterFace[] intfs;
 	
 	@RpcComsumer
+	@Qualifier("rpc_MethodInterFace")
 	private MethodInterFace intf;
 	
 	public  void test() {

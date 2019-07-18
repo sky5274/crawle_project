@@ -16,6 +16,10 @@ spring:
 
 Monitor:
    type: dev
+
+rpc:
+   node:
+      prefix: rpc_flow/client_demo
    
 
 logging:
