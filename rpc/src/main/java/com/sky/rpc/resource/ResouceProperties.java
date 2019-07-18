@@ -4,6 +4,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
+
+import com.sky.rpc.util.RpcSpringBeanUtil;
 
 /**
  * 资源文件读写信息
@@ -29,8 +32,24 @@ public class ResouceProperties {
 		return properties;
 	}
 	
+	/**
+	 * 获取property 从system、rpc.properties、spring property中获取
+	 * @param key
+	 * @return
+	 * @author 王帆
+	 * @date 2019年7月18日 上午10:55:28
+	 */
 	public static String getProperty(String key) {
-		return getDefProperties().getProperty(key);
+		String value=System.getProperty(key);
+		if(StringUtils.isEmpty(value) && getDefProperties()!=null) {
+			value=getDefProperties().getProperty(key);
+		}
+		if(StringUtils.isEmpty(value)) {
+			if(RpcSpringBeanUtil.getApplicationContext()!=null) {
+				value=RpcSpringBeanUtil.getEvnProperty(key);
+			}
+		}
+		return value;
 	}
 	
 	public static boolean isSocketServer() {
