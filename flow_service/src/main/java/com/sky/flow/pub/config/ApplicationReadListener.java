@@ -13,7 +13,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import com.sky.rpc.resource.ResouceProperties;
-import com.sky.rpc.util.RpcSpringBeanUtil;
 import com.sky.rpc.zk.RpcConfig;
 import com.sky.flow.annotation.RpcEvent;
 import com.sky.flow.service.TaskFlowActionService;
@@ -35,7 +34,6 @@ public class ApplicationReadListener  implements ApplicationListener<ContextRefr
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext=applicationContext;
-		RpcSpringBeanUtil.setApplicationContext(applicationContext);
 	}
 
 	@Override
@@ -49,7 +47,7 @@ public class ApplicationReadListener  implements ApplicationListener<ContextRefr
 					try {
 						RpcConfig.regist("/"+version, b, port);
 					} catch (Exception e) {
-						throw new Error("flow event handel regist failed! event class:"+b.getClass().getName());
+						//throw new Error("flow event handel regist failed! event class:"+b.getClass().getName());
 					}
 				}
 			}
