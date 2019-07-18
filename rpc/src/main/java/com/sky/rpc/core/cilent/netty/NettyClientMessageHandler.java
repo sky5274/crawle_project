@@ -64,7 +64,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter{
     	request.setArgs(args);
     	reuestId = request.getRequestId();
     	
-    	logger.debug("rpt client proxy mentod: "+request.getClassName()+"."+request.getMethodName());
+    	logger.debug("rpt client proxy mentod: "+request.getClassName()+"."+request.getMethodName()+" address:"+channel.remoteAddress());
     	channel.writeAndFlush(request);
     	channel.flush();
   		return queue;

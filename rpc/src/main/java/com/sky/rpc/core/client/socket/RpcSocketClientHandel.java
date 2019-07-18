@@ -19,7 +19,7 @@ public class RpcSocketClientHandel implements RpcClientHandel{
 	private Log logger=LogFactory.getLog(getClass());
 	@Override
 	public <T> T invoke(RpcRequest request, InetSocketAddress addr,int  timeout) throws Throwable {
-		logger.debug("rpt client proxt mentod: "+request.getClassName()+"."+request.getMethodName());
+		logger.debug("rpt client proxt mentod: "+request.getClassName()+"."+request.getMethodName()+" address:"+addr);
 		Socket socket = null;
         ObjectOutputStream output = null;
         ObjectInputStream input = null;
@@ -29,7 +29,6 @@ public class RpcSocketClientHandel implements RpcClientHandel{
             socket = new Socket();
 			socket.connect(addr);
 			socket.setSoTimeout(timeout);
-			logger.debug("rpt client connect server:"+addr);
             // 3.将远程服务调用所需的接口类、方法名、参数列表等编码后发送给服务提供者
             output = new ObjectOutputStream(socket.getOutputStream());
             Object[] args = request.getArgs();
