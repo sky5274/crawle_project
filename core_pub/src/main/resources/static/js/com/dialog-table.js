@@ -151,6 +151,16 @@ function getElement(e){
 			ele.attr("checked",check)
 		}
 	}
+	if(e.css){
+		$.each(e.css,function(k,v){
+			ele.css(k,v)
+		})
+	}
+	if(e.attrs){
+		$.each(e.attrs,function(k,v){
+			ele.attr(k,v)
+		})
+	}
 	initEleEvent(e,ele)
 	return ele
 }
