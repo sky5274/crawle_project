@@ -57,8 +57,11 @@ public class QuartzJobTaskTriggerListenner implements TriggerListener{
 		JobKey jobKey = job.getTrigger().getJobKey();
 		String taskId = jobKey.getName();
 		log.info(getName()+" triggerCompletejob:"+jobKey.toString());
-		JobTaskEntity jobtask = jobTaskMapper.selectByTaskId(taskId);
-		if(jobtask!=null) {
+		JobTaskEntity nowTask = jobTaskMapper.selectByTaskId(taskId);
+		if(nowTask!=null) {
+			JobTaskEntity jobtask=new JobTaskEntity();
+			jobtask.setId(nowTask.getId());
+			jobtask.setVersion(nowTask.getVersion());
 			jobtask.setStatus((byte)0);
 			jobTaskMapper.updateByPrimaryKeySelective(jobtask);
 		}

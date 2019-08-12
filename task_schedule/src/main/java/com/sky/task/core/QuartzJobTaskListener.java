@@ -38,11 +38,14 @@ public class QuartzJobTaskListener implements JobListener{
 		JobKey jobKey = job.getTrigger().getJobKey();
 		String taskId = jobKey.getName();
 		log.info(getName()+"toBe excute job:"+jobKey.toString());
-		JobTaskEntity jobtask = jobTaskMapper.selectByTaskId(taskId);
+		JobTaskEntity  nowTask= jobTaskMapper.selectByTaskId(taskId);
 		if(exp!=null) {
 			log.error(getName()+" has exception:"+exp.getMessage(),exp);
 		}
-		if(jobtask!=null) {
+		if(nowTask!=null) {
+			JobTaskEntity jobtask=new JobTaskEntity();
+			jobtask.setId(nowTask.getId());
+			jobtask.setVersion(nowTask.getVersion());
 			jobtask.setStatus((byte)2);
 			jobtask.setRunTimes(jobtask.getRunTimes()+1);
 			if(exp !=null) {
