@@ -1,7 +1,6 @@
 package com.sky.task.core;
 
 import org.quartz.CronScheduleBuilder;
-import org.quartz.CronTrigger;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -89,13 +88,27 @@ public class QuartzManager {
 			}
 			scheduler.scheduleJob(jobDetail, trigger);
 		} else {
-			CronTrigger crontrigger=(CronTrigger) trigger;
-			// Trigger已存在，那么更新相应的定时设置
-			CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(job.getCronExpression());
-			// 按新的cronExpression表达式重新构建trigger
-			crontrigger = crontrigger.getTriggerBuilder().withIdentity(triggerKey).usingJobData(newJobDataMap).withSchedule(scheduleBuilder).build();
+			if(StringUtils.isEmpty(job.getCronExpression())) {
+				trigger = TriggerBuilder
+						.newTrigger()
+						.withDescription(job.getTaskName())
+						.withIdentity(triggerKey).usingJobData(newJobDataMap)
+						.withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(3).withRepeatCount(0))
+						.build();
+			}else {
+				// 按新的cronExpression表达式重新构建trigger
+				trigger = TriggerBuilder
+						.newTrigger()
+						.withDescription(job.getTaskName())
+						.withIdentity(triggerKey).usingJobData(newJobDataMap)
+						.usingJobData(newJobDataMap)
+						.withSchedule( CronScheduleBuilder.cronSchedule(job.getCronExpression()))
+						.build();
+			}
+			
+			
 			// 按新的trigger重新设置job执行
-			scheduler.rescheduleJob(triggerKey, crontrigger);
+			scheduler.rescheduleJob(triggerKey, trigger);
 		}
 		if(!scheduler.isShutdown()) {
 			scheduler.start();
