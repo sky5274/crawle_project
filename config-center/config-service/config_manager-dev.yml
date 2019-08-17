@@ -5,6 +5,8 @@ eureka:
       defaultZone: http://localhost:8910/eureka
 
 spring:
+  session:
+     store-type: redis
   thymeleaf:
     cache: false 
     mode: HTML5  

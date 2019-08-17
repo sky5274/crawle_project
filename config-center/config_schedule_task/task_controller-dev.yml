@@ -2,6 +2,8 @@ server:
   port: 8980
 
 spring:
+  session:
+     store-type: redis
   thymeleaf:
     cache: false 
     mode: HTML5  

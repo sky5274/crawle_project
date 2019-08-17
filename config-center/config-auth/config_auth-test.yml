@@ -8,6 +8,8 @@ own:
 server:
   port: 8901
 spring:
+  session:
+     store-type: redis
   application:
     name: config_auth
   thymeleaf:
