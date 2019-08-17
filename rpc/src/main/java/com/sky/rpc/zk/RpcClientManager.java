@@ -22,7 +22,7 @@ import com.sky.rpc.util.RpcSpringBeanUtil;
 
 public class RpcClientManager {
 	private static  Log log=LogFactory.getLog(RpcClientManager.class);
-	public static String defaut_pref="com_sky_rpc_02";
+	public static String defaut_pref="/com_sky_rpc_02";
 	private String defaut_desc="com_sky_rpc_link_root_node";
 	private ZooKeeper zkClient=null;
 	private String url="127.0.0.1:2181";
@@ -48,6 +48,9 @@ public class RpcClientManager {
 		if(!StringUtils.isEmpty(node)) {
 			isSpringStart=true;
 			defaut_pref=node;
+		}
+		if(!defaut_pref.startsWith("/")) {
+			defaut_pref="/"+defaut_pref;
 		}
 		String node_desc = ResouceProperties.getProperty("rpc.node.desc");
 		if(!StringUtils.isEmpty(node_desc)) {
@@ -118,11 +121,11 @@ public class RpcClientManager {
 	* @return
 	 */
 	private String intPath(String path) {
-		if(!path.startsWith("/"+getDefPrefix())) {
+		if(!path.startsWith(getDefPrefix())) {
 			if(path.startsWith("/")){
 				path="/"+path;
 			}
-			path="/"+getDefPrefix()+path;
+			path=getDefPrefix()+path;
 		}
 		return path.replace("//", "/");
 	}

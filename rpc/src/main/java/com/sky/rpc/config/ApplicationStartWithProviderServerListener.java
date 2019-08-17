@@ -12,7 +12,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import com.sky.rpc.resource.ResouceProperties;
 import com.sky.rpc.util.RpcSpringBeanUtil;
 import com.sky.rpc.zk.RpcConfig;
-import com.alibaba.fastjson.JSON;
 import com.sky.rpc.core.RpcElement;
 import com.sky.rpc.provider.ProviderContant;
 import com.sky.rpc.provider.ProviderServer;
@@ -89,7 +88,7 @@ public class ApplicationStartWithProviderServerListener  implements ApplicationL
 		}
 		//rpc provider class info regist into zookeeper
 		try {
-			RpcConfig.regist(ele.writeUrl(), clazz, port);
+			RpcConfig.regist(ele.writeUrl(), clazz.getName(),clazz.getName(), port);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
