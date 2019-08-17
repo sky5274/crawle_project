@@ -4,6 +4,8 @@ server:
 spring:
  application:
     name: flow-client-demo
+ session:
+     store-type: redis
  profiles:
     active: dev
  thymeleaf:

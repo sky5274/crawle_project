@@ -12,6 +12,8 @@ spring:
        enabled: true
        serviceId: config-server
       label: master
+  session:
+     store-type: redis
   application:
     name: config_manager
   profiles:

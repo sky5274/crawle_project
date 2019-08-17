@@ -14,6 +14,8 @@ spring:
       label: master
   application:
     name: config_auth
+  session:
+    store-type: redis
   profiles:
     active: dev
   thymeleaf:
