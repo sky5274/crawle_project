@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.sky.pub.Result;
 import com.sky.pub.ResultCode;
 import com.sky.pub.ResultMData;
-import com.sky.pub.common.SpringHandlerExceptionResolver;
 import com.sky.pub.common.exception.ResultException;
 import com.sky.pub.common.exception.ResultMsgException;
+import com.sky.pub.web.exception.SpringHandlerExceptionResolver;
 @SuppressWarnings("rawtypes")
 public class BaseExcepionController {
 	protected Log log=LogFactory.getLog(getClass());
