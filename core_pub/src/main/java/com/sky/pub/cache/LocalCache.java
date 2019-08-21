@@ -162,7 +162,7 @@ public class LocalCache<T> implements Serializable {
 			public void run() {
 				localCache.clearCache();
 			}
-		}, localCache.DEFAULT_TASK_DELAY,0);
+		}, 0,localCache.DEFAULT_TASK_DELAY);
 		localCache.setTimer(ntimer);
 
 		Timer actTimer = new Timer();
@@ -171,7 +171,7 @@ public class LocalCache<T> implements Serializable {
 			public void run() {
 				localCache.clearActiveCache();
 			}
-		}, localCache.DEFAULT_ACTIVE_DELAY,30);
+		}, 30,localCache.DEFAULT_ACTIVE_DELAY);
 		localCache.setActivetimer(actTimer);
 		return localCache;
 	}
