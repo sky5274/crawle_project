@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.sky.flow.exception.FlowException;
 import com.sky.pub.Result;
 import com.sky.pub.ResultCode;
-import com.sky.pub.common.SpringHandlerExceptionResolver;
+import com.sky.pub.web.exception.SpringHandlerExceptionResolver;
 
 @SuppressWarnings({"unchecked","rawtypes"})
 public class BaseController {
