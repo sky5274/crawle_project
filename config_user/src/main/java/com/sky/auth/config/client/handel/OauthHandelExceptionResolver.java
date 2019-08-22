@@ -28,9 +28,9 @@ import com.sky.auth.config.entity.UserDetailEntitiy;
 import com.sky.auth.config.util.UserUtil;
 import com.sky.pub.Result;
 import com.sky.pub.ResultUtil;
-import com.sky.pub.common.SpringHandlerExceptionResolver;
 import com.sky.pub.util.ListUtils;
 import com.sky.pub.util.SpringUtil;
+import com.sky.pub.web.exception.SpringHandlerExceptionResolver;
 
 @Configuration
 @Order(Integer.MIN_VALUE)
