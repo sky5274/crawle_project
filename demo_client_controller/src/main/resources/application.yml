@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: demo_client
+  session:
+     store-type: redis
   profiles:
     active: dev
   thymeleaf:
