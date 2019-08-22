@@ -7,6 +7,57 @@ import com.sky.pub.common.exception.ResultException;
 public class ResultAssert {
 	
 	/**
+	 * 如果 isFalse==false  则抛出ResultException
+	 * @param isFalse
+	 * @param msg
+	 * @throws ResultException
+	 * @author 王帆
+	 * @date 2018年12月28日 下午1:13:31
+	 */
+	public static void isFalse(boolean isFalse,String msg) throws ResultException {
+		isTure(!isFalse, ResultCode.VALID,msg);
+	}
+	
+	/**
+	 * 如果 isFalse==false  则抛出ResultException
+	 * @param isFalse
+	 * @param msg
+	 * @param level
+	 * @throws ResultException
+	 * @author 王帆
+	 * @date 2018年12月28日 下午1:14:13
+	 */
+	public static void isFalse(boolean isFalse,String msg,LogLevel level) throws ResultException {
+		isTure(!isFalse, ResultCode.VALID,msg,level);
+	}
+	
+	/**
+	 * 如果 isFalse==false  则抛出ResultException
+	 * @param isFalse
+	 * @param code
+	 * @param msg
+	 * @throws ResultException
+	 * @author 王帆
+	 * @date 2018年12月28日 下午1:14:21
+	 */
+	public static void isFalse(boolean isFalse,ResultCode code,String msg) throws ResultException {
+		isTure(!isFalse, code, msg, LogLevel.INFO);
+	}
+	
+	/**
+	 * 如果 istrue==true  则抛出ResultException
+	 * @param isFalse
+	 * @param code
+	 * @param msg
+	 * @param level
+	 * @throws ResultException
+	 * @author 王帆
+	 * @date 2018年12月28日 下午1:14:35
+	 */
+	public static void isFalse(boolean isFalse,ResultCode code,String msg,LogLevel level) throws ResultException {
+		isTure(!isFalse, code, msg, level);
+	}
+	/**
 	 * 如果 istrue==true  则抛出ResultException
 	 * @param isture
 	 * @param msg
@@ -14,8 +65,8 @@ public class ResultAssert {
 	 * @author 王帆
 	 * @date 2018年12月28日 下午1:13:31
 	 */
-	public static void isFalse(boolean isture,String msg) throws ResultException {
-		isFalse(isture, ResultCode.VALID,msg);
+	public static void isTure(boolean isture,String msg) throws ResultException {
+		isTure(isture, ResultCode.VALID,msg);
 	}
 	
 	/**
@@ -27,8 +78,8 @@ public class ResultAssert {
 	 * @author 王帆
 	 * @date 2018年12月28日 下午1:14:13
 	 */
-	public static void isFalse(boolean isture,String msg,LogLevel level) throws ResultException {
-		isFalse(isture, ResultCode.VALID,msg,level);
+	public static void isTure(boolean isture,String msg,LogLevel level) throws ResultException {
+		isTure(isture, ResultCode.VALID,msg,level);
 	}
 	
 	/**
@@ -40,8 +91,8 @@ public class ResultAssert {
 	 * @author 王帆
 	 * @date 2018年12月28日 下午1:14:21
 	 */
-	public static void isFalse(boolean isture,ResultCode code,String msg) throws ResultException {
-		isFalse(isture, code, msg, LogLevel.INFO);
+	public static void isTure(boolean isture,ResultCode code,String msg) throws ResultException {
+		isTure(isture, code, msg, LogLevel.INFO);
 	}
 	
 	/**
@@ -54,7 +105,7 @@ public class ResultAssert {
 	 * @author 王帆
 	 * @date 2018年12月28日 下午1:14:35
 	 */
-	public static void isFalse(boolean isture,ResultCode code,String msg,LogLevel level) throws ResultException {
+	public static void isTure(boolean isture,ResultCode code,String msg,LogLevel level) throws ResultException {
 		if(isture) {
 			throw new ResultException(code, msg,level);
 		}
@@ -69,7 +120,7 @@ public class ResultAssert {
 	 * @date 2018年12月28日 下午1:14:44
 	 */
 	public static void isEmpty(Object obj,String msg) throws ResultException {
-		isFalse(obj==null,ResultCode.VALID,msg);
+		isTure(obj==null,ResultCode.VALID,msg);
 	}
 	
 	/**
@@ -82,7 +133,7 @@ public class ResultAssert {
 	 * @date 2018年12月28日 下午1:15:05
 	 */
 	public static void isEmpty(Object obj,ResultCode code,String msg) throws ResultException {
-		isFalse(obj==null,code,msg);
+		isTure(obj==null,code,msg);
 	}
 	
 	/**
@@ -95,7 +146,7 @@ public class ResultAssert {
 	 * @date 2018年12月28日 下午1:15:13
 	 */
 	public static void isEmpty(Object obj,String msg,LogLevel level) throws ResultException {
-		isFalse(obj==null,ResultCode.VALID,msg,level);
+		isTure(obj==null,ResultCode.VALID,msg,level);
 	}
 	
 	/**
@@ -109,7 +160,7 @@ public class ResultAssert {
 	 * @date 2018年12月28日 下午1:15:21
 	 */
 	public static void isEmpty(Object obj,ResultCode code,String msg,LogLevel level) throws ResultException {
-		isFalse(obj==null,code,msg,level);
+		isTure(obj==null,code,msg,level);
 	}
 	
 	/**
@@ -134,7 +185,7 @@ public class ResultAssert {
 	 * @date 2018年12月28日 下午1:15:53
 	 */
 	public static void isBlank(String str,ResultCode code,String msg) throws ResultException {
-		isFalse(str==null || "".equals(str),code,msg);
+		isTure(str==null || "".equals(str),code,msg);
 	}
 	
 	/**
@@ -161,6 +212,6 @@ public class ResultAssert {
 	 * @date 2018年12月28日 下午1:16:06
 	 */
 	public static void isBlank(String str,ResultCode code,String msg,LogLevel level) throws ResultException {
-		isFalse(str==null || "".equals(str),code,msg,level);
+		isTure(str==null || "".equals(str),code,msg,level);
 	}
 }

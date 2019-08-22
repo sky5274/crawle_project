@@ -2,11 +2,9 @@ package com.sky.crawl;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import com.sky.pub.annotation.SpringStartApplication;
 
-@SpringBootApplication
-@ComponentScan(value= {"com.sky"})
+@SpringStartApplication
 @MapperScan(value= {"com.sky.crawl.data.*.dao"})
 public class WebCrawleApplication {
 

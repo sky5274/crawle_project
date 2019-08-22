@@ -130,9 +130,9 @@
       <if test="createid != null" >
         createId = #{createid,jdbcType=INTEGER},
       </if>
-        ts = now
+        ts = now()
     </set>
-    where id = #{id,jdbcType=INTEGER} and ts=#{ts}
+    where id = #{id,jdbcType=INTEGER} 
   </update>
   <update id="updateByPrimaryKey" parameterType="com.sky.crawl.data.config.dao.entity.ConfigTableColumnEntity" >
     update config_table_column
@@ -144,7 +144,7 @@
       	type = #{type,jdbcType=VARCHAR},
       	createId = #{createid,jdbcType=INTEGER},
      	 ts = now()
-    where id = #{id,jdbcType=INTEGER} and ts=#{ts}
+    where id = #{id,jdbcType=INTEGER}
   </update>
   <sql id="table_Column_sql" >
   	select    col.id, col.tableid,col.attr, col.remark, col.type, col.createId, COL.is_null,col.primary,col.ts,tab.table_code

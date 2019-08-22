@@ -1,0 +1,29 @@
+server:
+  port: 8970
+
+spring:
+ application:
+    name: flow-client-demo
+ session:
+     store-type: redis
+ profiles:
+    active: dev
+ thymeleaf:
+    cache: false 
+    mode: HTML5  
+    encoding: UTF-8
+    content-type: text/html; charset=utf-8
+    prefix: classpath:/templates/
+    suffix: .html 
+
+Monitor:
+   type: dev
+
+rpc:
+   node:
+      prefix: rpc_flow/client_demo
+   
+
+logging:
+  level:   
+     com.sky: debug

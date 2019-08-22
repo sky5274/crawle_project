@@ -26,7 +26,7 @@ public class DefAuthenticationFailHandler extends SimpleUrlAuthenticationFailure
 
         	logger.info("登录失败");
             //设置状态码
-            response.setStatus(500);
+            response.setStatus(200);
             response.setContentType("application/json;charset=UTF-8");
             //将 登录失败 信息打包成json格式返回
             response.getWriter().write(JSON.toJSONString(ResultUtil.getFailed(ResultCode.AUTH_FAILED,exception.getMessage())));

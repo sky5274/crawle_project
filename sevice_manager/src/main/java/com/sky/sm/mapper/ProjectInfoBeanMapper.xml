@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.sm.dao.ProjectInfoBeanMapper" >
+  <resultMap id="ResultMap" type="com.sky.sm.bean.ProjectInfoBean" >
+    <result column="service_name" property="serviceName" jdbcType="VARCHAR" />
+    <result column="profile" property="profile" jdbcType="VARCHAR" />
+    <result column="version_list" property="version" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    service_name, profile, version_list
+  </sql>
+  <delete id="deleteProject" parameterType="com.sky.sm.bean.ProjectInfoBean" >
+    delete from trace_project_profile
+    where service_name = #{serviceName} and profile=#{profile}
+  </delete>
+  <insert id="insert" parameterType="com.sky.sm.bean.ProjectInfoBean" useGeneratedKeys="true" keyProperty="id">
+    insert into trace_project_profile (service_name, profile, version_list)
+    values (#{serviceName},#{profile},#{version})
+    ON DUPLICATE KEY UPDATE service_name = VALUES(service_name),profile = VALUES(profile),version_list = VALUES(version_list),ts = now()
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.sm.bean.ProjectInfoBean" >
+    update trace_project_profile
+    <set >
+      <if test="serviceName != null" >   service_name 	= #{serviceName,jdbcType=VARCHAR},   </if>
+      <if test="profile != null" >      profile			= #{profile,jdbcType=VARCHAR},      </if>
+      <if test="version != null" >      version_list	= #{version,jdbcType=VARCHAR},      </if>
+      				 					ts 				= now()
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.sm.bean.ProjectInfoBean" >
+    update trace_project_profile
+    set service_name 	= #{serviceName,jdbcType=VARCHAR},
+      profile			= #{profile,jdbcType=VARCHAR},
+      version_list		= #{version,jdbcType=VARCHAR},
+      ts 				= now()
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 默认的查询条件 -->
+  <sql id="base_query_contation">
+  	<trim prefix=" where " suffixOverrides="and | or">
+  		<if test="serviceName !=null and serviceName !=''">		service_name =#{serviceName} and			</if>
+  		<if test="profile !=null and profile !=''">			profile =#{profile} and					</if>
+  		<if test="version !=null and version !=''">		
+  			<if test="version.indexOf(',') &gt; -1">
+  				version_code in <foreach collection="version.splite(',')" item="it" open="(" close=") and" separator=",">#{it}</foreach>
+  			</if>
+  			<if test="version.indexOf(',') &lt; 0">	version_code like concat('%',#{version},'%') and </if> 
+  		</if>
+  	</trim>
+  </sql>
+
+	<select id="selectByProject" parameterType="com.sky.sm.bean.ProjectInfoBean" resultMap="ResultMap">
+		select DISTINCT <include refid="Base_Column_List"/>
+		from trace_project_profile
+		<include refid="base_query_contation"/>
+	</select>
+</mapper>

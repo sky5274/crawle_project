@@ -2,7 +2,7 @@ package com.sky.auth.config.entity;
 
 import java.util.List;
 import java.util.Set;
-
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -20,7 +20,8 @@ public class UserDetailEntitiy extends UserEntity implements UserDetails{
 	private  boolean accountNonExpired=true;
 	private  boolean credentialsNonExpired=true;
 	private  boolean accountNonLocked=true;
-	private Set<AuthorityEntity> authorities;
+	private Set<GrantedAuthority> authorities;
+	private Set<AuthorityEntity> permissions;
 	private List<String> roles;
 	private AuthTokenDefined token;
 	public List<String> getRoles() {
@@ -53,10 +54,10 @@ public class UserDetailEntitiy extends UserEntity implements UserDetails{
 	public void setAccountNonLocked(boolean accountNonLocked) {
 		this.accountNonLocked = accountNonLocked;
 	}
-	public Set<AuthorityEntity> getAuthorities() {
+	public Set<GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
-	public void setAuthorities(Set<AuthorityEntity> authorities) {
+	public void setAuthorities(Set<GrantedAuthority> authorities) {
 		this.authorities = authorities;
 	}
 	public AuthTokenDefined getToken() {
@@ -64,6 +65,12 @@ public class UserDetailEntitiy extends UserEntity implements UserDetails{
 	}
 	public void setToken(AuthTokenDefined token) {
 		this.token = token;
+	}
+	public Set<AuthorityEntity> getPermissions() {
+		return permissions;
+	}
+	public void setPermissions(Set<AuthorityEntity> permissions) {
+		this.permissions = permissions;
 	}
 	
 }

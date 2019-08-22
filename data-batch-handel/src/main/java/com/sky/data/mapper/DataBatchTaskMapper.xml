@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.data.dao.DataBatchTaskMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.data.entity.DataBatchTaskEntity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="task_id" property="taskId" jdbcType="INTEGER" />
+    <result column="task_name" property="taskName" jdbcType="VARCHAR" />
+    <result column="group_id" property="groupId" jdbcType="VARCHAR" />
+    <result column="cron_expression" property="cronExpression" jdbcType="VARCHAR" />
+    <result column="json_params" property="jsonParams" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="run_type" property="runType" jdbcType="INTEGER" />
+    <result column="run_times" property="runTimes" jdbcType="INTEGER" />
+    <result column="run_err_times" property="runErrTimes" jdbcType="INTEGER" />
+    <result column="run_err_msg" property="runErrMsg" jdbcType="VARCHAR" />
+    <result column="schedule_model" property="scheduleModel" jdbcType="INTEGER" />
+    <result column="limit_target_node" property="limitTargetNode" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="createid" property="createid" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+    <association property="ext" select="queryExtByTask" column="{taskId=task_id}"></association>
+   </resultMap>
+  <sql id="Base_Column_List" >
+    id, task_id, task_name, group_id, cron_expression, json_params, status, 
+    run_err_times,run_err_msg,
+    run_type, run_times, schedule_model, limit_target_node, remark, version, createid, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from batch_data_task
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByTaskId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from batch_data_task
+    where task_id = #{taskId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from batch_data_task
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.sky.data.entity.DataBatchTaskEntity" >
+    insert into batch_data_task (id, task_id, task_name, 
+       group_id, cron_expression, 
+      json_params, status, run_type, 
+      run_err_times,run_err_msg,
+      run_times, schedule_model, limit_target_node, 
+      remark, version, createid, 
+      ts)
+    values (#{id,jdbcType=INTEGER}, #{taskId,jdbcType=INTEGER}, #{taskName,jdbcType=VARCHAR}, 
+      #{groupId,jdbcType=VARCHAR}, #{cronExpression,jdbcType=VARCHAR}, 
+      #{jsonParams,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{runType,jdbcType=INTEGER}, 
+      #{runErrTimes,jdbcType=INTEGER},  #{runErrMsg,jdbcType=VARCHAR}, 
+      #{runTimes,jdbcType=INTEGER}, #{scheduleModel,jdbcType=INTEGER}, #{limitTargetNode,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER}, #{createid,jdbcType=INTEGER}, 
+      #{ts,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.data.entity.DataBatchTaskEntity" >
+    insert into batch_data_task
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >        		id,      			</if>
+      <if test="taskId != null" >        	task_id,      		</if>
+      <if test="taskName != null" >        	task_name,      	</if>
+      <if test="groupId != null" >        	group_id,      		</if>
+      <if test="cronExpression != null" >   cron_expression,	</if>
+      <if test="jsonParams != null" >       json_params,      	</if>
+      <if test="status != null" >        	status,      		</if>
+      <if test="runType != null" >        	run_type,      		</if>
+      <if test="runTimes != null" >        	run_times,      	</if>
+       <if test="runErrTimes !=null"> 		run_err_times ,		</if>
+      <if test="runErrTimes !=null">  		run_err_msg,		</if>
+      <if test="scheduleModel != null" >    schedule_model,     </if>
+      <if test="limitTargetNode != null" >  limit_target_node,  </if>
+      <if test="remark != null" >        	remark,      		</if>
+      <if test="createid != null" >        	createid,      		</if>
+      <if test="version != null" >        	version,      		</if>
+      <if test="ts != null" >        		ts,      			</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >        		#{id,jdbcType=INTEGER},      			</if>
+      <if test="taskId != null" >       	#{taskId,jdbcType=INTEGER},      		</if>
+      <if test="taskName != null" >       	#{taskName,jdbcType=INTEGER},      		</if>
+      <if test="groupId != null" >        	#{groupId,jdbcType=VARCHAR},      		</if>
+      <if test="cronExpression != null" > 	#{cronExpression,jdbcType=VARCHAR},		</if>
+      <if test="jsonParams != null" >       #{jsonParams,jdbcType=VARCHAR},      	</if>
+      <if test="status != null" >        	#{status,jdbcType=INTEGER},      		</if>
+      <if test="runType != null" >        	#{runType,jdbcType=INTEGER},      		</if>
+      <if test="runTimes != null" >        	#{runTimes,jdbcType=INTEGER},      		</if>
+       <if test="runErrTimes !=null"> 		#{runErrTimes,jdbcType=INTEGER},		</if>
+      <if test="runErrTimes !=null">   		#{runErrMsg,jdbcType=VARCHAR},			</if>
+      <if test="scheduleModel != null" >    #{scheduleModel,jdbcType=INTEGER},      </if>
+      <if test="limitTargetNode != null" >  #{limitTargetNode,jdbcType=VARCHAR},    </if>
+      <if test="remark != null" >        	#{remark,jdbcType=VARCHAR},      		</if>
+      <if test="createid != null" >       	#{createid,jdbcType=INTEGER},      		</if>
+      <if test="version != null" >        	#{version,jdbcType=INTEGER},      		</if>
+      <if test="ts != null" >        		#{ts,jdbcType=TIMESTAMP},      			</if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.data.entity.DataBatchTaskEntity" >
+    update batch_data_task
+    <set >
+      <if test="taskId != null" >        	task_id 			= #{taskId,jdbcType=INTEGER},      		</if>
+      <if test="taskName != null" >        	task_name 			= #{taskName,jdbcType=VARCHAR},      	</if>
+      <if test="groupId != null" >        	group_id 			= #{groupId,jdbcType=VARCHAR},      	</if>
+      <if test="cronExpression != null" >	cron_expression 	= #{cronExpression,jdbcType=VARCHAR},	</if>
+      <if test="jsonParams != null" >       json_params 		= #{jsonParams,jdbcType=VARCHAR},      	</if>
+      <if test="status != null" >       	status 				= #{status,jdbcType=INTEGER},      		</if>
+      <if test="runType != null" >        	run_type 			= #{runType,jdbcType=INTEGER},      	</if>
+      <if test="runTimes != null" >        	run_times 			= #{runTimes,jdbcType=INTEGER},      	</if>
+      <if test="runErrTimes !=null"> 		run_err_times 		= #{runErrTimes,jdbcType=INTEGER},		</if>
+      <if test="runErrTimes !=null">  		run_err_msg 		= #{runErrMsg,jdbcType=VARCHAR},		</if>
+      <if test="scheduleModel != null" >    schedule_model 		= #{scheduleModel,jdbcType=INTEGER},    </if>
+      <if test="limitTargetNode != null" >  limit_target_node   = #{limitTargetNode,jdbcType=VARCHAR},  </if>
+      <if test="remark != null" >        	remark 				= #{remark,jdbcType=VARCHAR},      		</if>
+      <if test="createid != null" >        	createid 			= #{createid,jdbcType=INTEGER},      	</if>
+              								version 			= version+1,      			
+             								ts 					= now()  					
+    </set>
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.data.entity.DataBatchTaskEntity" >
+    update batch_data_task
+    set 
+      task_id 			= #{taskId,jdbcType=INTEGER},
+      task_name 		= #{taskName,jdbcType=VARCHAR},
+      group_id 			= #{groupId,jdbcType=VARCHAR},
+      cron_expression 	= #{cronExpression,jdbcType=VARCHAR},
+      json_params 		= #{jsonParams,jdbcType=VARCHAR},
+      status 			= #{status,jdbcType=INTEGER},
+      run_type 			= #{runType,jdbcType=INTEGER},
+      run_times 		= #{runTimes,jdbcType=INTEGER},
+      run_err_times 	= #{runErrTimes,jdbcType=INTEGER},
+      run_err_msg 		= #{runErrMsg,jdbcType=VARCHAR},
+      schedule_model 	= #{scheduleModel,jdbcType=INTEGER},
+      limit_target_node = #{limitTargetNode,jdbcType=VARCHAR},
+      remark 			= #{remark,jdbcType=VARCHAR},
+      version 			= version+1,
+      createid 			= #{createid,jdbcType=INTEGER},
+      ts 				= now()
+    where id = #{id,jdbcType=INTEGER} and version=#{version}
+  </update>
+  
+  <update id="updateTaskToClosed" parameterType="java.util.List">
+  	  update batch_data_task
+    set 
+      status 			= 0,
+      version 			= version+1,
+      ts 				= now()
+    where concat(task_id,"-",group_id) in
+    <foreach collection="list" item="it" open="(" close=")" separator=",">concat(#{it.taskId},"-",#{it.groupId})</foreach>
+  </update>
+  
+  <sql id="query_conditon">
+  	<trim prefix="where" suffixOverrides="and|or">
+  		<if test="groupId !=null">	group_id = #{groupId} and 	</if>
+  		<if test="taskId !=null">	task_id = #{taskId} and 	</if>
+  		<if test="taskName !=null">	task_name like concat('%',#{taskName},'%') and 	</if>
+  		<if test="status !=null">	status = #{status} and		</if>
+  		<if test="runType !=null">	run_type = #{runType} and		</if>
+  		<if test="createid !=null and createid !=-1">	createid = #{createid} and 	</if>
+  	</trim>
+  </sql>
+  <select id="queryListByParam" parameterType="com.sky.data.entity.req.DataBatchReqData" resultMap="BaseResultMap">
+   	select 
+    <include refid="Base_Column_List" />
+    from batch_data_task
+    <include refid="query_conditon"></include>
+    <if test="current !=null and pageSize !=null">
+    limit #{current},#{pageSize}
+    </if>
+  </select>
+  <select id="accout" resultType="java.lang.Integer"  parameterType="com.sky.data.entity.req.DataBatchReqData">
+   	select count(1)
+    from batch_data_task
+    <include refid="query_conditon"></include>
+  </select>
+  <update id="updateJobTasksStatus">
+  	update batch_data_task
+  	set status=#{status}
+  	where concat(group_id,"-",task_id) in
+  	<foreach collection="list" item="it" open="(" close=")" separator=",">#{it}</foreach>
+  </update>
+  
+  <insert id="insertTaskExt" parameterType="com.sky.data.bean.DataBatchTaskExtEntity">
+  	insert into  batch_data_task_ext
+  	<trim prefix="(" suffix=")" suffixOverrides=",">
+  		<if test="id !=null"> 				id,				</if>
+  		<if test="taskId !=null"> 			task_id,		</if>
+  		<if test="type !=null"> 			type,			</if>
+  		<if test="splitSize !=null"> 		split_size,		</if>
+  		<if test="convertJs !=null"> 		convert_js,		</if>
+  		<if test="filterJs !=null"> 		filter_js,		</if>
+  		<if test="functions !=null"> 		field_function,	</if>
+  											ts
+  	</trim>
+  	<trim prefix="values(" suffix=")" suffixOverrides=",">
+  		<if test="id !=null"> 				#{id},				</if>
+  		<if test="taskId !=null"> 			#{taskId},			</if>
+  		<if test="type !=null"> 			#{type},			</if>
+  		<if test="splitSize !=null"> 		#{splitSize},		</if>
+  		<if test="convertJs !=null"> 		#{convertJs},		</if>
+  		<if test="filterJs !=null"> 		#{filterJs},		</if>
+  		<if test="functions !=null"> 		#{functions},		</if>
+  											now()
+  	</trim>
+  </insert>
+  
+  <update id="updateTaskExt" parameterType="com.sky.data.bean.DataBatchTaskExtEntity">
+  	update from batch_data_task_ext
+  	<trim prefix="set">
+  		<if test="type !=null"> 			type			=#{type},			</if>
+  		<if test="splitSzie !=null"> 		split_size		=#{splitSzie},		</if>
+  		<if test="convertJs !=null"> 		convert_js		=#{convertJs},		</if>
+  		<if test="filterJs !=null"> 		filter_js		=#{filterJs},		</if>
+  		<if test="countFields !=null"> 		count_fields  	=#{countFields},	</if>
+  		<if test="functions !=null"> 		field_function 	=#{functions},		</if>
+  											now()
+  	</trim>
+  	where task_id=#{taskId}
+  </update>
+  
+  <select id="queryExtByTask" resultType="com.sky.data.bean.DataBatchTaskExtEntity">
+  	select 
+  		id,type,task_id as taskId,split_size as splitSzie,convert_js as convertJs,filter_js as filterJs,
+  		count_fields as countFields,field_function AS functions
+  	from batch_data_task_ext	where  task_id=#{taskId}
+  </select>
+</mapper>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.sm.dao.TraceLimitBeanMapper" >
+  <resultMap id="ResultMap" type="com.sky.sm.bean.TraceLimitBean" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="server_name" property="serverName" jdbcType="VARCHAR" />
+    <result column="profile" property="profile" jdbcType="VARCHAR" />
+    <result column="server_version" property="serverVersion" jdbcType="VARCHAR" />
+    <result column="url" property="matchUrl" jdbcType="VARCHAR" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+    <result column="priod" property="priod" jdbcType="INTEGER" />
+    <result column="count" property="limitCount" jdbcType="INTEGER" />
+    <result column="is_global" property="isGlobal" jdbcType="INTEGER" />
+    <result column="createid" property="createid" jdbcType="INTEGER" />
+    <result column="level" property="likeLevel" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_limit_Column_List" >
+    lim.id,  lim.server_name, lim.profile, lim.server_version,  lim.url,  lim.count,  lim.priod,is_global,  lim.version,  lim.createid, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_limit_Column_List" />
+    from trace_limit_define lim
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from trace_limit_define
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteLimit" parameterType="java.util.List" >
+    delete from trace_limit_define
+    where id in <foreach collection="list" item="it" open="(" close=")" separator=",">#{it}</foreach>
+  </delete>
+  <insert id="insert" parameterType="com.sky.sm.bean.TraceLimitBean" useGeneratedKeys="true" keyProperty="id">
+    insert into trace_limit_define (server_name,profile,server_version, url, count, priod,is_global, version, createid, ts
+      )
+    values ( #{serverName,jdbcType=VARCHAR}, #{profile,jdbcType=VARCHAR} ,#{serverVersion,jdbcType=VARCHAR}, 
+      #{matchUrl,jdbcType=VARCHAR},  #{count,jdbcType=INTEGER}, #{priod,jdbcType=INTEGER},#{isGlobal}, 0,#{createid,jdbcType=INTEGER}, now()
+      )
+      ON DUPLICATE KEY UPDATE server_name = VALUES(server_name),profile = VALUES(profile),server_version = VALUES(server_version),
+      		url = VALUES(url),count = VALUES(count),priod = VALUES(priod),version = version+1,ts = now()
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.sm.bean.TraceLimitBean" useGeneratedKeys="true" keyProperty="id">
+    insert into trace_limit_define
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serverName != null" >       server_name,     					</if>
+      <if test="profile != null" >        	profile,      						</if>
+      <if test="serverVersion != null" >    server_version,      				</if>
+      <if test="url != null" >      		url,     							</if>
+      <if test="count != null" >			count,								</if>
+      <if test="priod != null" >			priod,								</if>
+      <if test="createid != null" >     	createid,      						</if>
+      <if test="isGlobal != null" >     	is_global,      					</if>
+      										version,      
+              								ts     
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serverName != null" >       #{serverName,jdbcType=VARCHAR},     </if>
+      <if test="profile != null" >        	#{profile,jdbcType=VARCHAR},     	</if>
+      <if test="serverVersion != null" >    #{serverVersion,jdbcType=VARCHAR},  </if>
+      <if test="url != null" >      		#{matchUrl,jdbcType=VARCHAR},      	</if>
+      <if test="count != null" >			#{count,jdbcType=INTEGER},			</if>
+      <if test="priod != null" >			#{priod,jdbcType=INTEGER},			</if>
+      <if test="createid != null" >     	#{createid,jdbcType=INTEGER},      	</if>
+      <if test="isGlobal != null" >     	#{isGlobal,jdbcType=INTEGER},      	</if>
+      										0,
+      										now()
+    </trim>
+    ON DUPLICATE KEY UPDATE server_name = VALUES(server_name),profile = VALUES(profile),server_version = VALUES(server_version),
+      		url = VALUES(url),count = VALUES(count),priod = VALUES(priod),version = VALUES(version)+1,ts = now()
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.sm.bean.TraceLimitBean" >
+    update trace_limit_define
+    <set >
+      <if test="serverName != null" >       server_name 	= #{serverName,jdbcType=VARCHAR},      	</if>
+      <if test="profile != null" >        	profile			= #{profile,jdbcType=VARCHAR},      	</if>
+      <if test="serverVersion != null" >    server_version 	= #{serverVersion,jdbcType=VARCHAR},      </if>
+      <if test="url != null" >      		url 			= #{matchUrl,jdbcType=VARCHAR},      </if>
+      <if test="count != null" >			count			= #{count,jdbcType=INTEGER},	</if>
+      <if test="priod != null" >			priod			= #{priod,jdbcType=INTEGER},	</if>
+      <if test="isGlobal != null" >     	is_global 		= #{isGlobal,jdbcType=INTEGER},     </if>
+      <if test="createid != null" >     	createid 		= #{createid,jdbcType=INTEGER},     </if>
+            								version 		= version+1,      				
+      				 						ts 				= now()
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.sm.bean.TraceLimitBean" >
+    update trace_limit_define
+    set 
+    server_name 	= #{serverName,jdbcType=VARCHAR},      	
+    profile			= #{profile,jdbcType=VARCHAR},      	
+    server_version 	= #{serverVersion,jdbcType=VARCHAR},     
+    url 			= #{matchUrl,jdbcType=VARCHAR},      
+    count			= #{count,jdbcType=INTEGER},	
+    priod			= #{priod,jdbcType=INTEGER},	
+    is_global 		= #{isGlobal,jdbcType=INTEGER},     
+    createid 		= #{createid,jdbcType=INTEGER},     
+    version 		= version+1,      				
+    ts 				= now()
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <sql id="sim-server-query-item">
+  	<if test="limit.serverName !=null and limit.serverName !=''">		server_name = #{limit.serverName} and	</if>
+  	<if test="limit.serverNameLike !=null"> 							
+	  			<if test="limit.serverNameLike.indexOf(',') &lt; 0">
+	  				server_name like concat('%',#{limit.serverNameLike},'%') and
+	  			</if>
+	  			<if test="limit.serverNameLike.indexOf(',') &gt;= 0">
+	  				<foreach collection="limit.serverNameLike.split(',')" item="it" open="server_name in (" close=") and" separator=",">#{it}</foreach>
+	  			</if>
+	  		</if>
+  </sql>
+  
+  <sql id="query-item">
+  			<include refid="sim-server-query-item"></include>
+	  		<if test="limit.profile !=null and limit.profile !=''">				`profile` =#{limit.profile} and								</if>
+	  		<if test="limit.serverVersion !=null and limit.serverVersion !=''">	server_version =#{limit.serverVersion} and					</if>
+	  		<if test="limit.matchUrl !=null ">			url like concat('%',#{limit.matchUrl},'%') and				</if>
+	  		<if test="limit.countNum !=null"> 										count =#{limit.countNum} and									</if>
+	  		<if test="limit.isGlobal !=null"> 									is_global =#{limit.isGlobal} and							</if>
+	  		<if test="limit.priodNum !=null"> 										count =#{limit.priodNum} and									</if>
+	  		<if test="limit.profileLike !=null"> 							
+	  			<if test="limit.profileLike.indexOf(',') &lt; 0">
+	  				profile like concat('%',#{limit.profileLike},'%') and
+	  			</if>
+	  			<if test="limit.profileLike.indexOf(',') &gt;= 0">
+	  				<foreach collection="limit.profileLike.split(',')" item="it" open="profile in (" close=") and" separator=",">#{it}</foreach>
+	  			</if>
+	  		</if>
+	  		<if test="limit.serverVersionLike !=null"> 							
+	  			<if test="limit.serverVersionLike.indexOf(',') &lt; 0">
+	  				server_version like concat('%',#{limit.serverVersionLike},'%') and
+	  			</if>
+	  			<if test="limit.serverVersionLike.indexOf(',') &gt;= 0">
+	  				<foreach collection="limit.serverVersionLike.split(',')" item="it" open="server_version in (" close=") and" separator=",">#{it}</foreach>
+	  			</if>
+	  		</if>
+  </sql>
+  
+  <!-- 默认的查询条件 -->
+  <sql id="base_query_contation">
+  	<trim prefix=" where " suffixOverrides="and | or">
+  		<if test="limit !=null and (limit.showGlobal ==null or !limit.showGlobal)">
+	  		<include refid="query-item"></include>
+  		</if>
+  		<if test="limit !=null and limit.showGlobal!=null and limit.showGlobal">
+	  		<trim prefix="(is_global=1 and" suffix=")" suffixOverrides="and | or">
+	  			<include refid="sim-server-query-item"/>
+	  			 lvl.s_l> 0 and 
+		  	</trim>
+	  		<trim prefix="or ( " suffix=")" suffixOverrides="and | or">
+	  			<include refid="query-item"/>
+	  			 lvl.s_l> 0 and 
+		  	</trim>
+  		</if>
+  	</trim>
+  </sql>
+  
+<sql id="base-table-level">
+	SELECT 
+		CASE when server_name ='${limit.serverName}' then 2
+			<if test="limit.serverName !=null and limit.serverName!=''"> when server_name like concat('%','${limit.serverName}','%') then 1</if>
+			<if test="limit.serverNameLike !=null and limit.serverNameLike.indexOf(',') &lt; 0">
+			 when server_name like concat('%','${limit.serverNameLike}','%') then 1
+		  	</if>
+			<if test="limit.serverNameLike !=null and limit.serverNameLike.indexOf(',') &gt; -1">
+			<foreach collection="limit.serverNameLike.split(',')" item="it" open="server_name in (" close=") then 2" separator=",">${it}</foreach>
+		  	</if>
+		else 0 end as s_l,
+		CASE when `profile` ='${limit.profile}' then 2
+			 <if test="limit.profile !=null and limit.profile!=''"> when `profile` like concat('%','${limit.profile}','%') then 1</if>
+			<if test="limit.profileLike !=null and  limit.profileLike.indexOf(',') &lt; 0">
+			 when `profile` like concat('%','${limit.profileLike}','%') then 1
+		  	</if>
+			<if test="limit.profileLike !=null and limit.profileLike.indexOf(',') &gt; -1">
+			<foreach collection="limit.profileLike.split(',')" item="it" open="`profile` in (" close=") then 2" separator=",">${it}</foreach>
+		  	</if>
+		else 0 end as p_l,
+		CASE when server_version ='${limit.serverVersion}' then 2
+		 	<if test="limit.serverVersion !=null and limit.serverVersion!=''"> when server_version like concat('%','${limit.serverVersion}','%') then 1</if>
+			<if test="limit.serverVersionLike !=null  and limit.serverVersionLike.indexOf(',') &lt; 0">
+			 when server_version concat('%','${limit.serverVersionLike}','%') then 1
+		  	</if>
+			<if test="limit.serverVersionLike !=null and limit.serverVersionLike.indexOf(',') &gt; -1">
+			<foreach collection="limit.serverVersionLike.split(',')" item="it" open="`server_version` in (" close=") then 2" separator=",">${it}</foreach>
+		  	</if>
+		else 0 end as v_l,
+		id
+	FROM trace_limit_define
+</sql>
+
+  <sql id="base-change-table">
+  	<if test=" limit ==null or limit.showGlobal==null or !limit.showGlobal">
+  		select  <include refid="Base_limit_Column_List" />
+    	from trace_limit_define lim
+  	</if>
+  	<if test="limit !=null and limit.showGlobal !=null and limit.showGlobal">
+  		select  
+  		CONCAT(lvl.s_l,lvl.p_l,lvl.v_l) as level,
+  		case WHEN lvl.s_l=0 then 0
+			else case when lvl.p_l=0 then lvl.s_l*10
+					else lvl.s_l*10+lvl.p_l*5+lvl.v_l end
+		end as leveldata,
+  		<include refid="Base_limit_Column_List" />
+    	from trace_limit_define lim
+    	left join (<include refid="base-table-level"></include>) lvl on lvl.id=lim.id
+  	</if>
+  </sql>
+  <sql id="base-change-table-order">
+  	<if test="limit !=null and limit.showGlobal !=null and limit.showGlobal">
+  		order by level
+  	</if>
+  </sql>
+	
+	<!-- 查询限流配置数据 -->
+	<select id="queryLimitBeans" resultMap="ResultMap">
+		<include refid="base-change-table"/>
+		<include refid="base_query_contation"/>
+		<include refid="base-change-table-order"/>
+		 <if test="page !=null and page.current !=null and page.pageSize !=null">
+	    	limit #{page.current},#{page.pageSize}
+	    </if>
+	</select>
+	
+	<!-- 统计限流配置数据 -->
+	<select id="accoutLimitBean" resultType="java.lang.Integer" >
+		<if test=" limit ==null or limit.showGlobal==null or !limit.showGlobal">
+	  		select  count(1)
+	    	from trace_limit_define lim
+	  	</if>
+	  	<if test="limit !=null and limit.showGlobal !=null and limit.showGlobal">
+	  		select  
+	  		count(1)
+	    	from trace_limit_define lim
+	    	left join (<include refid="base-table-level"></include>) lvl on lvl.id=lim.id
+	  	</if>
+		<include refid="base_query_contation"/>
+	</select>
+	
+</mapper>

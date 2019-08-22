@@ -23,7 +23,7 @@ public class Result<T> implements Serializable{
 		this(code,data,code==ResultCode.OK);
 	}
 	public Result(ResultCode code,T data,Boolean success) {
-		this(code.getMsg(),code.getCode(),data,success);
+		this(code.getCode(),code.getMsg(),data,success);
 	}
 	public Result(String code,String msg,T data) {
 		this(code,msg,data,ResultCode.OK.getCode().equals(code));

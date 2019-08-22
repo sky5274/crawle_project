@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('权限主页','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/dialog-table.js')"></head>
+<script type="text/javascript">
+$(function(){
+	initEvent();
+	
+	$("#role-table").jTable({
+		url:"/permission/role/page",
+		uniqueId:'id',
+		method:"post",
+		contentType: 'application/json',
+		queryParams:function(param){
+			var params={}
+			params.current=param.offset;
+			params.pageSize=param.limit;
+			params.data=param;
+			return params;
+		},
+		columns :[
+			{field: 'radio', radio: true}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "id", title : "id"},
+			{ field : "name", title : "名称"},
+			{ field : "code", title : "编码"},
+			{ field : "createName", title : "创建人"},
+			{ field : "version", title : "版本号", visible: false},
+			{ field : "ts", title : "时间",formatter:function(value,row){return value !=null?new Date(value).toLocaleString():'-'}},
+		],
+		onCheck:function(row,ele){
+			var flag=row.vailFlag=='Y';
+			$(".page-tool .disabled").removeClass('disabled').removeAttr("disabled");
+			$(".page-tool .btn-status").each(function(i,e){
+				if($(e).attr("status") != row.vailFlag){
+					$(this).addClass("disabled");
+					$(this).attr("disabled","disabled");
+				}
+			})
+		}
+	})
+})
+
+function initEvent(){
+		$("#btn_role_relative").on("click",function(){
+			var row=$("#role-table").bootstrapTable('getSelections')[0];
+			if(row){
+				var _this=this;
+				$.diaLog({
+					title:"角色关联",
+					type:"confrim",
+					heigth:'500px',
+					con:'<div class="auth-choses-content clearfix">'+
+							'<div class="auth-selected-box clearfix"></div>'+
+							'<div class="auth-table"><table id="auth-page-table"></table></div>'+
+						'</div>',
+					init:function(content){
+						queryAuthsToTable($(content).find("#auth-page-table"),$(content).find(".auth-selected-box"),row.code)
+					},
+					func:function(type,content){
+						row.authorityCodes=[]
+						if(type='sure'){
+							$(content).find(".auth_code_panel").each(function(i,ele){
+								row.authorityCodes.push($(this).attr("code"))
+							})
+							if(row.authorityCodes.length == 0){
+								$.alert({content:"请选择权限",type:"warn"})
+								return false;
+							}
+							$.doPostJsonAjax({
+								url:"/permission/role/change/auth",
+								data:row,
+								async:false,
+								success:function(res){
+									$.diaLog({
+										con:"操作成功"
+									})
+									$("#auth-table").jmTable("refresh")
+								}
+							})
+						}
+					}
+				})
+		}else{
+			$.diaLog({con:"请选择条数据"})
+		}
+	})
+	
+	$("#btn_role_add").on("click",function(){
+		$.diaLog({
+			title:"新建角色",
+			type:"confrim",
+			con:getTableContent([
+				{title:"code",name:"code"},
+				{title:"name",name:"name"},
+			]),
+			func:function(type,content){
+				$(content).find('input').parent().css("border",'')
+				var code=$(content).find("input[name=code]").val();
+				var name=$(content).find("input[name=name]").val();
+				var flag=true;
+				if(code ==''){
+					$.alert({content:"角色编码不能为空",type:"warn"})
+					$(content).find("input[name=code]").parent().css('border',"1px solid red")
+					flag=false;
+				}
+				if(name ==''){
+					$.alert({content:"角色名称不能为空",type:"warn"})
+					$(content).find("input[name=name]").parent().css('border',"1px solid red")
+					flag=false;
+				}
+				if(flag){
+					if(type='sure'){
+						$.doPostJsonAjax({
+							url:'/permission/role/add',
+							data:{code:code,name:name},
+							async:false,
+							success:function(res){
+								$.diaLog({
+									con:"操作成功"
+								})
+								$("#role-table").jmTable("refresh")
+							}
+						})
+					}
+				}
+				return flag;
+			}
+		})
+	})
+	
+}
+	
+	function queryAuthsToTable(id,select,code){
+		$.doJsonAjax({
+			url:"/permission/query/auths",
+			data:{rolecode:code},
+			alert:"查询角色:"+code+" 对应的权限数据失败",
+			success:function(res){
+				initAuthPageTable(id,select,res.data)
+			}
+		})
+	}
+	function initAuthPageTable(id,select,auths){
+		$(select).on("click",".auth-close",function(){
+			var code=$(this).parent().attr("code");
+			var datas=$(id).jmTable("getData");
+			$.each(datas,function(i,d){
+				if(d.authcode==code){
+					$(id).jmTable("uncheck",i);
+				}
+			})
+		})
+		$(id).jTable({
+			url:"/permission/auth/page",
+			uniqueId:'id',
+			method:"post",
+			contentType: 'application/json',
+			queryParams:function(param){
+				var params={}
+				params.current=param.offset;
+				params.pageSize=param.limit;
+				params.data=param;
+				return params;
+			},
+			columns :[
+				{field: 'radio', checkbox: true,align: 'center'}, 
+				{
+					field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+					formatter: function (value,row,index){return index+1; }
+				},
+				{ field : "authname", title : "名称"},
+				{ field : "authcode", title : "编码"}
+			],
+			onLoadSuccess:function(data){
+				if(auths==undefined){
+					auths=[]
+				}
+				$(select).find(".auth_code_panel").each(function(i,ele){
+					auths.push($(this).attr("code"))
+				})
+				$.each(data.list,function(i,a){
+					if($.inArray(a.authcode,auths)>-1){
+						$(id).jmTable("check",i);
+					}
+				})
+			},
+			onCheck:function(row,ele){
+				$(select).append('<div class="auth_code_panel pull-left" style="margin-left:10px;position: relative;" code="'+row.authcode+'"><span>'+row.authname+'</span><span class="auth-close" style="position: absolute; top: -2px;cursor: pointer;">&times;</span></div>')
+			},
+			onUncheck:function(row,ele){
+				$(select).find(".auth_code_panel[code="+row.authcode+"]").remove()
+			}
+		})
+	}
+</script>
+<body>
+	<div id="page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left">权限</h4>
+				<div class="page-tool pull-right">
+						<button class="btn btn-primary" id="btn_role_add">添加</button>
+						<button class="btn btn-primary btn-status" id="btn_role_modify">修改</button>
+						<button class="btn btn-primary btn-status" id="btn_role_relative">关联</button>
+						<button class="btn btn-primary btn-status" id="btn_role_del">删除</button>
+				</div> 
+			</div>
+			<div id="page-contain" class="panel-body">
+				<div class="page-table">
+					<table id="role-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

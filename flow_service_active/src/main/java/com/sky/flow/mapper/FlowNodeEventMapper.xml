@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.flow.dao.FlowNodeEventBeanMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.flow.bean.FlowNodeEventBean" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="node_id" property="nodeId" jdbcType="VARCHAR" />
+    <result column="e_key" property="key" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="order_index" property="order" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="event_type" property="eventType" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="create_code" property="createCode" jdbcType="VARCHAR" />
+    <result column="create_name" property="createName" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id,flow_id,node_id, e_key, name, order_index, type, event_type, content, create_code, create_name, version,   ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from flow_node_event
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from flow_node_event
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByIds" parameterType="java.util.List" >
+    delete from flow_node_event
+    where id in <foreach collection="list" open="(" close=")" separator="," item="it">#{it}</foreach>
+  </delete>
+  <delete id="deleteByNode" >
+    delete from flow_node_event
+     where flow_id = #{flowId} and node_id=#{nodeId}
+  </delete>
+  <insert id="insert" parameterType="com.sky.flow.bean.FlowNodeEventBean" useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_node_event (id, e_key, name, 
+      flow_id,node_id, 
+      order_index, type, event_type, 
+      content, create_code, create_name, 
+      version, ts)
+    values (#{id,jdbcType=INTEGER}, #{key,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{flowId,jdbcType=INTEGER}, #{nodeId,jdbcType=VARCHAR}, 
+      #{order,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{eventType,jdbcType=VARCHAR}, 
+      #{content,jdbcType=VARCHAR}, #{createCode,jdbcType=VARCHAR}, #{createName,jdbcType=VARCHAR}, 
+      0,now())
+  </insert>
+  <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_node_event (id, e_key, name, 
+      flow_id,node_id, 
+      order_index, type, event_type, 
+      content, create_code, create_name, 
+      version, ts)
+     <foreach collection="list" item="it" open="values " separator=",">
+     (#{it.id,jdbcType=INTEGER}, #{it.key,jdbcType=VARCHAR}, #{it.name,jdbcType=VARCHAR}, 
+      #{it.flowId,jdbcType=INTEGER}, #{it.nodeId,jdbcType=VARCHAR}, 
+      #{it.order,jdbcType=INTEGER}, #{it.type,jdbcType=VARCHAR}, #{it.eventType,jdbcType=VARCHAR}, 
+      #{it.content,jdbcType=VARCHAR}, #{it.createCode,jdbcType=VARCHAR}, #{it.createName,jdbcType=VARCHAR}, 
+      0,now())
+     </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.flow.bean.FlowNodeEventBean"  useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_node_event
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >        	id,      		</if>
+      <if test="flowId != null" >       flow_Id,      	</if>
+      <if test="nodeId != null" >       node_id,      	</if>
+      <if test="key != null" >        	e_key,      		</if>
+      <if test="name != null" >        	name,      		</if>
+      <if test="order != null" >        order_index,      	</if>
+      <if test="type != null" >        	type,      		</if>
+      <if test="eventType != null" >    event_type,     </if>
+      <if test="content != null" >      content,      	</if>
+      <if test="createCode != null" >   create_code,    </if>
+      <if test="createName != null" >   create_name,    </if>
+        								version,
+        								ts,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >        	#{id,jdbcType=INTEGER},      	</if>
+      <if test="flowId != null" >       #{flowId,jdbcType=VARCHAR},     </if>
+      <if test="nodeId != null" >       #{nodeId,jdbcType=VARCHAR},     </if>
+      <if test="key != null" >        	#{key,jdbcType=VARCHAR},      	</if>
+      <if test="name != null" >        	#{name,jdbcType=VARCHAR},      	</if>
+      <if test="order != null" >        #{order,jdbcType=INTEGER},      </if>
+      <if test="type != null" >        	#{type,jdbcType=VARCHAR},      	</if>
+      <if test="eventType != null" >    #{eventType,jdbcType=VARCHAR},  </if>
+      <if test="content != null" >      #{content,jdbcType=VARCHAR},    </if>
+      <if test="createCode != null" >   #{createCode,jdbcType=VARCHAR}, </if>
+      <if test="createName != null" >   #{createName,jdbcType=VARCHAR}, </if>
+      									0,
+      									now()
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.flow.bean.FlowNodeEventBean" >
+    update flow_node_event
+    <set >
+      <if test="flowId != null" >       flow_id = #{flowId,jdbcType=VARCHAR},     		</if>
+      <if test="nodeId != null" >       node_id = #{nodeId,jdbcType=VARCHAR},     		</if>
+      <if test="key != null" >        	e_key = #{key,jdbcType=VARCHAR},      			</if>
+      <if test="name != null" >        	name = #{name,jdbcType=VARCHAR},      			</if>
+      <if test="order != null" >        order_index = #{order,jdbcType=INTEGER},      	</if>
+      <if test="type != null" >        	type = #{type,jdbcType=VARCHAR},      			</if>
+      <if test="eventType != null" >    event_type = #{eventType,jdbcType=VARCHAR},     </if>
+      <if test="content != null" >      content = #{content,jdbcType=VARCHAR},      	</if>
+      <if test="createCode != null" >   create_code = #{createCode,jdbcType=VARCHAR},   </if>
+      <if test="createName != null" >   create_name = #{createName,jdbcType=VARCHAR},   </if>
+             							version = version+1,      
+        								ts = now(),
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.flow.bean.FlowNodeEventBean" >
+    update flow_node_event
+    set e_key = #{key,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      flow_id = #{flowId,jdbcType=VARCHAR},     
+      node_id = #{nodeId,jdbcType=VARCHAR},
+      order_index = #{order,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      event_type = #{eventType,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      create_code = #{createCode,jdbcType=VARCHAR},
+      create_name = #{createName,jdbcType=VARCHAR},
+      version = version+1,
+      ts = now()
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectByNode" parameterType="com.sky.flow.bean.FlowNodeBean" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from flow_node_event
+  	where (SELECT flow_container( #{flowId})) like CONCAT('%',flow_id,'%') and node_id=#{id}
+  </select>
+</mapper>

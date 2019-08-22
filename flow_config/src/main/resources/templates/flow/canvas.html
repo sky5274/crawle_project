@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('流程绘图','/bootstrap/menu/bootstrap_contextmenu.css','https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.7.1/svg.js,/js/com/dialog-table.js,/js/com/page-dialog-action.js,/js/draw.canvas.js,/js/flow_canvas.js,/js/flow_draw_canvas.js,/js/flow_canvas_action.js,/bootstrap/menu/bootStrap_contextmenu.js')"></head>
+<script type="text/javascript">
+$(function(){
+	var flowId=$("#flowId").val();
+	canvas=$draw.initCanvas("panel-canvas");
+	if(flowId==''){
+		$.diaLog({con:"请先选择流程"})
+	}else{
+		initFlowCanvas(flowId)
+	}
+	
+})
+
+
+	
+</script>
+<style type="text/css">
+body{width: 100%;height: 100%}
+.tool-item{min-width: 20px;min-height: 20px;max-width: 40px;max-height: 40px; cursor: pointer;}
+.item-choose{border: 1px solid #ff99ff;}
+.tool-item img{width: 80%;height: 80%; margin: 5px 10%;}
+.panel-title{height: 25px; width: 100%}
+#canvas-page-panel{width: 100%;height: 100%}
+.panel-content{width: calc(100% - 10px);margin:0 5px; height: calc(100% - 25px)}
+.panel-tool{height: 100%; width: 10%; min-width: 20px; max-width: 40px; border: 1px solid #ee5f5b; }
+.panel-detail-show{height: 100%; width: 20%; min-width: 100px; border: 1px solid blue;}
+.panel-canvas{height: 100%; width: 70%; max-width: calc(100% - 120px);min-width: calc(80% - 40px); border: 1px solid green;}
+.ele_active{stroke:blue;stroke-width:2px}
+.ele_active text{stroke-width:0px}
+.input-tab-lable{width: 40%; }
+.input-null{border: 1px solid red;}
+.node-obj{cursor: pointer;}
+.glyphicon_act{display: none; margin-left: 5px}
+.item-active .glyphicon_act{display: inline;}
+</style>
+<body>
+	<input id="flowId" type="hidden" th:value="${flowId}"/>
+	<div id="canvas-page-panel">
+		<h4 class="panel-title-panel clearfix"><span class="panel-title"></span><button class="btn btn-primary pull-right" id="save-flow-btn">保存流程</button></h4>
+		<div class="panel-content">
+			<div class="panel-tool pull-left">
+				<div id="tool-choose" class="tool-item " data-toggle="tooltip" title="选择" active="choose"><img th:src="@{/img/canvas/canvas-choose.png}"/></div>
+				<div id="tool-move" class="tool-item " data-toggle="tooltip" title="移动" active="drage"><img th:src="@{/img/canvas/handpoint.png}"/></div>
+				<div id="tool-node" class="tool-item " data-toggle="tooltip" title="添加节点" active="node"><img th:src="@{/img/canvas/rect.png}"/></div>
+				<div id="tool-link" class="tool-item " data-toggle="tooltip" title="连线" active="line"><img th:src="@{/img/canvas/line.png}"/></div>
+			</div>
+			<div id="panel-canvas" class="panel-canvas pull-left"></div>
+			<div class="panel-detail-show pull-left"></div>
+		</div>
+	</div>
+</body>
+</html>

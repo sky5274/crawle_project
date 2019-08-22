@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sky.crawl.WebCrawleApplication;
 import com.sky.crawl.data.config.dao.MenuEntityMapper;
+import com.sky.crawl.test.MenuServicePageTest;
 import com.sky.crawl.util.RestTemplateUtil;
-import com.skycrawl.test.MenuServicePageTest;
 
 /**
  *	 页面测试

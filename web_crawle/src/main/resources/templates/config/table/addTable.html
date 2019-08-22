@@ -36,7 +36,7 @@
 				data.columns=attrs
 				$.doPostJsonAjax({
 					url:actionType[flag],
-					data:JSON.stringify(data),
+					data:data,
 					type:"post",
 					success:function(res){
 						if(res.success){
@@ -55,8 +55,7 @@
 			$("#sql-preview").html("")
 			$.doPostJsonAjax({
 				url:'/config/table/sql/temp/createtable',
-				data:JSON.stringify(getTableConfig()),
-				type:"post",
+				data:getTableConfig(),
 				loadding:true,
 				loadtarget:"#sql-preview",
 				success:function(res){

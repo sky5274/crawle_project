@@ -156,7 +156,7 @@
   <!-- 根据id查询表与属性数据 -->
   <select id="queryTableByID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     <include refid="table-columns-sql"></include>
-    where tab.id==#{id}
+    where tab.id=#{id}
   </select>
   
    <!-- 根据条件查询表与其属性的数据 -->

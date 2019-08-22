@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('任务信息','','https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.7.1/svg.js,/js/com/dialog-table.js,/js/com/page-dialog-action.js,/js/flow.link.js,/js/flow_canvas.js,/js/draw.canvas.js,/js/flow_detail_page.js')"></head>
+<style type="text/css">
+	#page-panel{height: 100%;}
+	#page-panel>.panel{height:100%;overflow-y: hidden;margin: auto;}
+	#page-panel .panel-body{height: calc(100% - 40px)}
+	.task-detail-info{width: 100%; height: calc(100% - 50px); }
+	.task-detail-info .panel-half{height: calc(100% - 10px);overflow-y: auto; border: 1px solid red;}
+	.panel-half{width: calc(50% - 10px);  margin: 5px;}
+	.panel-half>div{width: 100%;height: calc(100% - 5px);}
+	.node_select{stroke: #864fabc2;stroke-opacity: 0.8;stroke-width: 4px;}
+	.node-hover{border: 1px #ff8080 solid; border-radius: 5px; box-shadow: 0px 5px 25px 5px #808080}
+	.link_select,.link_select_callback{opacity: 1 !important}
+	.link_select polyline{stroke: #cc6699;}
+	.link_select_callback polyline{stroke: #00FF00;}
+	.clearboth{clear: both;}
+</style>
+<body>
+	<div id="page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left task-item" id="task-name" param='name'>任务</h4>
+				<a id="task-call-back" class="pull-right" href="#">回滚</a>
+			</div>
+			<div id="page-contain" class="panel-body">
+				<input type="hidden" id="taskId" th:value="${id}"/>
+				<div class="task-info">
+					<div class="task-desc"><span>描述：</span><span class="task-item" param="desc"></span></div>
+					<div class="task-message"><span>消息：</span><span class="task-item" param="message"></span></div>
+				</div>
+				<div class="task-detail-info panel">
+					<div class="pull-left panel-half">
+						<div id="task-flow-link"></div>
+					</div>
+					<div class="pull-left panel-half">
+						<div id="task-flow-canvas"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

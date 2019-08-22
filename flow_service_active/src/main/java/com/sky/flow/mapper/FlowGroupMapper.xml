@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.flow.dao.FlowGroupBeanMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.flow.bean.FlowGroupBean" >
+    <result column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="create_code" property="createCode" jdbcType="VARCHAR" />
+    <result column="create_name" property="createName" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="base_colums">
+  	id, name,code, create_code,       create_name, version, ts  
+  </sql>
+  <insert id="insert" parameterType="com.sky.flow.bean.FlowGroupBean"  useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_group (id, name,code, create_code,       create_name, version, ts      )
+    values (UUID_SHORT(), #{name,jdbcType=VARCHAR},#{code,jdbcType=VARCHAR}, #{createCode,jdbcType=VARCHAR}, 
+      #{createName,jdbcType=VARCHAR}, 0,now()
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.flow.bean.FlowGroupBean" useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_group
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        								id,
+      <if test="name != null" >        	name,      		</if>
+      <if test="code != null" >        	code,      		</if>
+      <if test="createCode != null" >   create_code,    </if>
+      <if test="createName != null" >   create_name,    </if>
+        								version,
+        								ts,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        								UUID_SHORT(),
+      <if test="name != null" >        	#{name,jdbcType=VARCHAR},      		</if>
+      <if test="code != null" >        	#{code,jdbcType=VARCHAR},      		</if>
+      <if test="createCode != null" >   #{createCode,jdbcType=VARCHAR},     </if>
+      <if test="createName != null" >   #{createName,jdbcType=VARCHAR},     </if>
+      									0,
+      									now()
+    </trim>
+  </insert>
+  <update id="updateSelective" parameterType="com.sky.flow.bean.FlowGroupBean">
+  	update  flow_group
+  	 <trim prefix="set " suffixOverrides="," >
+      <if test="name != null" >        	name	= #{name},      		</if>
+      <if test="code != null" >        	code	= #{code},      		</if>
+      <if test="createCode != null" >   create_code	=	#{createCode},  </if>
+      <if test="createName != null" >   create_name = #{createName},    </if>
+        								version,
+        								ts=now()
+    </trim>
+    where id=#{id}
+  </update>
+  
+  <select id="selectByCodes" parameterType="java.util.List" resultMap="BaseResultMap">
+  	select <include refid="base_colums"/>
+  	from flow_grouo
+  	<trim prefix="where">
+  	<if test="list !=null">
+  		<foreach collection="list" item="it" open="code in(" close=")" separator=",">#{it}</foreach>
+  	</if>
+  	</trim>
+  </select>
+  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select <include refid="base_colums"/>
+  	from flow_grouo
+  	where id=#{id}
+  </select>
+  
+</mapper>

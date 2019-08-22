@@ -140,8 +140,7 @@ function btnExcete(param){
 			if(data){
 				$.doPostJsonAjax({
 					url:"/crawle/config/excute",
-					data:JSON.stringify(data),
-					type:"post",
+					data:data,
 					loadding:true,
 					success:function(res){
 						if(res.success){

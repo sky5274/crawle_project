@@ -8,3 +8,5 @@ config-center  is a file to save the project properties
 config-server  is spring cloud project for manage properties
 
 web_config_main  is spring cloud project for project manage center 
+
+crawle.sql is the all table sql defiened

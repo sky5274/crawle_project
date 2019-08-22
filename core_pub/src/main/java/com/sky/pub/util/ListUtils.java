@@ -1,6 +1,6 @@
 package com.sky.pub.util;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * 	集合工具类
@@ -8,7 +8,7 @@ import java.util.List;
  * @date  2019年1月24日 下午5:22:48
  */
 public class ListUtils {
-	public static boolean isEmpty(List<?> list) {
+	public static boolean isEmpty(Collection<?> list) {
 		return list==null || list.isEmpty();
 	}
 }

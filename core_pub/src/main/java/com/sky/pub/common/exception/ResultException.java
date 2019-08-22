@@ -23,7 +23,10 @@ public class ResultException extends Exception{
 	private String msg;
 	private Object data;
 	public ResultException(ResultCode code) {
-		this(code.getCode(),code.getMsg());
+		this(code.getCode(),code.getMsg(),code==ResultCode.UNKONW_EXCEPTION? LogLevel.INFO:LogLevel.ERROR);
+	}
+	public ResultException(Object data,ResultCode code) {
+		this(code.getCode(),code.getMsg(),code==ResultCode.UNKONW_EXCEPTION? LogLevel.INFO:LogLevel.ERROR,data);
 	}
 	public ResultException(ResultCode code,Object data) {
 		this(code.getCode(),code.getMsg(),LogLevel.INFO,data);
@@ -38,13 +41,13 @@ public class ResultException extends Exception{
 		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message);
 	}
 	public ResultException(ResultCode code,String message,Object data) {
-		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message,LogLevel.INFO,data);
+		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message,code==ResultCode.UNKONW_EXCEPTION? LogLevel.INFO:LogLevel.ERROR,data);
 	}
 	public ResultException(ResultCode code,String message,LogLevel level) {
 		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message,level);
 	}
 	public ResultException(ResultCode code,String message,Object data,Exception e) {
-		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message,LogLevel.INFO,data,e);
+		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message,code!=ResultCode.UNKONW_EXCEPTION? LogLevel.INFO:LogLevel.ERROR,data,e);
 	}
 	public ResultException(ResultCode code,String message,Exception e) {
 		this(code.getCode(),StringUtils.isEmpty(message)? code.getMsg():message,e);
@@ -69,12 +72,14 @@ public class ResultException extends Exception{
 		this.setData(data);
 		this.setCode(code);
 		this.setMsg(message);
+		this.setLevel(level);
 	}
 	public ResultException(String code,String message,LogLevel level,Object data,Exception e) {
 		super(e);
 		this.setData(data);
 		this.setCode(code);
 		this.setMsg(message);
+		this.setLevel(level);
 	}
 	
 	/**

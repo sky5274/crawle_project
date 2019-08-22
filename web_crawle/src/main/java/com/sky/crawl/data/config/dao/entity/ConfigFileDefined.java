@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import com.sky.pub.BaseTableEntity;
+import com.sky.pub.contant.PubFileContant;
 
 /**
  * 配置：文件读取参数
@@ -33,7 +34,6 @@ public class ConfigFileDefined extends BaseTableEntity {
 	private String path;
 	/**0:新建，1：开始，2：进行中，3：暂停，4：终止*/
 	private int status;
-	private String statusName;
 	private int length;
 	private int index;
 	private String context;
@@ -44,7 +44,7 @@ public class ConfigFileDefined extends BaseTableEntity {
 		}else {
 			code=config.getCode();
 		}
-		this.path=getClass().getResource("/").getFile()+"/log/"+new SimpleDateFormat("yyyy/MM").format(new Date())+"/"+this.code+".txt";
+		this.path=PubFileContant.getJarPath()+"/log/"+new SimpleDateFormat("yyyy/MM").format(new Date())+"/"+this.code+".txt";
 	}
 	public String getPath() {
 		return path;

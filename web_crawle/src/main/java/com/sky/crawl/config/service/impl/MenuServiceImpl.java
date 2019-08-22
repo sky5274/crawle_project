@@ -10,12 +10,12 @@ import com.sky.crawl.config.service.MenuService;
 import com.sky.crawl.data.config.dao.MenuEntityMapper;
 import com.sky.crawl.data.config.dao.entity.MenuEntity;
 import com.sky.crawl.data.config.dao.entity.MenuNode;
+import com.sky.pub.util.Filter;
+import com.sky.pub.util.FilterReduce;
 import com.sky.pub.BasePageRequest;
 import com.sky.pub.Page;
 import com.sky.pub.ResultAssert;
 import com.sky.pub.common.exception.ResultException;
-import com.sky.pub.util.Filter;
-import com.sky.pub.util.FilterReduce;
 
 @Service
 public class MenuServiceImpl implements MenuService{
@@ -38,16 +38,15 @@ public class MenuServiceImpl implements MenuService{
 		List<String> err=new LinkedList<>();
 		if(StringUtils.isEmpty(menu.getCode())) err.add("菜单编码");
 		if(StringUtils.isEmpty(menu.getName())) err.add("菜单名称");
-		ResultAssert.isFalse(!err.isEmpty(), "请提交"+org.apache.tomcat.util.buf.StringUtils.join(err));
+		ResultAssert.isTure(!err.isEmpty(), "请提交"+org.apache.tomcat.util.buf.StringUtils.join(err));
 		
 		MenuEntity temp=new MenuEntity();
 		temp.setCode(menu.getCode());
 		temp.setName(menu.getName());
 		//验证menu  编码与名称是否重复
-		ResultAssert.isFalse(!menuMapper.queryByEntity(menu).isEmpty(),String.format("菜单编码：%s,菜单名称：%s 已存在，请修改后再提交",menu.getCode(),menu.getName()));
+		ResultAssert.isTure(!menuMapper.queryByEntity(menu).isEmpty(),String.format("菜单编码：%s,菜单名称：%s 已存在，请修改后再提交",menu.getCode(),menu.getName()));
 		//验证menu  添加操作是否成功
-		ResultAssert.isFalse(menuMapper.insertSelective(menu)<=0, "菜单添加失败");
-		
+		ResultAssert.isTure(menuMapper.insertSelective(menu)<=0, "菜单添加失败");
 		return menuMapper.queryByEntity(menu).get(0);
 	}
 

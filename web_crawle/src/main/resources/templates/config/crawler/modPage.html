@@ -28,8 +28,7 @@
 				}
 				$.doPostJsonAjax({
 					url:actionType[flag],
-					data:JSON.stringify(data),
-					type:"post",
+					data:data,
 					success:function(res){
 						if(res.success){
 							$.cartPage().back();

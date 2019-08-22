@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.sky.task</groupId>
+	<artifactId>data-batch-client</artifactId>
+	<version>0.0.3-SNAPSHOT</version>
+	<name>data-batch-client</name>
+	<packaging>jar</packaging>
+	<description>data batch client</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<fastjson.version>1.2.32</fastjson.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+		    <groupId>com.alibaba</groupId>
+		    <artifactId>fastjson</artifactId>
+		    <version>${fastjson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sky.base</groupId>
+			<artifactId>core_pub</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sky</groupId>
+			<artifactId>rpc</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+	      <groupId>org.springframework</groupId>
+	      <artifactId>spring-expression</artifactId>
+	      <version>4.3.13.RELEASE</version>
+	      <scope>provided</scope>
+	    </dependency>
+	</dependencies>
+</project>

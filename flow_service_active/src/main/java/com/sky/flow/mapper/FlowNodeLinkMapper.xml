@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.flow.dao.FlowNodeLinkBeanMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.flow.bean.FlowNodeLinkBean" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="l_key" property="key" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="condition_con" property="condition" jdbcType="VARCHAR" />
+    <result column="up_node_id" property="upNodeId" jdbcType="VARCHAR" />
+    <result column="down_node_id" property="downNodeId" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, l_key, condition_con,flow_id, up_node_id, down_node_id, version, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from flow_node_link
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from flow_node_link
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByIds" >
+    delete from flow_node_link
+    where flow_id=#{flowId} and id in <foreach collection="list" item="it" open="(" close=")" separator=",">#{it}</foreach>
+  </delete>
+  <delete id="deleteByNode" >
+    delete from flow_node_link
+    where flow_id=#{flowId} and up_node_id=#{nodeId}
+  </delete>
+  <delete id="deleteByKeys">
+    delete from flow_node_link
+    where flow_id=#{flowId} and  l_key in <foreach collection="list" item="it" open="(" close=")" separator=",">#{it}</foreach>
+  </delete>
+  <insert id="insert" parameterType="com.sky.flow.bean.FlowNodeLinkBean" useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_node_link (id, l_key, condition_con, 
+      flow_id,up_node_id, down_node_id, version, 
+      ts)
+    values (#{id,jdbcType=INTEGER}, #{key,jdbcType=VARCHAR}, #{condition,jdbcType=VARCHAR}, 
+     #{flowId,jdbcType=VARCHAR}, #{upNodeId,jdbcType=VARCHAR}, #{downNodeId,jdbcType=VARCHAR}, 0, 
+     now())
+  </insert>
+  <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_node_link (id, l_key, condition_con, 
+      flow_id,up_node_id, down_node_id, version, 
+      ts)
+      <foreach collection="list" item="it" open="values " separator=",">
+      (#{it.id,jdbcType=INTEGER}, #{it.key,jdbcType=VARCHAR}, #{it.condition,jdbcType=VARCHAR}, 
+     	#{it.flowId,jdbcType=VARCHAR}, #{it.upNodeId,jdbcType=VARCHAR}, #{it.downNodeId,jdbcType=VARCHAR}, 0, 
+      now())
+      </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.flow.bean.FlowNodeLinkBean" useGeneratedKeys="true"  keyProperty="id">
+    insert into flow_node_link
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >        	id,      		</if>
+      <if test="key != null" >        	l_key,      	</if>
+      <if test="condition != null" >    condition_con,  </if>
+      <if test="flowId != null" >    	flow_id,      	</if>
+      <if test="upNodeId != null" >     up_node_id,     </if>
+      <if test="downNodeId != null" >   down_node_id,   </if>
+             							version,     
+              							ts,      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >        	#{id,jdbcType=INTEGER},      	</if>
+      <if test="key != null" >        	#{key,jdbcType=VARCHAR},      	</if>
+      <if test="condition != null" >    #{condition,jdbcType=VARCHAR},  </if>
+      <if test="flowId != null" >    	#{flowId,jdbcType=VARCHAR},  	</if>
+      <if test="upNodeId != null" >     #{upNodeId,jdbcType=VARCHAR},   </if>
+      <if test="downNodeId != null" >   #{downNodeId,jdbcType=VARCHAR}, </if>
+      									0,
+      									now()
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.flow.bean.FlowNodeLinkBean" >
+    update flow_node_link
+    <set >
+      <if test="key != null" >        		l_key = #{key,jdbcType=VARCHAR},      			</if>
+      <if test="condition != null" >        condition_con = #{condition,jdbcType=VARCHAR},  </if>
+       <if test="flowId != null" >    		flow_id = #{flowId,jdbcType=VARCHAR},  			</if>
+      <if test="upNodeId != null" >        	up_node_id = #{upNodeId,jdbcType=VARCHAR},      </if>
+      <if test="downNodeId != null" >       down_node_id = #{downNodeId,jdbcType=VARCHAR},  </if>
+      										version=version+1,
+      										ts=now()
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.flow.bean.FlowNodeLinkBean" >
+    update flow_node_link
+    set l_key = #{key,jdbcType=VARCHAR},
+      condition_con = #{condition,jdbcType=VARCHAR},
+      flow_id = #{flowId,jdbcType=VARCHAR},
+      up_node_id = #{upNodeId,jdbcType=VARCHAR},
+      down_node_id = #{downNodeId,jdbcType=VARCHAR},
+      version=version+1,
+      ts=now()
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectByFlow" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from flow_node_link
+  	where flow_id=#{flowId}
+  </select>
+  
+  <select id="selectByNode"  resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from flow_node_link
+  	where flow_id=#{flowId} and( up_node_id=#{nodeId} or down_node_id=#{nodeId})
+  </select>
+  <select id="selectByUpNode" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	from flow_node_link
+  	where (SELECT flow_container( #{flowId})) like CONCAT('%',flow_id,'%') and up_node_id=#{nodeId}
+  </select>
+</mapper>

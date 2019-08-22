@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('任务调度','/bootstrap/css/bootstrap-table.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/com/dialog-table.js')"></head>
+<style type="text/css">
+.btn-red{color: red}
+.btn-blue{color:  blue}
+.btn-display{color: gray}
+.input-select{    text-align: center; margin-top: 6px; margin-left: 10px;}
+.input-select select{min-width: 100px;height: 25px}
+.btn-status{    height: 25px;  padding-top: 1px;}
+</style>
+<script type="text/javascript">
+	$(function(){
+		$("#group-select").change(function(){
+			$("#task-table").jmTable('refresh', {url :API.config.url+"/datatask/query/page?groupId="+$(this).val()})
+		})
+		var groupid=$("#group-select").val();
+		if(groupid){
+			$("#task-table").jTable({
+				url:"/datatask/query/page?groupId="+groupid,
+				uniqueId:'taskId',
+				isPost:true,
+				method:'post',
+				detailView: true,//父子表
+				columns :[
+					{field: 'radio', radio: true}, 
+					{
+						field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+						formatter: function (value,row,index){return index+1; }
+					},
+					{ field : "taskId", title : "编码"},
+					{ field : "status", title : "状态编码",visible: false},
+					{ field : "statusName", title : "状态",formatter: statusFormatter},
+					{ field : "taskName", title : "任务名称"},
+					{ field : "groupId", title : "分组id"},
+					{ field : "cronExpression", title : "时间表达式"},
+					{ field : "version", title : "版本号",visible: false},
+					{ field:'taskId', title: '操作',formatter: actionFormatter}
+				],
+				onExpandRow: function (index, row, $detail) {
+					extendTable(index, row, $detail)
+				},
+				onDblClickRow:function(row,ele){
+					$.cartPage({parent:"#page-panel",src:'/datatask/page/cart?id='+row.id})
+				}
+			})
+		}
+		
+		$("#task-table").on("click",".tab-index",function(e){
+			var id=$(this).attr("index")
+			var type=$(this).attr("type")
+			var row=getNewJobTask(id);
+			if(row==undefined || row==null){
+				row=$("#task-table").bootstrapTable("getRowByUniqueId",id)
+			}
+			console.log(row)
+			if(type=="mod"){
+				$.cartPage({parent:"#page-panel",src:'/datatask/page/modify?id='+id})
+			}else {
+				doTaskJobAction(row,type)
+			}
+			
+			$("#task-table").jmTable("updateByUniqueId",{id:id,row:row})
+		})
+		
+		$("#btn-task-add").on("click",function(){
+			$.cartPage({parent:"#page-panel",src:'/datatask/page/modify'})
+		})
+	})
+	
+	var job_status_action={
+			"run":{
+					context:"是否运行该调度任务",
+					valid:function(job){
+						if(job.status==2){
+							return "调度任务已经启动"
+						}
+					}
+				},
+			"pause":{
+				context:"是否运行该调度任务",
+				valid:function(job){
+					if(job.status==1){
+						return "调度任务已经暂停"
+					}
+					if(job.status==0){
+						return "调度任务已经停止，无法暂停"
+					}
+				}
+			},
+			"close":{
+				context:"是否运行该调度任务",
+				valid:function(job){
+					if(job.status==0){
+						return "调度任务已经停止"
+					}
+				}
+			}
+	}
+	
+	function reflushPage(){
+		$("#task-table").jmTable("refresh")
+	}
+	
+	function doTaskJobAction(job,status){
+		var status_action=job_status_action[status];
+		$.diaLog({con:status_action.context,func:function(type){
+			if(type=="sure"){
+				var msg=status_action.valid(job);
+				if(msg){
+					$.diaLog({con:msg})
+					return;
+				}
+				$.doPostJsonAjax({
+					url:"/datatask/"+status+"/task",
+					type:"post",
+					data:JSON.stringify(job),
+					async:false,
+					success:function(res,status){
+						if(res.success){
+							$.alert({context:"任务调度成功，任务执行中"})
+						}else{
+							$.alert({context:"任务调度失败",type:"warn"})
+						}
+					}
+				})
+			}
+		}})
+	}
+	
+	function getNewJobTask(taskId){
+		var data;
+		$.doJsonAjax({
+			url:"/datatask/query/info?taskId="+taskId,
+			async:false,
+			success:function(res,status){
+				if(res.success){
+					data=res.data
+				}
+			}
+		})
+		return data;
+	}
+	
+	var btnStatuType={"-1":"btn-default","0":"btn-success","1":"btn-warning","2":"btn-danger"}
+	function statusFormatter(value, row, index, field){
+		return '<a class="btn-status btn '+btnStatuType[row.status]+'">'+value+'</a>'
+	}
+	function actionFormatter(value, row, index, field){
+		return [
+			'<a class="tab-index btn-blue" type="run" data-toggle="tooltip" title="运行" index="'+value+'"><span class="glyphicon glyphicon-play"></span></a>',
+			'<a class="tab-index btn-blue" type="pause" data-toggle="tooltip" title="暂停" index="'+value+'"><span class="glyphicon glyphicon-pause"></span></a>',
+			'<a class="tab-index btn-red" type="close" data-toggle="tooltip" title="停止" index="'+value+'"><span class="glyphicon glyphicon-stop"></span></a>',
+			'<a class="tab-index btn-blue" type="mod" data-toggle="tooltip" title="修改" index="'+value+'"><span class="glyphicon glyphicon-edit"></span></a>'
+		].join("")
+	}
+	
+	function extendTable(index, row, $detail){
+		var ext=row.ext;
+		$detail.html("")
+		console.log(row)
+		if(ext){
+			var con=[
+				{title:"functions",value:ext.functions,attrs:{'disable':"disable",'readonly':'readoonly'}},
+				{title:"splitSize",value:ext.splitSize,attrs:{'disable':"disable",'readonly':'readoonly'}},
+				{title:"filtJs",value:ext.filtJs,attrs:{'disable':"disable",'readonly':'readoonly'}},
+				{title:"convertJs",value:ext.convertJs,attrs:{'disable':"disable",'readonly':'readoonly'}}
+			]
+			$detail.html(getTableContent(con))
+		}
+	}
+</script>
+<body>
+	<div  id="page-panel" class="panel panel-default fade in">
+		<div class="panel-heading clearfix">
+			<h4 class="pull-left">调度任务</h4>
+			<div class="pull-left input-select">
+				<select id="group-select"><option th:each="item,stats:${groups}" th:value="${item.groupId}" th:text="${item.groupName}"></option></select>
+			</div>
+			
+			<div class="page-tool pull-right">
+					<button class="btn btn-primary" id="btn-task-add">添加</button>
+			</div> 
+		</div>
+		<div id="page-contain" class="panel-body">
+			<div class="page-table">
+				<table id="task-table"></table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

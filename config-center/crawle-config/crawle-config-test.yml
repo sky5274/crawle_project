@@ -1,0 +1,47 @@
+server:
+  port: 8990
+
+spring:
+  session:
+     store-type: redis
+  application:
+    name: crawle-config
+  thymeleaf:
+    cache: false 
+    mode: HTML5  
+    encoding: UTF-8
+    content-type: text/html; charset=utf-8
+    prefix: classpath:/templates/
+    suffix: .html 
+  datasource:
+    name: test
+    url: jdbc:mysql://localhost:3306/crawle?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    username: temp
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+mybatis:
+  mapper-locations: classpath:com/sky/crawl/data/*/mapper/*.xml
+Monitor:
+   type: dev
+
+security:
+     basic:
+       url:   http://127.0.0.1:8980
+       enabled: false
+     oauth2:
+       client:
+         client-id: test
+         client-secret: temp123456
+         user-authorization-uri: ${security.basic.url}/oauth/authorize
+         access-token-uri:   ${security.basic.url}/oauth/token ##网关的地址
+         redirect-uri-template: http//:127.0.0.1:${server.port}/config/main
+         scope: all
+       resource:
+         user-info-uri:  ${security.basic.url}/auth/user/info
+         prefer-token-info: false
+       sso:
+         loginPath: /do/login
+
+logging:
+  level:   
+     com.sky: debug

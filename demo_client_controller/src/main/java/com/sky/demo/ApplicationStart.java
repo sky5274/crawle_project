@@ -1,0 +1,16 @@
+package com.sky.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+import com.sky.rpc.annotation.EnableRpcRegistAble;
+
+@SpringBootApplication
+@ComponentScan(value= {"com.sky"})
+@EnableRpcRegistAble("com.sky.demo")
+public class ApplicationStart {
+	public static void main(String[] args) {
+		SpringApplication.run(ApplicationStart.class, args);
+	}
+}

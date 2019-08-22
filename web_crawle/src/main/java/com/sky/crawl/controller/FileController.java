@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.druid.util.StringUtils;
-import com.sky.crawler.core.CrawlerJsContant;
 import com.sky.pub.Result;
 import com.sky.pub.ResultCode;
 import com.sky.pub.ResultUtil;
 import com.sky.pub.common.exception.ResultException;
+import com.sky.pub.contant.PubFileContant;
 
 /**
  * 	通用文件服务
@@ -166,7 +166,7 @@ public class FileController {
 	 * @date 2019年1月21日 上午8:50:29
 	 */
 	private String getFilePrefix() {
-		return CrawlerJsContant.getJarPath()+prefix;
+		return PubFileContant.getJarPath()+prefix;
 	}
 	
 	/**

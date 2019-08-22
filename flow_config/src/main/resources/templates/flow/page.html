@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('流程主页','/bootstrap/css/bootstrap-table.css,/bootstrap/menu/bootstrap_contextmenu.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/com/dialog-table.js,/js/com/page-dialog-action.js,/bootstrap/menu/bootStrap_contextmenu.js,/js/flow_page.js')"></head>
+<script type="text/javascript">
+$(function(){
+	initEvent();
+	
+	$("#flow-table").jTable({
+		url:"/flow/query/bygroup",
+		uniqueId:'id',
+		method:"post",
+		detailView: true,//父子表
+		contentType: 'application/json',
+		pagination:false,
+		getParam:function(){
+			return {groupId:''}
+		},
+		responseHandler:function(res){
+			if(res.success ){
+				return {list:res.data,total:res.data.length};
+			}else{
+				$.alert({type:"warn",content:"请求数据错误,错误编码："+res.code+" 信息："+res.message})
+			}
+		},
+		columns :[
+			{field: 'radio', radio: true,cellStyle:function(){return {classes:"flow-def"}}}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "type", "value":"flow", visible: false},
+			{ field : "id", title : "id"},
+			{ field : "name", title : "名称"},
+			{ field : "groupId", title : "分组"},
+			{ field : "createName", title : "创建人"},
+			{ field : "status", title : "状态",formatter:function(value,row){return value==0?'正常':'作废'}},
+			{ field : "version", title : "版本号", visible: false},
+			{ field : "ts", title : "时间",formatter:function(value,row){return value !=null?new Date(value).toLocaleString():'-'}},
+		],
+		onExpandRow: function (index, row, $detail) {
+			extendTable(index, row, $detail)
+		}
+	})
+	
+	
+})
+
+	
+</script>
+<body>
+	<div id="page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left">流程</h4>
+				<div class="page-tool pull-right">
+						<button class="btn btn-primary" id="btn_flow_add">添加</button>
+						<button class="btn btn-primary" id="btn_flow_update">修改</button>
+						<button class="btn btn-primary btn-status" status="Y" url="/permission/flow/disable" id="btn_flow_disable">作废</button>
+						<button class="btn btn-primary btn-status" status="N" url="/permission/flow/active" id="btn_flow_active">生效</button>
+						<button class="btn btn-primary btn-status" status="N" url="/permission/flow/delete" id="btn_flow_del">删除</button>
+				</div> 
+			</div>
+			<div id="page-contain" class="panel-body">
+				<div class="page-table">
+					<table id="flow-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

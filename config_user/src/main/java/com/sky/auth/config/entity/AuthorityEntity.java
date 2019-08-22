@@ -18,7 +18,8 @@ public class AuthorityEntity extends BaseTableEntity implements GrantedAuthority
 	private static final long serialVersionUID = 1L;
 	private String authcode;
 	private String authname;
-
+	/**权限有效标识：Y/N*/
+	private Character vailFlag;
 	public String getAuthcode() {
 		return authcode;
 	}
@@ -37,6 +38,14 @@ public class AuthorityEntity extends BaseTableEntity implements GrantedAuthority
 
 	public String getAuthority() {
 		return authcode;
+	}
+
+	public Character getVailFlag() {
+		return vailFlag==null?'Y':vailFlag;
+	}
+
+	public void setVailFlag(Character vailFlag) {
+		this.vailFlag = vailFlag;
 	}
 
 }

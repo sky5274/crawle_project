@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('流程节点','','')"></head>
+<style>
+.control-label{height: 34px; line-height: 34px; font-size: 18px;}
+.tab-pane{position: relative;}
+.panel-con-add{position: absolute;top: 5px;right: 10px; height: 10px; width: 10px;}
+.tab-pane .glyphicon{color: green; cursor: pointer;}
+.tab-pane>div{max-height: 100px;min-height: 10px}
+.attr-title>div{text-align: center;}
+.input-minus{line-height: 34px;}
+</style>
+<script type="text/javascript">
+$(function(){
+	initEvent();
+	var flowId=$("#node-page-contain input[name=flowId]").val();
+	if(flowId==''){
+		$.alert({type:"warn",content:"未选择流程"})		
+	}else{
+		loadFlowNodes(flowId)
+		var nodeId=$("#node-page-contain input[name=nodeId]").val()
+		if(nodeId!=''){
+			var containerId=$("#node-page-contain input[name=containerId]").val();
+			initFlowNode(containerId!=''?containerId:flowId,nodeId)
+		}
+	}
+})
+
+function initEvent(){
+	$(".panel-con-add").on("click",function(){
+		var p=$(this).parent();
+		var li=p.find('.input-con-demo').clone()
+		li.removeClass("hide input-con-demo").addClass("input-con")
+		p.find('.content-list').append(li)
+		var func=$(this).attr("func");
+		if(func!=undefined){
+			eval(func+"(li)")
+		}
+	})
+	$("#node-data select[name=type]").on("change",function(){
+		if($(this).val()=='container'){
+			$(".node-type-container").removeClass("hide")
+			$("#node-page-contain li").addClass("hide")
+			$("#node-page-contain li").eq(0).removeClass("hide")
+		}else{
+			$("#node-page-contain li").removeClass("hide")
+			$(".node-type-container").addClass("hide")
+			$(".node-type-container").find("option").attr("selected",false)
+			$(".node-type-container").find("option").eq(0).attr("selected",true)
+		}
+	})
+	
+}
+
+function initType(panel){
+	$(panel).find(".evt-type-input").inputSelect({
+		data:[
+			{value:"in",name:"in"},
+			{value:"out",name:"out"},
+			{value:"back",name:"back"},
+			{value:"user",name:"user"},
+		]
+	})
+}
+
+function loadFlowNodes(flowId){
+	$.doJsonAjax({
+		url:"/flow/node/query/simple",
+		data:{flowId:flowId},
+		async:false,
+		success:function(res){
+			var nodeId=$("input[name=nodeId]").val()
+			var sel=$("#node-page-contain select[name=downNodeId]")
+			$.each(res.data,function(i,e){
+				if(e.id!=nodeId){
+					sel.append('<option value="'+e.id+'">'+e.key+'-'+e.name+'</option>')
+				}
+			})
+		}
+	})
+	$.doJsonAjax({
+		url:"/flow/query/bygroup",
+		data:{groupId:null},
+		success:function(res){
+			var sel=$(".node-type-container").find("select")
+			$.each(res.data,function(i,d){
+				if(flowId!=d.id){
+					sel.append('<option value="'+d.id+'">'+d.name+'</option>')
+				}
+			})
+		}
+	})
+}
+
+/**初始化流程节点数据*/
+function initFlowNode(flowId,nodeId){
+	$.doJsonAjax({
+		url:"/flow/node/query/id",
+		data:{flowId:flowId,nodeId:nodeId},
+		async:false,
+		loadtarget:"#node-page-contain .tab-content",
+		loadding:true,
+		success:function(res){
+			initFlowNodeData(res.data)
+		}
+	})
+}
+
+function initFlowNodeData(node){
+	node.nodeId=node.id
+	$("#node-data").find("input").each(function(i,e){
+		$(this).val(node[$(this).attr("name")])
+	})
+	$("#node-data").find("select[name=type]").find("option[value="+node.type+"]").attr("selected",true);
+	$("#node-data").find("select[name=id]").find("option[value="+node.id+"]").attr("selected",true);
+	if(node.type!='container'){
+		initFlowNodeContent("#node-attr",node.attrs)
+		initFlowNodeContent("#node-link",node.links)
+		initFlowNodeContent("#node-event",node.events)
+	}else{
+		$(".nav-tabs li").addClass('hide')
+		$(".nav-tabs .active").removeClass('hide')
+		$("#node-data").find("select[name=type]").attr("disabled","disabled")
+	}
+}
+
+function initFlowNodeContent(ele,list){
+	if(list.length>0){
+		$.each(list,function(i,d){
+			var li=$(ele).find('.input-con-demo').clone()
+			li.removeClass("hide input-con-demo").addClass("input-con")
+			li.find("input").each(function(j,it){
+				var val=d[$(this).attr("name")]
+				$(this).val(val?val:'')
+			})
+			li.find("select").each(function(j,it){
+				var val=d[$(this).attr("name")]
+				$(this).find("option[value="+val+"]").attr("selected",true);
+				$(this).find("option").each(function(j,el){
+					if($(this).attr("value")==val){
+						$(this).attr("selected",true);
+					}
+				})
+			})
+			$(ele).find('.content-list').append(li)
+		})
+	}
+}
+
+
+function removeTr(ele){
+	$(ele).parents(".input-con").remove()
+}
+
+function getNode(){
+	var node={}
+	$("#node-data").find("input,select").each(function(i,e){
+		var val=$(this).val();
+		if(val !=''){
+			node[$(this).attr("name")]=val;
+		}
+	})
+	if(node.id==undefined){
+		node.id=node.nodeId
+	}
+	if(node.type!='container'){
+		node.attrs=addNodeRelative("#node-attr",function(attr){
+			attr.nodeId=node.nodeId
+		})
+		node.links=addNodeRelative("#node-link",function(link){
+			link.upNodeId=node.nodeId
+		},"condition")
+		node.events=addNodeRelative("#node-event",function(event){
+			event.nodeId=node.nodeId
+		})
+	}
+	return node;
+}
+
+function addNodeRelative(ID,func,outLimit){
+	var list=[]
+	$(ID).find(".input-con").each(function(){
+		var node={}
+		var flag=false;
+		$(this).find("input,select").each(function(j,it){
+			var val=$(it).val();
+			if(val !='' || outLimit.indexOf($(it).attr("name"))>-1){
+				node[$(it).attr("name")]=val;
+			}else{
+				flag=true;
+			}
+		})
+		if(!flag){
+			if(func){
+				func(node)
+			}
+			list.push(node)
+		}
+	})
+	return list;
+}
+	
+</script>
+<body>
+	<div id="node-page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left">节点</h4>
+				
+			</div>
+			<div id="node-page-contain" class="panel-body">
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="#node-data" data-toggle="tab">数据</a> </li>
+					<li><a href="#node-attr" data-toggle="tab">属性</a></li>
+					<li><a href="#node-link" data-toggle="tab">链接</a></li>
+					<li><a href="#node-event" data-toggle="tab">事件</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane fade in active" id="node-data">
+						<input th:value="${flowId}" type="hidden" name="flowId"/>
+						<input th:value="${nodeId}" type="hidden" name="nodeId"/>
+						<input th:value="${containerId}" type="hidden" name="containerId"/>
+						<div class="form-group clearfix"><lable class="col-sm-2 control-label">key:</lable><div class="col-sm-8 form-item"><input class="pull-left  form-control" type="text" placeholder="key" name="key"/></div></div>
+						<div class="form-group clearfix"><lable class="col-sm-2 control-label">name:</lable><div class="col-sm-8 form-item"><input class="pull-left  form-control" type="text" placeholder="name" name="name"/></div></div>
+						<div class="form-group clearfix"><lable class="col-sm-2 control-label">type:</lable>
+							<div class="col-sm-8 form-item">
+								<select class="pull-left  form-control" name="type">
+									<option></option>
+									<option value="base">基础</option>
+									<option value="start">开始</option>
+									<option value="end">结束</option>
+									<option value="select">条件</option>
+									<option value="choose">选择</option>
+									<option value="container">容器</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group clearfix node-type-container hide"><lable class="col-sm-2 control-label">container:</lable>
+							<div class="col-sm-8 form-item">
+								<select class="pull-left  form-control" name="id">
+									<option></option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane fade " id="node-attr">
+						<label class="node-attr-add panel-con-add"><i class="glyphicon glyphicon-plus icon-plus"></i></label>
+						<div id="node-attr-content pane-content">
+							<div class="attr-title"><div class="col-sm-3">key</div><div class="col-sm-4">name</div><div class="col-sm-4">value</div><div class="col-sm-1"></div></div>
+							<div class="input-con-demo hide">
+								<div class="col-sm-3"><input class="form-control" type="text" placeholder="key" name="key"/></div>
+								<div class="col-sm-4"><input class="form-control" type="text" placeholder="name" name="name"/></div>
+								<div class="col-sm-4"><input class="form-control" type="text" placeholder="value" name="value"/></div>
+								<div class="col-sm-1 input-minus"><i class="glyphicon glyphicon-minus icon-minus" onclick="removeTr(this)"></i></div>
+							</div>
+							<div class="content-list"></div>
+						</div>
+					</div>
+					<div class="tab-pane fade " id="node-link">
+						<label class="node-link-add panel-con-add"><i class="glyphicon glyphicon-plus icon-plus"></i></label>
+						<div id="node-attr-content pane-content">
+							<div class="attr-title"><div class="col-sm-3">key</div><div class="col-sm-4">condition</div><div class="col-sm-4">downnode</div><div class="col-sm-1"></div></div>
+							<div class="input-con-demo hide">
+								<div class="col-sm-3"><input class="form-control" type="text" placeholder="key" name="key"/></div>
+								<div class="col-sm-4"><input class="form-control" type="text" placeholder="condition" name="condition"/></div>
+								<div class="col-sm-4"><select class="form-control" type="text" placeholder="downNodeId" name="downNodeId"><option></option></select></div>
+								<div class="col-sm-1 input-minus"><i class="glyphicon glyphicon-minus icon-minus" onclick="removeTr(this)"></i></div>
+							</div>
+							<div class="content-list"></div>
+						</div>
+					</div>
+					<div class="tab-pane fade " id="node-event">
+						<label class="node-event-add panel-con-add" func="initType"><i class="glyphicon glyphicon-plus icon-plus"></i></label>
+						<div id="node-attr-content pane-content">
+							<div class="attr-title"><div class="col-sm-2">key</div><div class="col-sm-2">name</div><div class="col-sm-2">type</div><div class="col-sm-2">eventType</div><div class="col-sm-3">content</div><div class="col-sm-1"></div></div>
+							<div class="input-con-demo hide">
+								<div class="col-sm-2"><input class="form-control" type="text" placeholder="key" name="key"/></div>
+								<div class="col-sm-2"><input class="form-control" type="text" placeholder="name" name="name"/></div>
+								<div class="col-sm-2"><input class="form-control evt-type-input" type="text" placeholder="eventType" name="type"/></div>
+								<div class="col-sm-2">
+									<select class="form-control" name="type">
+										<option></option>
+										<option value="class">类</option>
+										<option value="method">方法</option>
+										<option value="js">js</option>
+									</select>
+								</div>
+								<div class="col-sm-3"><input class="form-control" type="text" placeholder="content" name="content"/></div>
+								<div class="col-sm-1 input-minus"><i class="glyphicon glyphicon-minus icon-minus" onclick="removeTr(this)"></i></div>
+							</div>
+							<div class="content-list"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

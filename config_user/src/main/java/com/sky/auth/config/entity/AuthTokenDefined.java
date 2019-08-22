@@ -1,7 +1,12 @@
 package com.sky.auth.config.entity;
 
+import java.io.Serializable;
 
-public class AuthTokenDefined{
+public class AuthTokenDefined implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	//{"access_token":"0fbcbcb2-1c24-44b9-89b2-81a67698db1c","token_type":"bearer","refresh_token":"9db8ae33-3d31-4db6-8388-a7bc83a463bf","expires_in":28578,"scope":"all read writer"}
 	private String access_token;
 	private String token_type;

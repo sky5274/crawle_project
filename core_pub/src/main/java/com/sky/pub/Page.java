@@ -45,7 +45,7 @@ public class Page <T>{
 		this.pageSize = pageSize;
 	}
 	
-	public void setPageData(PageRequest reqPage) {
+	public void setPageData(@SuppressWarnings("rawtypes") PageRequest reqPage) {
 		if(reqPage !=null) {
 			setPageData(reqPage.hasInit(),reqPage.getCurrent(),reqPage.getPageSize());
 		}

@@ -1,5 +1,7 @@
 package com.sky.pub;
 
+import java.util.List;
+
 public class ResultUtil {
 	
 	public static <T> Result<T> getOk(ResultCode code,T data){
@@ -20,5 +22,13 @@ public class ResultUtil {
 	public static <T> Result<T> copy(Result<Object> result){
 		return new Result<>(result.getCode(),result.getMessage());
 	}
-	
+	public static <T> Result<T> getFailed(ResultCode code,T data,List<MsgPrinter> msgdatas){
+		return new ResultMData<T>(code,data, msgdatas).fail();
+	}
+	public static <T> Result<T> getFailed(ResultCode code,List<MsgPrinter> msgdatas){
+		return new ResultMData<T>(code.getCode(), msgdatas).fail();
+	}
+	public static <T> Result<T> getFailed(ResultCode code,String msg,List<MsgPrinter> msgdatas){
+		return new ResultMData<T>(code.getCode(), msg,msgdatas).fail();
+	}
 }

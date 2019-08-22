@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.flow.dao.TaskFlowBeanMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.flow.bean.TaskFlowBean" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+    <result column="flow_name" property="flowName" jdbcType="VARCHAR" />
+    <result column="desc_con" property="desc" jdbcType="VARCHAR" />
+    <result column="message" property="message" jdbcType="VARCHAR" />
+    <result column="params" property="params"  jdbcType="VARCHAR" javaType="com.alibaba.fastjson.JSONObject" typeHandler="com.sky.flow.typehandler.MybatisJsonTypeHandler"/>
+    <result column="in_task" property="inTask" jdbcType="INTEGER" />
+    <result column="in_now_task_node" property="inNowTaskNode" jdbcType="INTEGER" />
+    <result column="create_code" property="createCode" jdbcType="VARCHAR" />
+    <result column="create_name" property="createName" jdbcType="VARCHAR" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name,status, flow_id,flow_name, message,desc_con, params, create_code, create_name, ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from task_flow
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 查询用户编码是否在任务环节中 -->
+  <select id="queryUserIsInTask" resultType="java.lang.Boolean" >
+    select  task_has_user(#{usercode},#{taskId})>0
+   
+  </select>
+  
+  <!-- 查询用户编码是否在当前任务节点中 -->
+  <select id="queryUserIsTaskNode" resultType="java.lang.Boolean" >
+    select  user_in_tasknode(#{usercode},#{taskNodeId})>0
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from task_flow
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.sky.flow.bean.TaskFlowBean" useGeneratedKeys="true"  keyProperty="id">
+    insert into task_flow (id, name,status, flow_id, flow_name,
+      message,desc_con, params, create_code, create_name, ts)
+    values (IFNULL(#{id},UUID_SHORT()), #{name,jdbcType=VARCHAR},#{status,jdbcType=INTEGER}, #{flowId,jdbcType=VARCHAR}, #{flowName,jdbcType=VARCHAR},
+      #{message,jdbcType=VARCHAR},#{desc,jdbcType=VARCHAR}, #{params, jdbcType=OTHER,typeHandler=com.sky.flow.typehandler.MybatisJsonTypeHandler}, 
+      #{createCode,jdbcType=VARCHAR},#{createName,jdbcType=VARCHAR}, #{ts,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.flow.bean.TaskFlowBean" useGeneratedKeys="true"  keyProperty="id">
+    insert into task_flow
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        								id,
+      <if test="name != null" >       	name,      		</if>
+      <if test="status != null" >       status,      	</if>
+      <if test="flowId != null" >       flow_id,      	</if>
+      <if test="flowName != null" >     flow_name,      </if>
+      <if test="message != null" >      message,   		</if>
+      <if test="desc != null" >        	desc_con,      	</if>
+      <if test="params != null" >       params,      	</if>
+      <if test="createCode != null" >   create_code,    </if>
+      <if test="createName != null" >   create_name,    </if>
+        								ts,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+       									IFNULL(#{id},UUID_SHORT()),
+      <if test="name != null" >        	#{name,jdbcType=VARCHAR},      		</if>
+      <if test="status != null" >       #{status,jdbcType=INTEGER},      	</if>
+      <if test="flowId != null" >       #{flowId,jdbcType=VARCHAR},      	</if>
+      <if test="flowName != null" >     #{flowName,jdbcType=VARCHAR},      	</if>
+      <if test="message != null" >      #{message,jdbcType=VARCHAR},      	</if>
+      <if test="desc != null" >        	#{desc,jdbcType=VARCHAR},      		</if>
+      <if test="params != null" >       #{params, jdbcType=OTHER,typeHandler=com.sky.flow.typehandler.MybatisJsonTypeHandler},      	</if>
+      <if test="createCode != null" >   #{createCode,jdbcType=VARCHAR},     </if>
+      <if test="createName != null" >   #{createName,jdbcType=VARCHAR},     </if>
+       									now(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.flow.bean.TaskFlowBean" >
+    update task_flow
+    <set >
+      <if test="name != null" >     	name = #{name,jdbcType=VARCHAR},      			</if>
+      <if test="status != null" >      	status = #{status,jdbcType=INTEGER},      		</if>
+      <if test="flowId != null" >       flow_id = #{flowId,jdbcType=VARCHAR},      		</if>
+      <if test="flowName != null" >     flow_name=#{flowName,jdbcType=VARCHAR},      	</if>
+      <if test="message != null" >      message = #{message,jdbcType=VARCHAR},      	</if>
+      <if test="desc != null" >        	desc_con = #{desc,jdbcType=VARCHAR},      		</if>
+      <if test="params != null" >       params = #{params ,jdbcType=OTHER,typeHandler=com.sky.flow.typehandler.MybatisJsonTypeHandler},      		</if>
+      <if test="createCode != null" >   create_code = #{createCode,jdbcType=VARCHAR},   </if>
+      <if test="createName != null" >   create_name = #{createName,jdbcType=VARCHAR},   </if>
+             							ts = now(),
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.flow.bean.TaskFlowBean" >
+    update task_flow
+    set name 		= #{name,jdbcType=VARCHAR},
+      status 		= #{status,jdbcType=INTEGER}, 
+      flow_id 		= #{flowId,jdbcType=VARCHAR},
+      flow_name		= #{flowName,jdbcType=VARCHAR},
+      desc_con 		= #{desc,jdbcType=VARCHAR},
+      message 		= #{message,jdbcType=VARCHAR},
+      params 		= #{params, jdbcType=OTHER,typeHandler=com.sky.flow.typehandler.MybatisJsonTypeHandler},
+      create_code 	= #{createCode,jdbcType=VARCHAR},
+      create_name 	= #{createName,jdbcType=VARCHAR},
+      ts 			= now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <sql id="base-query-condition">
+  	<trim prefix="where" suffixOverrides="and | or">
+  		<if test="task !=null">
+  			<if test="task.id !=null and task.id!=''"> 						id=#{task.id}		and									</if>
+  			<if test="task.name !=null and task.name!=''"> 					name like concat('%',#{task.name},'%') and				</if>
+  			<if test="task.flowId !=null and task.flowId!=''"> 				flow_id=#{task.flowId}			and						</if>
+  			<if test="task.status !=null "> 								status=#{task.status}			and						</if>
+  			<if test="task.createCode !=null and task.createCode!=''"> 		create_code=#{task.createCode}	and						</if>
+  			<if test="task.opretorCode !=null and task.opretorCode!=''"> 	task_has_user(#{task.opretorCode},task,id ) &gt;0 and	</if>
+  		</if>
+  	</trim>
+  </sql>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/>
+  	<if test="task.opretorCode !=null and task.opretorCode!=''">
+  	,task_has_user(#{task.opretorCode},id )>0 as in_task
+  	</if>
+  	<if test="task.opretorCode ==null or task.opretorCode==''">
+  	,1 as in_task
+  	</if>
+  	,user_in_tasknode(#{task.opretorCode},(select id from task_flow_node where task_id=task.id order by ts desc limit 0,1))>0 as in_now_task_node
+  	from task_flow task
+  	<include refid="base-query-condition"/>
+  	<if test="page !=null">
+  		limit #{page.current},#{page.pageSize}
+  	</if>
+  </select>
+  
+  <select id="accoutByParam" resultType="java.lang.Integer">
+  	select count(1)
+  	from task_flow
+  	<include refid="base-query-condition"/>
+  </select>
+</mapper>

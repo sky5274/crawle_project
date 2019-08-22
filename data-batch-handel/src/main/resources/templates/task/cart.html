@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('任务调度-查看','','')"></head>
+<style type="text/css">
+.need_inp{border: 1px solid red;}
+.form-panel{padding: 5px 15px}
+</style>
+<script type="text/javascript">
+	$(function(){
+		initBtnEvent();
+		initPageBtnEvent();
+	})
+	
+	var action_type_list=['/datatask/add/data','/datatask/modify/data']
+	function initPageBtnEvent(){
+		$("#btn-task-run").on("click",function(){
+			taskJobAction({
+				url:"/datatas/run/task",
+				success:function(res){
+					if(res.data){
+						$.alert({content:"调度成功，任务执行中"})
+					}else{
+						$.alert({content:"调度失败",type:"warn"})
+					}
+				}
+			})
+		})
+		$("#btn-task-modify").on("click",function(){
+			$.cartPage({parent:$("#page-panel",window.parent.document),src:'/datatask/page/modify?id='+$("input[name=id]").val()})
+		})
+		
+		$("#setCron-btn").on("click",function(){
+			$.diaLog({
+				type:"confrim",
+				width:800,
+				src:"/datatask/page/cron",
+				func:function(type,dialog){
+					if(type=="sure"){
+						$("input[name=cronExpression]").val($(dialog).find("#cron").val())
+					}
+				}
+			})
+		})
+	}
+	
+	function taskJobAction(obj){
+		 var data=getPageData();
+		 if(data){
+			 $.doPostJsonAjax({
+				url:obj.url,
+				data:data,
+				success:function(res){
+					if(obj.success){
+						obj.success(res)
+					}
+				}
+			})
+		 }
+	}
+	
+	function initBtnEvent(){
+		$("#queryTaskSource_btn").on("click",function(){
+			var name=$("input[name=targetClass]").val();
+			var groupId=$("select[name=groupId]").val();
+			if(name !=''){
+				$.doJsonAjax({
+					url:"/datatask/query/node",
+					data:{className:name,groupId:groupId},
+					success:function(res){
+						var nodes=res.data;
+						if(nodes.length==0){
+							$.diaLog({con:"系统未找到匹配到>>[group:"+groupId+" ,class:"+name+" ] 的数据源"})
+						}else{
+							showSourceNodes(nodes)
+						}
+					}
+				})
+			}else{
+				$.diaLog({con:"请先填写要查询的类"})
+			}
+		})
+	}
+	
+	function showSourceNodes(nodes){
+		var context="";
+		$.each(nodes,function(i,n){
+			context+='<li><input type="checkbox"/><span>'+n+'</span></li>'
+		})
+		$.diaLog({
+			con:'<div id="node-context">'+context+'</div>',
+			init:function(dialog){
+				$(dialog).find("li").css("cursor","pointer")
+				$(dialog).find("li").on("click",function(){
+					$(this).find("input[type=checkbox]").click()
+				})
+			},
+			func:function(type,dialog){
+				if(type=="sure"){
+					var inps=$(dialog).find("input:checked");
+					var sources=[]
+					$.each(inps,function(i,n){
+						sources.push($(this).parant().text())
+					})
+					console.log(sources)
+					$("input[name=limitTargetNode]").val(sources,join(";"))
+				}
+			}
+		})
+	}
+	
+	var check_types=["radio","checkbox"]
+	/**获取页面form信息*/
+	function getPageData(){
+		var data={}
+		var flag=true;
+		$(".need_inp").removeClass("need_inp");
+		$("#page-contain input,select").each(function(i,it){
+			var value=$(this).val();
+			if(value!=""){
+				var type=$(this).attr("type")
+				if($.inArray(type,check_types)>-1){
+					if($(this).prop("checked")){
+						data[$(this).attr("name")]=value;
+					}
+				}else{
+					data[$(this).attr("name")]=value;
+				}
+			}else{
+				if($(this).attr("require")=="true"){
+					flag=false;
+					$(this).parents(".form-group").addClass("need_inp")
+					$.alert({content:$(this).parents(".form-group").text()+"为空",type:"warn"})
+				}
+			}
+			
+		})
+		return flag?data:undefined;
+	}
+</script>
+<body>
+	<div  id="page-panel" class="panel panel-default fade in">
+		<div class="panel-heading clearfix">
+			<h4 class="pull-left action-type" data-type="1">调度任务</h4>
+			<div class="page-tool pull-right">
+					<button class="btn btn-primary" id="btn-task-run">执行</button>
+					<button class="btn btn-primary" id="btn-task-modify">修改</button>
+			</div> 
+		</div>
+		<div id="page-contain" class="panel-body">
+			<div class="form-panel form-horizontal" role="form">
+				<div class="form-group" th:if="${job!=null}"><input type="hidden" name="id"  th:value="${job.id}"/></div>
+				<div class="form-group" th:if="${job!=null}"><input type="hidden" name="taskId" th:value="${job.taskId}"/></div>
+				<div class="form-group" th:if="${job!=null}"><input type="hidden" name="version" th:value="${job.version}"/></div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label" >分组</label>
+					<div class="col-sm-10">
+						<input  class="form-control" type="text"  name="groupId" readonly="readonly" th:value="${job.groupId}"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label" >任务名称</label>
+					<div class="col-sm-10">
+						<input class="form-control" require="true" readonly="readonly" type="text" placeholder="任务名称" name="taskName" th:value="${job==null?'':job.taskName}"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label" >时间表达式</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" placeholder="时间表达式" readonly="readonly" name="cronExpression" th:value="${job==null?'':job.cronExpression}"/>
+					</div>
+					<div class="col-sm-2">
+						<a href="#" id="setCron-btn">设置时间</a>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label" >执行方式</label>
+					<div class="col-sm-10">
+						 <label class="checkbox-inline">
+					        <input type="radio" name="runType" value="0" th:checked="${job==null?true:job.runType==0}"/> 单次
+					    </label>
+						 <label class="checkbox-inline">
+					        <input type="radio" name="runType" value="1" th:checked="${job==null?false:job.runType==1}"/> 循环调度
+					    </label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label" >调度方式</label>
+					<div class="col-sm-8">
+						 <label class="checkbox-inline">
+					        <input type="radio" name="scheduleModel" th:checked="${job==null?true:job.scheduleModel==0}" value="0"/> 单点调度
+					    </label>
+						 <label class="checkbox-inline">
+					        <input type="radio" name="scheduleModel" th:checked="${job==null?false:job.scheduleModel==1}" value="1"/> 多点调用
+					    </label>
+					</div>
+					<input name="limitTargetNode" type="hidden"/>
+					<div class="col-sm-2"><a class="btn btn-default" id="queryTaskSource_btn"  href="#">查看调度源</a></div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label" >备注</label>
+					<div class="col-sm-10">
+						<p th:text="${job.remark}"></p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label" >调用参数</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" readonly="readonly" placeholder="调用参数" name="jsonParams" th:text="${job==null?'':job.jsonParams}"></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

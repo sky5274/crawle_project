@@ -1,3 +1,4 @@
+
 package com.sky.pub.common;
 
 import com.alibaba.fastjson.JSON;
@@ -197,7 +198,7 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @param isRespondBody 
 	 * @return 模型视图对象
 	 */
-	private ModelAndView errorResult(String code,String message, String url,Exception ex, HttpServletRequest request, boolean isRespondBody) {
+	protected ModelAndView errorResult(String code,String message, String url,Exception ex, HttpServletRequest request, boolean isRespondBody) {
 		if (isRespondBody || isAjax(request) || isJson(request)) {
 			return jsonResult(code, message,ex);
 		} else {
