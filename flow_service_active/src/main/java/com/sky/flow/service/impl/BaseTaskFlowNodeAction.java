@@ -148,7 +148,6 @@ public class BaseTaskFlowNodeAction  extends AbstratTaskFlowNodeAction {
 			for(FlowNodeEventBean evt:events) {
 				//节点类型对应的事件的运行执行
 				if(evt.getType().equals(enmu.name())) {
-					System.err.println(enmu);
 					flowEventEngineFactory.invoke(evt, node, task);
 				}
 			}
