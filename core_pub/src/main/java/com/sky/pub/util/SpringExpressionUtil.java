@@ -67,27 +67,18 @@ public class SpringExpressionUtil {
 		return getExpression(expression).getValue(clazz);
 	}
 	public static Object parse(String expression,Object value) {
-		ctx=new StandardEvaluationContext(value);
-		return getExpression(expression).getValue(ctx,String.class);
+		return parse(expression,value,String.class);
 	}
 	public static <T> T parse(String expression,Object value,Class<T> clazz) {
+		if(value instanceof Map) {
+			value=new DynamicBean((Map<?, ?>)value).getObject();
+		}
 		ctx=new StandardEvaluationContext(value);
 		return getExpression(expression,value).getValue(ctx,clazz);
 	}
-	public static Object parse(String expression,Map<String, Object> value) {
-		return parse(expression, new DynamicBean(value).getObject());
-	}
-	public static <T> T parse(String expression,Map<String, Object> value,Class<T> clazz) {
-		return parse(expression, new DynamicBean(value).getObject(),clazz);
-	}
-	
 	public static Boolean match(String expression,Object value) {
 		return parse(expression, value, Boolean.class);
 	}
-	public static Boolean match(String expression,Map<String, Object> value) {
-		return parse(expression, value, Boolean.class);
-	}
-	
 }
 /**
  * 动态添加对象属性
