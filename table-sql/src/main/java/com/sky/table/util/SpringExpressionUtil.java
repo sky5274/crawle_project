@@ -1,4 +1,4 @@
-package com.sky.pub.util;
+package com.sky.table.util;
 
 import java.util.Iterator;
 import java.util.Map;
