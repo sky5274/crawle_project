@@ -3,6 +3,7 @@ package com.sky.pub.config;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
@@ -61,6 +62,7 @@ public class RedisConfig extends CachingConfigurerSupport{
         return cacheManager;
     }
     @Bean
+    @ConditionalOnMissingClass
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory){
         StringRedisTemplate template = new StringRedisTemplate(factory);
         setSerializer(template);//设置序列化工具
