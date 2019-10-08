@@ -63,9 +63,8 @@ public abstract class RequestTraceEventListen <T>{
 		if(trace !=null && trace.getUrl()!=null && !isTraceUrl(trace)) {
 			log.debug("trace regist start: "+trace.getUrl());
 				try {
-					HttpUtil.getResponse(60*1000, SpringUtil.getBean(SkyConfigValue.class).getLocation()+SkyConfigRequest.trace_start.getUrl(), HttpMethod.POST, JSON.parseObject(JSON.toJSONString(trace),Map.class));
+					HttpUtil.AsyncResponse(60*1000, SpringUtil.getBean(SkyConfigValue.class).getLocation()+SkyConfigRequest.trace_start.getUrl(), HttpMethod.POST, JSON.parseObject(JSON.toJSONString(trace),Map.class),null);
 				} catch (IOException e) {
-					e.printStackTrace();
 					log.warn(trace.getUrl()+" trace regist start failed", e);
 				}
 		}
