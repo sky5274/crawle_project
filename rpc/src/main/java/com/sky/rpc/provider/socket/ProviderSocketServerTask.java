@@ -7,6 +7,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.Socket;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -46,7 +48,7 @@ public class ProviderSocketServerTask implements Runnable{
 				for(Object arg:args) {
 					if(arg!=null) {
 						if(arg instanceof RpcCallBack) {
-							args[i]=getArgCallProxy(request.getParameterTypes()[i],input,output,i,request.getRequestId());
+							args[i]=getArgCallProxy(request.getParameterTypes()[i],input,output,i,request.getRequestId(),request.getHeaders());
 						}
 					}
 					i++;
@@ -91,7 +93,7 @@ public class ProviderSocketServerTask implements Runnable{
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <T> T getArgCallProxy(final Class<T> serviceInterface, final ObjectInputStream input, final ObjectOutputStream output, final int i,final String requestId) {
+	private <T> T getArgCallProxy(final Class<T> serviceInterface, final ObjectInputStream input, final ObjectOutputStream output, final int i,final String requestId, final Map<String, String> headers) {
 		return (T) Proxy.newProxyInstance(FactoryBean.class.getClassLoader(), new Class<?>[]{serviceInterface},
 				new InvocationHandler() {
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -99,6 +101,7 @@ public class ProviderSocketServerTask implements Runnable{
 						RpcRequest req = new RpcRequest(serviceInterface.getName()+"_"+i, method, args);
 						String id = requestId+"_"+serviceInterface.getName()+"_"+i;
 						req.setRequestId(id);
+						req.setHeaders(headers);
 						//代理调用参数的方法
 						output.writeObject(req);
 						Result<?> res = (Result<?>) input.readObject();

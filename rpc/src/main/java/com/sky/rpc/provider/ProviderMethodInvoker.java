@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.sky.rpc.base.RpcException;
 import com.sky.rpc.base.RpcRequest;
+import com.sky.rpc.handle.factory.RpcRequetHandleFactory;
 import com.sky.rpc.util.RpcSpringBeanUtil;
 
 /**
@@ -20,6 +21,8 @@ public class ProviderMethodInvoker {
 	
 	public static Object invoke(SocketAddress addr,RpcRequest request) throws Throwable  {
 		try {
+			//服务端请求参数预处理
+			RpcRequetHandleFactory.preInvoke(request);
 			return invokeMethod(addr,Class.forName(request.getClassName()),request);
 		} catch (ClassNotFoundException e) {
 			throw new RpcException("["+addr+"] server can not find class:"+request.getClassName());
