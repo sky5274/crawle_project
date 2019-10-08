@@ -111,6 +111,7 @@ public class HttpUtil {
 			builder.url(url);
 			break;
 		}
+		builder.addHeader("Content-Type", "application/json");
 		return builder;
 	}
 }
