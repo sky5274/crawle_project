@@ -10,14 +10,17 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
-import com.sky.pub.util.SpringUtil;
 import com.sky.sm.bean.ProjectTransationNodeData;
 import com.sky.sm.service.impl.StringJsonRedisServiceImpl;
 
 @ServerEndpoint(value = "/socket/transaction")
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
 public class HttpTransactionSocketService {
 	private StringJsonRedisServiceImpl stringRedisService;
@@ -85,17 +88,10 @@ public class HttpTransactionSocketService {
     	ProjectTransationNodeData nodeData = JSON.parseObject(message,ProjectTransationNodeData.class);
     	if(nodeData!=null) {
     		//在redis中缓存事务节点数据
-    		getStringRedisService().set(getKey(nodeData), message, Integer.valueOf((nodeData.getTimeOut()+moreTime)+""));
+    		stringRedisService.set(getKey(nodeData), message, Integer.valueOf((nodeData.getTimeOut()+moreTime)+""));
     		String key = fromateGroup(nodeData.getProject(), nodeData.getVersion());
     		sendInfo(key, message);
     	}
-    }
-    
-    private StringJsonRedisServiceImpl getStringRedisService() {
-    	if(stringRedisService==null) {
-    		stringRedisService=SpringUtil.getBean(StringJsonRedisServiceImpl.class);
-    	}
-    	return stringRedisService;
     }
 
     /**
