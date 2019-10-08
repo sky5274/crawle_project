@@ -1,27 +1,25 @@
 package com.sky.sm.socketService;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import javax.annotation.Resource;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-
 import org.springframework.stereotype.Component;
-
+import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
+import com.sky.pub.util.SpringUtil;
 import com.sky.sm.bean.ProjectTransationNodeData;
 import com.sky.sm.service.impl.StringJsonRedisServiceImpl;
 
 @ServerEndpoint(value = "/socket/transaction")
 @Component
 public class HttpTransactionSocketService {
-	@Resource
 	private StringJsonRedisServiceImpl stringRedisService;
 	private int moreTime=1000*30;
 	/**事务节点redis key format*/
@@ -40,10 +38,30 @@ public class HttpTransactionSocketService {
     @OnOpen
     public void onOpen(Session session) {
         this.session = session;
-        webSocketSet.add(this);     //加入set中
-        Map<String, String> paramMap = session.getPathParameters();
+        Map<String, String> paramMap = getQueryMap(session);
         System.err.println(paramMap);
         groupKey=fromateGroup(paramMap.get("project"),paramMap.get("version"));
+        System.err.println(JSON.toJSONString(this));
+        webSocketSet.add(this);     //加入set中
+    }
+    
+    private Map<String, String> getQueryMap(Session session){
+    	Map<String, String> queryMap=new HashMap<String, String>();
+    	String queryString = session.getQueryString();
+    	if(!StringUtils.isEmpty(queryString)) {
+    		String[] queryParams = queryString.split("&");
+    		if(queryParams.length>0) {
+    			for(String params:queryParams) {
+    				if(!StringUtils.isEmpty(params)) {
+    					String[] paramEntity = params.split("=");
+    					if(paramEntity.length==2) {
+    						queryMap.put(paramEntity[0], paramEntity[1]);
+    					}
+    				}
+    			}
+    		}
+    	}
+    	return queryMap;
     }
     
     public static String fromateGroup(String project,String version) {
@@ -67,10 +85,17 @@ public class HttpTransactionSocketService {
     	ProjectTransationNodeData nodeData = JSON.parseObject(message,ProjectTransationNodeData.class);
     	if(nodeData!=null) {
     		//在redis中缓存事务节点数据
-    		stringRedisService.set(getKey(nodeData), message, Integer.valueOf((nodeData.getTimeOut()+moreTime)+""));
+    		getStringRedisService().set(getKey(nodeData), message, Integer.valueOf((nodeData.getTimeOut()+moreTime)+""));
     		String key = fromateGroup(nodeData.getProject(), nodeData.getVersion());
     		sendInfo(key, message);
     	}
+    }
+    
+    private StringJsonRedisServiceImpl getStringRedisService() {
+    	if(stringRedisService==null) {
+    		stringRedisService=SpringUtil.getBean(StringJsonRedisServiceImpl.class);
+    	}
+    	return stringRedisService;
     }
 
     /**
