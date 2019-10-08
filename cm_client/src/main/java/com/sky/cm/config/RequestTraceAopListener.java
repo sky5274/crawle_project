@@ -1,6 +1,8 @@
 package com.sky.cm.config;
 
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -38,7 +40,10 @@ public class RequestTraceAopListener {
 			return obj;
 		} catch (Throwable e) {
 			httpRequestEventListener.recordTraceEnd(500,JSON.toJSONString(new Result<>(ResultCode.UNKONW_EXCEPTION, e.getMessage())));
-			throw new Exception(e);
+			if(UndeclaredThrowableException.class.getName().equals(e.getClass().getName())) {
+				throw e.getCause();
+			}
+			throw e;
 		}
 	}
 	
