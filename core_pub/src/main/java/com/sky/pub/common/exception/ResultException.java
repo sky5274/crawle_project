@@ -87,9 +87,9 @@ public class ResultException extends Exception{
 	public ResultException(String message,ResultCode code,Object...args) {
 		if(message!=null) {
 				for(Object arg:args) {
-					msg.replace("{}", arg.toString());
+					message.replace("{}", arg.toString());
 				}
-			this.setMsg(msg);
+			this.setMsg(message);
 		}else {
 			this.setMsg(null);
 		}
