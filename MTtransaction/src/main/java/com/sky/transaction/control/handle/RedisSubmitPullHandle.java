@@ -22,6 +22,7 @@ public class RedisSubmitPullHandle extends RedisSubmitHandle implements ConnectS
 
 	@Override
 	public List<ConnectTransationNodeData> listenConnectTransactionNode() {
+//		System.err.println("redis get node");
 		ConnectTransationNodeData node = ConnectTransactionNodeFactory.getDefTransactionNodeData();
 		StringRedisTemplate template = super.getRedisTemplate();
 		if(template!=null) {

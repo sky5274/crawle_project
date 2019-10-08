@@ -51,6 +51,10 @@ public class RedisSubmitPushListenerHandle extends RedisSubmitHandle implements 
 	 * @date 2019年9月26日 下午4:51:17
 	 */
 	public void excuteNode(String node) {
+		if(node.startsWith("\"")) {
+			node=node.substring(1, node.length()-1);
+		}
+		node=node.replace("\\", "");
 		excuteNode(JSON.parseObject(node, ConnectTransationNodeData.class));
 	}
 }

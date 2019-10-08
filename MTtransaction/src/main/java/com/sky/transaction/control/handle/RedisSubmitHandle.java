@@ -40,13 +40,13 @@ public class RedisSubmitHandle implements ConnectSubmitHandle{
 
 	@Override
 	public ConnectTransationNodeData submitTransactionNodeEvent(ConnectTransationNodeData req) {
-		redisTemplate.opsForValue().set(getKey(req), JSON.toJSONString(req), req.getTimeOut()+timeout, TimeUnit.MILLISECONDS);
+		getRedisTemplate().opsForValue().set(getKey(req), JSON.toJSONString(req), req.getTimeOut()+timeout, TimeUnit.MILLISECONDS);
 		return req;
 	}
 
 	public StringRedisTemplate getRedisTemplate() {
 		if(redisTemplate==null) {
-			redisTemplate=SpringMTUtil.getBean(StringRedisTemplate.class);
+			redisTemplate=(StringRedisTemplate) SpringMTUtil.getBean("getRedisTemplate");
 		}
 		return redisTemplate;
 	}
