@@ -91,7 +91,7 @@ public class ResultException extends Exception{
 				}
 			this.setMsg(message);
 		}else {
-			this.setMsg(null);
+			this.setMsg(code.getMsg());
 		}
 		this.setCode(code.getCode());
 	}
