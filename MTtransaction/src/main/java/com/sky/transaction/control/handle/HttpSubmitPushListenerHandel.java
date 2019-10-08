@@ -106,7 +106,7 @@ public class HttpSubmitPushListenerHandel extends HttpSubmitHandle implements Co
 	
 	private WebSocketClient getSocketClient() {
 		if(socketClient==null) {
-			String url = String.format("%s%s?project=%s&verson=%s",platfromUrl,baseUrl,
+			String url = String.format("%s%s?project=%s&version=%s",platfromUrl,baseUrl,
 					SpringMTUtil.getEvnProperty(ConnectTransactionNodeFactory.NODE_ENV_PRO, ConnectTransactionNodeFactory.NODE_ENV_PRO),
 					SpringMTUtil.getEvnProperty(ConnectTransactionNodeFactory.NODE_ENV_EVERSION, ConnectTransactionNodeFactory.NODE_ENV_EVERSION)
 					);
