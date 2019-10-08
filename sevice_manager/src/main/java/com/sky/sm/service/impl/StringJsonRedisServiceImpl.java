@@ -10,6 +10,11 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.sky.pub.service.impl.BaseRedisServiceImpl;
 
+/**
+ * jsonString  redis service
+ * @author 王帆
+ * @date  2019年10月8日 下午3:21:43
+ */
 @Component
 public class StringJsonRedisServiceImpl extends BaseRedisServiceImpl<String>{
 
