@@ -73,7 +73,7 @@ public class ConnectTransactionNodeFactory {
 	 * @date 2019年9月22日 下午12:01:41
 	 */
 	public static String getTransactionNode() {
-		String  nodeId=String.format("%s-%s-%s_d", "mt_node",ThreadUtil.getThreadKey(),ThreadUtil.getShortUuid(),System.currentTimeMillis());
+		String  nodeId=String.format("%s-%s-%s_%d", "mt_node",ThreadUtil.getThreadKey(),ThreadUtil.getShortUuid(),System.currentTimeMillis());
 		return nodeId;
 	}
 
@@ -164,16 +164,20 @@ public class ConnectTransactionNodeFactory {
 			boolean flag=false;
 			Iterator<String> its = keys.iterator();
 			while(its.hasNext()) {
-				String key=its.next();
-				if(key.startsWith(group+":")) {
-					if(!flag) {
-						ConnectSourceGroupBean sg=connectGroupMap.get(key);
-						submitTransaction(sg, -2);
-						flag=true;
+				try {
+					String key=its.next();
+					if(key.startsWith(group+":")) {
+						if(!flag) {
+							ConnectSourceGroupBean sg=connectGroupMap.get(key);
+							submitTransaction(sg, -2);
+							flag=true;
+						}
+						connectGroupMap.remove(key);
+						transactionResultMap.remove(group);
 					}
-					connectGroupMap.remove(key);
-					transactionResultMap.remove(group);
+				} catch (Exception e) {
 				}
+				
 			}
 			ConnectSourceGroupBean sg = CurrentSourceGroupBean();
 			if(sg!=null && !StringUtils.isEmpty(sg.getGroupId()) && sg.getGroupId().equals(group)) {
