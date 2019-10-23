@@ -37,7 +37,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	protected abstract Class<V> getExtendClass();
 	private Logger log=Logger.getLogger(BaseRedisServiceImpl.class);
 
-	@Resource  
+	@Resource(name="redisTemplate")  
 	private RedisTemplate<String,V> redisTemplate;  
 	private boolean flag=false;
 	

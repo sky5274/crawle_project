@@ -1,5 +1,6 @@
 package com.sky.demo.controller;
 
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,13 +12,23 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.sky.cm.annotation.Limit;
 import com.sky.cm.core.SkyConfig;
+import com.sky.demo.dao.FlowSqlMapper;
+import com.sky.demo.data.service.DemoService;
+import com.sky.demo.data.service.DemoSqlService;
 import com.sky.pub.Result;
 import com.sky.pub.ResultUtil;
+import com.sky.transaction.annotation.MTransaction;
 
 @RestController
 public class PageController {
 	@Autowired
 	SkyConfig skyconfig;
+	@Autowired
+	private FlowSqlMapper sqlMapper;
+	@Autowired
+	private DemoService demoService;
+	@Autowired
+	private DemoSqlService sqlServcie;
 	
 	@RequestMapping("/page/{name}")
 	public ModelAndView goPage(@PathVariable String name) {
@@ -40,6 +51,24 @@ public class PageController {
 	@RequestMapping("/writer")
 	public Result<Map<String, String[]>> say(HttpServletRequest req) {
 		return ResultUtil.getOk(req.getParameterMap());
+	}
+	
+	@RequestMapping("sql")
+	@MTransaction(timeout=60*1000)
+	public Result<List<Map<String, String>>> testSql(final String table){
+//		final FlowSqlMapper mapper=sqlMapper;
+//		new Thread(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				mapper.queryBySql("select * from "+table);
+//			}
+//		}).start();;
+//		demoService.queryTable(table);
+//		return ResultUtil.getOk(mapper.queryBySql("select * from "+table));
+		demoService.queryTable(table);
+		
+		return ResultUtil.getOk(sqlServcie.queryTable(table));
 	}
 	
 	@RequestMapping(value="do",method=RequestMethod.POST)

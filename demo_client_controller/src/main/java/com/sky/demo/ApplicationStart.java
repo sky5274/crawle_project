@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import com.sky.rpc.annotation.EnableRpcRegistAble;
 
 @SpringBootApplication
-@ComponentScan(value= {"com.sky"})
+@ComponentScan(value= {"com.sky","com.sky.transaction"})
 @EnableRpcRegistAble("com.sky.demo")
 public class ApplicationStart {
 	public static void main(String[] args) {

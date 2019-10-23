@@ -30,7 +30,7 @@ public interface TraceRecordEntityMapper {
      * @author 王帆
      * @date 2019年3月16日 上午10:34:06
      */
-    TraceRecordBean queryTraceGroup(TraceRecordEntity record);
+    List<TraceRecordBean> queryTraceGroup(TraceRecordEntity record);
     
     /**
      * 	根据链路信息查询关联的链路数据

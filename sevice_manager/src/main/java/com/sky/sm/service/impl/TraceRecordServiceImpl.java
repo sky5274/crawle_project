@@ -126,7 +126,7 @@ public class TraceRecordServiceImpl extends BaseRedisServiceImpl<TraceRecordEnti
 		if(!ListUtils.isEmpty(list)) {
 			traces.addAll(transfrom(list));
 		}
-		traces.add(traceRecordMapper.queryTraceGroup(trace));
+		traces.addAll(traceRecordMapper.queryTraceGroup(trace));
 		return traces;
 	}
 	
