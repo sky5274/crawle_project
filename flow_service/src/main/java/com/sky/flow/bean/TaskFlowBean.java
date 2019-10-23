@@ -44,8 +44,8 @@ public class TaskFlowBean extends BaseTableBean{
     private Boolean inTask;
     /**是否在当前任务环节中*/
     private Boolean inNowTaskNode;
-    /**操作任务编码*/
-    private String opretorCode;
+    /**操作人员编码*/
+    private String operaterCode;
     
     public void putParam( TaskFlowNodeBean node) {
     	if(this.params==null) {
