@@ -199,6 +199,16 @@ public class BaseTaskFlowNodeAction  extends AbstratTaskFlowNodeAction {
 		return addNode(node);
 	}
 
+	/**
+	 * 添加任务节点 
+	 * @param info
+	 * @param node
+	 * @param call  回调函数
+	 * @return
+	 * @throws FlowException
+	 * @author 王帆
+	 * @date 2019年10月23日 上午10:20:34
+	 */
 	public TaskFlowNodeBean addNode(TaskFlowInfoBean info, TaskFlowNodeBean node, TaskFlowCallBack call) throws FlowException {
 		node=initAndGetNextNode(info,node);
 		TaskFlowNodeInfoBean nodeInfo=new TaskFlowNodeInfoBean();
@@ -213,6 +223,7 @@ public class BaseTaskFlowNodeAction  extends AbstratTaskFlowNodeAction {
 				node.putParams(TaskContants.TASK_STATUS, 1);
 			}
 		}
+		//执行回调函数过程
 		nodeInfo.setActiveNode(node);
 		call.before(nodeInfo);
 		preAddNode(node);
