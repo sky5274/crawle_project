@@ -116,20 +116,20 @@
   			<if test="task.flowId !=null and task.flowId!=''"> 				flow_id=#{task.flowId}			and						</if>
   			<if test="task.status !=null "> 								status=#{task.status}			and						</if>
   			<if test="task.createCode !=null and task.createCode!=''"> 		create_code=#{task.createCode}	and						</if>
-  			<if test="task.opretorCode !=null and task.opretorCode!=''"> 	task_has_user(#{task.opretorCode},task,id ) &gt;0 and	</if>
+  			<if test="task.operaterCode !=null and task.operaterCode!=''"> 	task_has_user(#{task.operaterCode},task,id ) &gt;0 and	</if>
   		</if>
   	</trim>
   </sql>
   
   <select id="selectByParam" resultMap="BaseResultMap">
   	select <include refid="Base_Column_List"/>
-  	<if test="task.opretorCode !=null and task.opretorCode!=''">
-  	,task_has_user(#{task.opretorCode},id )>0 as in_task
+  	<if test="task.operaterCode !=null and task.operaterCode!=''">
+  	,task_has_user(#{task.operaterCode},id )>0 as in_task
   	</if>
-  	<if test="task.opretorCode ==null or task.opretorCode==''">
+  	<if test="task.operaterCode ==null or task.operaterCode==''">
   	,1 as in_task
   	</if>
-  	,user_in_tasknode(#{task.opretorCode},(select id from task_flow_node where task_id=task.id order by ts desc limit 0,1))>0 as in_now_task_node
+  	,user_in_tasknode(#{task.operaterCode},(select id from task_flow_node where task_id=task.id order by ts desc limit 0,1))>0 as in_now_task_node
   	from task_flow task
   	<include refid="base-query-condition"/>
   	<if test="page !=null">

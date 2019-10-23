@@ -53,7 +53,7 @@ public interface TaskFlowQueryService {
 	public List<TaskFlowNodeBean> queryTaskDetails(TaskFlowNodeBean node);
 	
 	/**
-	 * 根据renwid查询任务流程的当前的节点
+	 * 根据任务id查询任务流程的当前的节点
 	 * @param taskId
 	 * @return
 	 * @author 王帆
@@ -74,11 +74,12 @@ public interface TaskFlowQueryService {
 	/**
 	 * 根据任务id查询流程任务主表信息
 	 * @param taskId
+	 * @param operaterCode
 	 * @return
 	 * @author 王帆
 	 * @date 2019年6月1日 下午3:33:37
 	 */
-	public TaskFlowBean queryTask(String taskId,String opretorCode);
+	public TaskFlowBean queryTask(String taskId,String operaterCode);
 	
 	/**
 	 * 根据任务id查询流程任务的所有信息
@@ -88,5 +89,5 @@ public interface TaskFlowQueryService {
 	 * @throws FlowException 
 	 * @date 2019年6月1日 下午3:34:12
 	 */
-	public TaskFlowDetailBean queryTaskInfo(String taskId ,String opretorCode) throws FlowException;
+	public TaskFlowDetailBean queryTaskInfo(String taskId ,String operaterCode) throws FlowException;
 }

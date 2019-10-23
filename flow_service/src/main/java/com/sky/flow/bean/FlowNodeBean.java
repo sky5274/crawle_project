@@ -29,7 +29,7 @@ public class FlowNodeBean extends BaseTableBean{
     private Integer status;
     /**流程id*/
     private String flowId;
-    /**控制权限编码*/
+    /**控制权限用户编码*/
     private String authCodes;
     
     /**流程链接属性*/

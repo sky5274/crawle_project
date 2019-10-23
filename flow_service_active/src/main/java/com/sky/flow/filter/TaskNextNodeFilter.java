@@ -30,6 +30,13 @@ public class TaskNextNodeFilter implements TaskNodeFilter{
 	private StringBuilder link=new StringBuilder();
 	private Log log=LogFactory.getLog(getClass());
 	
+	/**
+	 * 是否在当前任务环节中
+	 * @param flowNowNode
+	 * @return
+	 * @author 王帆
+	 * @date 2019年10月23日 上午10:36:49
+	 */
 	private boolean isInTask(FlowNodeContainerBean flowNowNode) {
 		return TaskNodeAuthoValidHandel.hasAutho(nowNode,flowNowNode, userCode);
 	}

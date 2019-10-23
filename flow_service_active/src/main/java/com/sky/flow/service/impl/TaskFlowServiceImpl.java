@@ -67,7 +67,8 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 		List<TaskFlowBean> tasks = taskFlowMapper.selectByParam(taskpage,taskpage.getData());
 		for(TaskFlowBean t:tasks) {
 			if(taskpage.getData() !=null && t.getInNowTaskNode()==null) {
-				t.setInNowTaskNode(isInTaskNodeFlow(t.getId(),taskpage.getData().getOpretorCode()));
+				//判断是否在当前任务环节中
+				t.setInNowTaskNode(isInTaskNodeFlow(t.getId(),taskpage.getData().getOperaterCode()));
 			}
 		}
 		page.setList(tasks);
@@ -75,6 +76,14 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 		return page;
 	}
 	
+	/**
+	 * 用户编码是否在任务环节的权限控制中
+	 * @param taskId
+	 * @param userCode
+	 * @return
+	 * @author 王帆
+	 * @date 2019年10月23日 上午10:07:06
+	 */
 	private boolean isInTaskNodeFlow(String taskId, String userCode) {
 		return isInTaskNodeFlow(taskId, queryTaskNowNode(taskId), userCode);
 	}
@@ -101,10 +110,11 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 	}
 
 	@Override
-	public TaskFlowDetailBean queryTask(String taskId,String opretorCode) {
+	public TaskFlowDetailBean queryTask(String taskId,String operaterCode) {
 		TaskFlowDetailBean task = queryTask(taskId);
 		if(task!=null && task.getInNowTaskNode()==null) {
-			task.setInNowTaskNode(isInTaskNodeFlow(taskId, opretorCode));
+			//判断是否在当前任何环节中
+			task.setInNowTaskNode(isInTaskNodeFlow(taskId, operaterCode));
 		}
 		return task;
 	}
@@ -115,14 +125,14 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 	}
 
 	@Override
-	public TaskFlowDetailBean queryTaskInfo(String taskId,String opretorCode) throws FlowException {
+	public TaskFlowDetailBean queryTaskInfo(String taskId,String operaterCode) throws FlowException {
 		TaskFlowDetailBean task = queryTask(taskId);
 		if(task!=null) {
 			task.setDetails(queryTaskDetails(taskId));
 			if(task.getDetails()!=null && !task.getDetails().isEmpty() && task.getInNowTaskNode()==null) {
 				try {
 					TaskFlowNodeBean nowNode = task.getDetails().get(task.getDetails().size()-1);
-					if(isInTaskNodeFlow(taskId,nowNode,opretorCode) && !"end".equals(nowNode.getParam().getString(TaskContants.TASK_NODE_TYPE))) {
+					if(isInTaskNodeFlow(taskId,nowNode,operaterCode) && !"end".equals(nowNode.getParam().getString(TaskContants.TASK_NODE_TYPE))) {
 						task.setInNowTaskNode(true);
 						task.setNode(getFlowNode(nowNode.getFlowId(),nowNode.getNodeId()));
 					}
@@ -194,7 +204,9 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 		task.setId(getPreTaskId());
 		task.setFlowName(flow.getName());
 		taskFlowMapper.insertSelective(task);
+		//根据流程，任务节点，等信息重置任务初始任务节点
 		taskNode=taskNodeConvert.convert(task, taskNode ,flow, node);
+		//任务参数设置，设置任务初始状态
 		taskNode.putParams(TaskContants.TASK_STATUS, 0);
 		taskNode.setCreateCode(task.getCreateCode());
 		taskNode.setCreateName(task.getCreateName());
@@ -263,6 +275,7 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 		JSONObject param = backNode.getParam();
 		backNode.setParam(null);
 		
+		//设置任务流程环节参数，回滚节点链路，回滚环节，下次回滚任务节点等
 		if(!StringUtils.isEmpty(links)) {
 			//记录的链路倒序
 			List<String> list=Arrays.asList(links.split(","));
@@ -279,7 +292,7 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 		backNode.putParams(TaskContants.TASK_NOW, backNode.getId());
 		backNode.putParams(TaskContants.TASK_UPNODE, nowNode.getId());
 		backNode.setId(null);
-		
+		//添加回滚任务节点
 		TaskFlowNodeBean node = baseTaskFlowNodeAction.addNode(backNode);
 		return node!=null;
 	}
