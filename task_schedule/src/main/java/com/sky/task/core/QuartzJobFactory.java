@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.ibatis.reflection.ExceptionUtil;
+import org.apache.tomcat.util.ExceptionUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -15,6 +17,7 @@ import org.quartz.JobKey;
 import org.springframework.util.StringUtils;
 import com.sky.pub.util.ListUtils;
 import com.sky.pub.util.SpringUtil;
+import com.sky.pub.web.exception.SpringHandlerExceptionResolver;
 import com.sky.task.core.RpcConfig.NodeData;
 
 public class QuartzJobFactory implements Job{
@@ -72,7 +75,7 @@ public class QuartzJobFactory implements Job{
 		try {
 			HttpTaskRpcClient.invoke(url, params);
 		} catch (Throwable e) {
-			addJoErrorMsg(org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(e));
+			addJoErrorMsg(SpringHandlerExceptionResolver.getExceptionStrace(e));
 		}
 	}
 	
