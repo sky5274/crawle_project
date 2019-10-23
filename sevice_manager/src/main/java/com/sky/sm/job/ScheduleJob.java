@@ -1,12 +1,13 @@
 package com.sky.sm.job;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import com.sky.sm.service.TraceRecordService;
 
 @Component
+@EnableScheduling
 public class ScheduleJob {
 	@Autowired
 	private TraceRecordService traceRecordServce;

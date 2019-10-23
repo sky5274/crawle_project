@@ -1,6 +1,8 @@
 package com.sky.rpc.base;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.sky.rpc.resource.RpcMethodUtil;
 
@@ -27,6 +29,7 @@ public class RpcRequest extends RpcBaseBean{
 	/**方法参数类型*/
 	private Class<?>[] parameterTypes;
 	private String[] parameterNames;
+	private Map<String, String> headers=new HashMap<String, String>();
 	public RpcRequest() {}
 	public RpcRequest(String className, Method method, Object[] args2)  {
 		this(className,method.getName(),RpcMethodUtil.getMethodParameterNames(method),method.getParameterTypes(),args2);
@@ -68,5 +71,14 @@ public class RpcRequest extends RpcBaseBean{
 	}
 	public void setParameterNames(String[] parameterNames) {
 		this.parameterNames = parameterNames;
+	}
+	public Map<String, String> getHeaders() {
+		return headers;
+	}
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
+	}
+	public void put(String key,String value) {
+		headers.put(key, value);
 	}
 }

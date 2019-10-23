@@ -73,7 +73,7 @@ public class ProviderObjectNettyHandel extends ChannelInboundHandlerAdapter{
 					for(Object arg:args) {
 						if(arg!=null) {
 							if(arg instanceof RpcCallBack) {
-								args[i]=getArgCallProxy(request.getParameterTypes()[i],ctx,i,request.getRequestId());
+								args[i]=getArgCallProxy(request.getParameterTypes()[i],ctx,i,request.getRequestId(),request.getHeaders());
 							}
 						}
 						i++;
@@ -112,7 +112,7 @@ public class ProviderObjectNettyHandel extends ChannelInboundHandlerAdapter{
 		}
 	}
 	@SuppressWarnings("unchecked")
-	private <T> T getArgCallProxy(final Class<?> serviceInterface, final ChannelHandlerContext ctx, final int i, final String requestId) {
+	private <T> T getArgCallProxy(final Class<?> serviceInterface, final ChannelHandlerContext ctx, final int i, final String requestId, final Map<String, String> headers) {
 		return (T) Proxy.newProxyInstance(FactoryBean.class.getClassLoader(), new Class<?>[]{serviceInterface},
 				new InvocationHandler() {
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -120,6 +120,7 @@ public class ProviderObjectNettyHandel extends ChannelInboundHandlerAdapter{
 						RpcRequest req = new RpcRequest(serviceInterface.getName()+"_"+i, method, args);
 						String id = requestId+"_"+serviceInterface.getName()+"_"+i;
 						req.setRequestId(id);
+						req.setHeaders(headers);
 						SynchronousQueue<Result<?>> quene=new SynchronousQueue<Result<?>>();
 						//代理调用参数的方法
 						ctx.writeAndFlush(req);

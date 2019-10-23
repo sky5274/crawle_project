@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import com.sky.rpc.base.RpcRequest;
 import com.sky.rpc.core.cilent.netty.RpcNettyClientHandel;
 import com.sky.rpc.core.client.socket.RpcSocketClientHandel;
+import com.sky.rpc.handle.factory.RpcRequetHandleFactory;
 import com.sky.rpc.resource.ResouceProperties;
 
 public class RpcClient <T>{
@@ -30,6 +31,11 @@ public class RpcClient <T>{
 		}else {
 			rpcClientHandel=new RpcNettyClientHandel();
 		}
-		return  rpcClientHandel.invoke(request,addr,timeout);
+		//rpc客户端  预处理
+		RpcRequetHandleFactory.before(request);
+		T res =rpcClientHandel.invoke(request,addr,timeout);
+		//rpc客户端  执行返回结果
+		RpcRequetHandleFactory.after(request, res);
+		return res;
 	}
 }

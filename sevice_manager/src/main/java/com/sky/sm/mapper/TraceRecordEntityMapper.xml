@@ -151,7 +151,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   
-  <select id="queryTraceRecordByGroup" parameterType="java.lang.String" resultMap="TraceBaseResultMap" >
+  <select id="queryTraceRecordByGroup" resultMap="TraceBaseResultMap" >
     select 
     <include refid="Base_Column_List" />
     from trace_record
@@ -162,8 +162,8 @@
   	<trim prefix="where " suffixOverrides="and">
   		<if test="traceId !=null">trace_id 		= #{traceId,jdbcType=VARCHAR} and</if>
   		<if test="groupId !=null">group_id 		= #{groupId,jdbcType=VARCHAR} and</if>
-  		<if test="url !=null and (isLike =null or isLike !=1)">trace_id = #{url,jdbcType=VARCHAR} and</if>
-  		<if test="url !=null and (isLike !=null or isLike =1)">trace_id = concat('%',#{url,jdbcType=VARCHAR},'%') and</if>
+  		<if test="url !=null and (isLike ==null or isLike !=1)">url = #{url,jdbcType=VARCHAR} and</if>
+  		<if test="url !=null and (isLike !=null or isLike ==1)">url = concat('%',#{url,jdbcType=VARCHAR},'%') and</if>
   		<if test="sessionId !=null">session_id 		= #{sessionId,jdbcType=VARCHAR} and</if>
   	</trim>
   </sql>

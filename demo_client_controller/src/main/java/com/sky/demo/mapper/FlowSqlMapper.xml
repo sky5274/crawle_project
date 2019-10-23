@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.demo.dao.FlowSqlMapper" >
+	<select id="queryShortUUID" resultType="java.lang.String">
+		select UUID_SHORT();
+	</select>
+  	
+  	<select id="queryBySql" parameterType="java.lang.String" resultType="java.util.Map">
+	    ${sql}
+	</select>
+	<update id="excuteBySql" parameterType="java.lang.String">
+	    ${sql}
+	</update>
+</mapper>

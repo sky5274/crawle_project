@@ -48,8 +48,18 @@ sky:
       config:
          location: http://127.0.0.1:9000
          profile: test
-         enablelimit: true
+         enablelimit: false
          version: 1.0.0
+
+com:
+   transacton: 
+      platform: http
+      platType: pull
+      url: http://localhost:9000
+      topic: topic
+      timeOut: 30000
+      project: ${spring.application.name}
+      version: 1.0.0
 
 logging:
   level:   

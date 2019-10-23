@@ -17,6 +17,7 @@ public class SkyConfigCacheServiceImpl extends BaseRedisServiceImpl<String>{
 	}
 	
 	public String doStringSet(String key,String value ,int expressTime) {
-		return this.doStringSet(key,value,expressTime);
+		super.doStringSet(key,value,expressTime);
+		return key;
 	}
 }
