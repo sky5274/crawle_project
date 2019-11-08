@@ -54,38 +54,23 @@ function getSelctRow(table,alert){
 
 function updatOrAddPostRequest(obj){
 	var flag=false;
+	var param={
+			url:obj.url,
+			data:obj.data,
+			async:false,
+			loadding:obj.loadding?obj.loadding:true,
+			success:function(res){
+				$.diaLog({con:"操作成功"})
+				if(obj.table){
+					$(obj.table).jmTable("refresh")	
+				}
+				flag=true;
+			}
+		}
 	if(obj.isPost ==undefined||obj.isPost){
-		$.doPostJsonAjax({
-			url:obj.url,
-			data:obj.data,
-			async:false,
-			loadding:obj.loadding,
-			success:function(res){
-				$.diaLog({
-					con:"操作成功"
-				})
-				if(obj.table){
-					$(obj.table).jmTable("refresh")	
-				}
-				flag=true;
-			}
-		})
+		$.doPostJsonAjax(param)
 	}else{
-		$.doJsonAjax({
-			url:obj.url,
-			data:obj.data,
-			async:false,
-			loadding:obj.loadding,
-			success:function(res){
-				$.diaLog({
-					con:"操作成功"
-				})
-				if(obj.table){
-					$(obj.table).jmTable("refresh")	
-				}
-				flag=true;
-			}
-		})
+		$.doJsonAjax(param)
 	}
 	return flag;
 	
