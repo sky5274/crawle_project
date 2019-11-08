@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('容器控制','/bootstrap/css/bootstrap-table.css,/bootstrap/menu/bootstrap_contextmenu.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/com/dialog-table.js,/js/com/page-dialog-action.js,/bootstrap/menu/bootStrap_contextmenu.js,/js/action/container_action.js')"></head>
+<script type="text/javascript">
+$(function(){
+	initEvent();
+	
+	$("#container-table").jTable({
+		url:"/container/querypage",
+		uniqueId:'id',
+		method:"post",
+		ispost:true,
+		showColumns:true,
+		showRefresh:true,
+		showToggle:true,
+		toolbar:'#container-page-query-tool',
+		getParam:getQueryParam,
+		columns :[
+			{field: 'radio', radio: true}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "groupId", 	title : "groupId",align: 'center'},
+			{ field : "containerId", 	title : "容器id",align: 'center'},
+			{ field : "containerName", 	title : "容器名称",align: 'center'},
+			{ field : "imageId", 		title : "镜像id",align: 'center'},
+			{ field : "imageName", 		title : "镜像名称",align: 'center'},
+			{ field : "imageVersion", 	title : "镜像版本",align: 'center'},
+			{ field : "runPort", 		title : "端口号",align: 'center'},
+			{ field : "runStatsDesc", 	title : "容器状态",align: 'center'},
+			{ field : "runCmdsDesc", 	title : "容器命令",align: 'center'},
+			{ field : "status", 		title : "容器状态",align: 'center',formatter:function(value,row){return value;}},
+		],
+		onLoadSuccess:function(row){
+			$(".btn-run-status,#btn_c_update").attr("disabled",true);
+		},
+		onClickRow:function(row,ele){
+			$(".btn-run-status").attr("disabled",true);
+			$("#btn_c_update").removeAttr("disabled")
+			$(".btn-run-status").each(function(i,el){
+				var s=$(el).attr("status");
+				var status=row.status==1?'Y':'N'
+				if(s==undefined || s=='' || s==status){
+					$(this).removeAttr("disabled")
+				}
+			})
+		},
+		onDblClickRow:function(row,ele){
+			$.cartPage({parent:"#page-panel",src:basePath+'/page/container/detail?id='+row.containerId})
+		}
+	})
+})
+
+function getQueryParam(){
+	return $("#limit-page-query-tool").pageQuery()
+}
+
+function initEvent(){
+	$("#container-page-query-tool").pageQueryTool({
+		columns:[
+			{title:"分组",name:"groupId",size:2},
+			{title:"容器名称",name:"containerName",size:2},
+			{title:"镜像名称",name:"imageName",size:2},
+			{title:"version",name:"version",size:2},
+		]
+	})
+	
+	
+	$("#btn_c_add").on("click",function(){
+		doActionContainer({
+			title:"新增容器",
+			needFile:true,
+			success:function(res){
+				updatOrAddPostRequest({url:'/container/create',data:res,table:"#container-table"})
+			}
+		})
+	})
+	$("#btn_c_update").on("click",function(){
+		var row=getSelctRow("#container-table");
+		if(row){
+			doActionContainer({
+				title:"更新容器",
+				data:row,
+				success:function(res){
+					updatOrAddPostRequest({url:'/container/update',data:res,table:"#container-table"})
+				}
+			})
+		}else{
+			$.diaLog({con:"请先选择一条数据"})			
+		}
+	})
+	$(".btn-run-status").on('click',function(){
+		var _this=this;
+		var row=getSelctRow("#container-table");
+		if(row){
+			$.diaLog({
+				con:'是否'+$(_this).text()+"容器",
+				type:"confrim",
+				func:function(type){
+					if(type=='sure'){
+						$.doJsonAjax({
+							url:$(_this).attr("url"),
+							data:row,
+							loadding:true,
+							success:function(res){
+								$.diaLog({con:"操作成功"})
+								$("#container-table").jmTable("refresh")	
+							}
+						})
+					}
+				}
+			})
+		}
+	})
+}
+</script>
+<body>
+	<div id="page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left">容器</h4>
+				<div class="page-tool pull-right">
+						<button class="btn btn-primary" id="btn_c_add">添加</button>
+						<button class="btn btn-primary" id="btn_c_update">修改</button>
+						<button class="btn btn-primary btn-run-status" status="N" th:attr="url=@{/container/start}" id="btn_c_run">运行</button>
+						<button class="btn btn-primary btn-run-status" status="Y" th:attr="url=@{/container/stop}" id="btn_c_stop">停止</button>
+						<button class="btn btn-primary btn-run-status"  th:attr="url=@{/container/start}" id="btn_c_restart">重启</button>
+				</div> 
+			</div>
+			<div id="page-contain" class="panel-body">
+				<div class="page-table">
+					<div id="container-page-query-tool" class="page-tool form-inline"></div>
+					<table id="container-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

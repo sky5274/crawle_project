@@ -71,16 +71,18 @@ function getTableContent(list){
 
 /**form item 封装1*/
 function addFromTable(content,list){
-	$.each(list,function(i,e){
-		if(e.hide){
-			content.append('<input type="hidden" name="'+getNotNullText(e.name)+'" value="'+getNotNullText(e.value)+'"/>')
-		}else{
-			var size=e.size?e.size:10
-			var item=$('<div class="item-lable form-group clearfix"><lable class="col-sm-2 control-label">'+getNotNullText(e.title)+':</lable><div class="col-sm-'+size+' form-item"></div></div>')
-			$(item).find("div.form-item").append(getElement(e));;
-			content.append(item)
-		}
-	})
+	if(list){
+		$.each(list,function(i,e){
+			if(e.hide){
+				content.append('<input type="hidden" name="'+getNotNullText(e.name)+'" value="'+getNotNullText(e.value)+'"/>')
+			}else{
+				var size=e.size?e.size:10
+				var item=$('<div class="item-lable form-group clearfix"><lable class="col-sm-2 control-label">'+getNotNullText(e.title)+':</lable><div class="col-sm-'+size+' form-item"></div></div>')
+				$(item).find("div.form-item").append(getElement(e));;
+				content.append(item)
+			}
+		})
+	}
 }
 function getNotNullText(txt){
 	return txt?txt:''

@@ -19,10 +19,13 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.alibaba.fastjson.JSON;
 import com.sky.pub.util.ListUtils;
 
@@ -71,13 +74,18 @@ public class ControllAdvice {
 		String[] params = u.getParameterNames(msd.getMethod());
 		Object[] argList = joinpoint.getArgs();
 		for(int i=0;i<argList.length;i++){
-			if(argList[i] instanceof HttpServletRequest){
+			Object arg = argList[i];
+			if(arg instanceof HttpServletRequest){
 				argMap.put(params[i],req.getParameterMap());
 				continue;
-			}else if(argList[i] instanceof HttpServletResponse){
+			}else if(arg instanceof MultipartFile){
+				MultipartFile f = (MultipartFile) arg;
+				argMap.put(params[i],f.getOriginalFilename());
+				continue;
+			}else if(arg instanceof HttpServletResponse || arg instanceof InputStreamSource){
 				continue;
 			}
-			argMap.put(params[i], argList[i]);
+			argMap.put(params[i], arg);
 		}
 		log.info(prefix+method+"  被"+req.getRemoteAddr()+"调用");
 		String queryString = req.getQueryString();

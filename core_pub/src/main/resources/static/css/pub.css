@@ -4,6 +4,8 @@ iframe{height: 100%;height: 100%;overflow:hidden; }
 .wd_80{width: 80%}
 .pos_relative{position: relative;}
 .tab-close{cursor: pointer;}
+.form-inline{display: flex;}
+.form-inline .switch-off{height: 100%}
 .lay {
 	width: 100%;
 	height: 100%;

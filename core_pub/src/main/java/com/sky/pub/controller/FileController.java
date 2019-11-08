@@ -35,7 +35,7 @@ import com.sky.pub.contant.PubFileContant;
 @RestController
 @RequestMapping("file")
 public class FileController {
-	private String prefix="/file";
+	private static String prefix="/file";
 	public static Map<String, String> medieType=new HashMap<>();
 	private Random random=new Random(1000);
 	static {
@@ -49,6 +49,8 @@ public class FileController {
 		medieType.put("txt", MediaType.TEXT_PLAIN_VALUE);
 		medieType.put("svg", MediaType.TEXT_PLAIN_VALUE);
 		medieType.put("html", MediaType.TEXT_HTML_VALUE);
+		medieType.put("jar", MediaType.ALL_VALUE);
+		medieType.put("war", MediaType.ALL_VALUE);
 	}
 	
 	/**
@@ -86,7 +88,7 @@ public class FileController {
 	 * @author 王帆
 	 * @date 2019年1月21日 上午8:53:17
 	 */
-	private String getFileType(String path) {
+	public static String getFileType(String path) {
 		return path.substring(path.lastIndexOf(".")+1, path.length());
 	}
 	
@@ -148,7 +150,7 @@ public class FileController {
 		return newPath;
 	}
 	
-	private File getFile(String path) throws IOException {
+	public static File getFile(String path) throws IOException {
 		File file=new File(path);
 		if(!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
@@ -166,7 +168,7 @@ public class FileController {
 	 * @author 王帆
 	 * @date 2019年1月21日 上午8:50:29
 	 */
-	private String getFilePrefix() {
+	public static String getFilePrefix() {
 		return PubFileContant.getJarPath()+prefix;
 	}
 	
