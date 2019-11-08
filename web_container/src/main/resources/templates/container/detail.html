@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('容器','','/js/com/dialog-table.js,/js/com/page-dialog-action.js,/bootstrap/menu/bootStrap_contextmenu.js,/js/plugin/websocket.js,/js/plugin/echart.min.js,/js/action/container_action.js')"></head>
+<style type="text/css">
+	#page-panel{width: 100%;height: 100%}
+	#page-panel>div>div{float: left;}
+	.panel{width:100%;height: 100%}
+	.container_info{width: 20%;height: 100%;}
+	.item_cols{display: flex;clear: both;width: 100%}
+	.t_name{max-width: 30%;word-break: break-word;}
+	.t_value{max-width:69%;word-break: break-word;}
+	.container_monitor{width: 80%; height: 100%}
+	.container_monitor>div{width: calc(50% - 10px);padding: 5px;float: left}
+	.gauge-panel,.using-time-status-panel{height: 300px}
+	.compare-panel{width: 300px !important;height: 230px}
+</style>
+<script type="text/javascript">
+$(function(){
+	var id=$("#container_id").val();
+	if(id ==''){
+		$.diaLog({con:"缺少必要参数：容器id"})
+		return false;
+	}
+	$(".btn-run-status").attr("disabled",true)
+	$.doJsonAjax({
+		url:"/container/query/"+id,
+		loadding:true,
+		success:function(res){
+			loadContainerInfo(res.data)
+		}
+	})
+})
+
+function initContainerStatus(data){
+	var stauts=data.status==1?'Y':'N'
+	$(".btn-run-status").each(function(i,el){
+		var s=$(el).attr("status");
+		if(s==undefined || s=='' || s==status){
+			$(this).removeAttr("disabled")
+		}
+	})
+	$(".btn-run-status").on('click',function(){
+		var _this=this;
+		var row=getSelctRow("#container-table");
+		if(row){
+			windowAction({
+				title:'是否'+$(_this).text()+"容器",
+				table:"#container-table",
+				actionUrl:$(_this).attr("url"),
+			})
+		}
+	})
+}
+
+function loadContainerInfo(data){
+	var content=$('<div class="panel-group" id="accordion"></div>')
+	if(data){
+		initContainerStatus(data)
+		if(data.container){
+			content.append(loadPanel({title:"容器信息",id:"container-info",		body:loadConInfo(data.container)}));
+			content.append(loadPanel({title:"容器状态",id:"container-status",	body:loadContainerStatus(data.container.State)}));
+			content.append(loadPanel({title:"容器配置",id:"container-config",	body:loadContainerConfig(data.container.Config)}));
+			content.append(loadPanel({title:"网络配置",id:"container-network",	body:loadContainerNetWork(data.container.NetworkSettings)}));
+
+			startMontior(data.containerId)
+		}
+		content.data("container",data)
+	}else{
+		$.diaLog({con:"未查询到容器信息"})
+	}
+	
+	$(".container_info").append(content)
+}
+
+function loadPanel(obj){
+	var body=$('<div class="panel panel-default">'+
+		        '<div class="panel-heading"><h4 class="panel-title"> <a data-toggle="collapse" data-parent="#accordion" href="#'+obj.id+'">'+obj.title+'</a></h4></div>'+
+		        '<div id="'+obj.id+'" class="panel-collapse collapse in"> <div class="panel-body"></div></div>'+
+		    '</div>')
+	 body.find(".panel-body").append(obj.body)
+	 return body;
+}
+
+function loadConInfo(data){
+	var panel=$('<div class="tab-pane fade in active" id="container-info"><div class="panel-group"></div></div>')
+	var cols=[
+		{name:"容器id",value:data.Id},
+		{name:"镜像id",value:data.Image},
+		{name:"容器名称",value:data.Name},
+		{name:"容器平台",value:data.Platform},
+		{name:"容器DRIVER",value:data.Driver},
+		{name:"容器创建时间",value:data.Created},
+	]
+	panel.find(".panel-group").append(getColumTxt(cols))
+	return panel;
+}
+function loadContainerStatus(data){
+	var panel=$('<div class="tab-pane fade in active" id="container-status"><div class="panel-group"></div></div>')
+	var cols=[
+		{name:"状态",value:data.Status},
+		{name:"启动时间",value:data.StartedAt},
+		{name:"ExitCode",value:data.ExitCode},
+		{name:"进程id",value:data.Pid},
+	]
+	panel.find(".panel-group").append(getColumTxt(cols))
+	return panel;
+}
+function loadContainerConfig(data){
+	var panel=$('<div class="tab-pane fade in active" id="container-config"><div class="panel-group"></div></div>')
+	var cols=[
+		{name:"主机名",value:data.Hostname},
+		{name:"镜像",value:data.Image},
+		{name:"环境变量",value:data.Env.join(",<br/>")},
+	]
+	panel.find(".panel-group").append(getColumTxt(cols))
+	return panel;
+}
+function loadContainerNetWork(data){
+	var panel=$('<div class="tab-pane fade in active" id="container-network"><div class="panel-group"></div></div>')
+	var cols=[]
+	for(var k in data.Networks.bridge){
+		var v=data.Networks.bridge[k];
+		if(v){
+			cols.push({name:k,value:v})
+		}
+	}
+	panel.find(".panel-group").append(getColumTxt(cols))
+	return panel;
+}
+
+function getColumTxt(col){
+	var li='';
+	$.each(col,function(i,l){
+		li+='<div class="item_cols"><div class="t_name pull-left">'+l.name+'</div><span class="pull-left">:</span><div class="t_value pull-left">'+l.value+'</div></div>';
+	})
+	return $(li)
+}
+
+var nowTime,time
+function startMontior(id){
+	
+	if(time==undefined){
+		time=0;
+	}
+	var socket=new WebSocket(basePath.replace('http://','ws://')+"/cloud/container/montior?id="+id)
+	socket.onopen = function(evt) {//websocket关闭
+      　	$.loading().show()
+    }
+    socket.onerror = function(evt) {//失败额处理
+      　　if (typeof console.log == "function") {
+        　　　　console.log(evt)
+      　　}
+    }
+    socket.onmessage = function(evt) {//接受到数据
+    	$.loading().close()
+    	if(nowTime==undefined){
+    		nowTime=evt.timeStamp
+    		loadChart()
+    	}
+    	if(time==undefined){
+    		time=0;
+    	}
+    	time+=(evt.timeStamp-nowTime)/1000
+    	
+    	nowTime=evt.timeStamp
+    	var data=JSON.parse(evt.data).data;
+    	if(data){
+    		data['time'] =time;
+        	loadChartData(data)
+    	}else{
+    		socket.close();
+    		$.diaLog({con:"容器停止"})
+    	}
+    }
+}
+
+var chartMap={}
+function loadChart(){
+	chartMap.cpu= echarts.init(document.getElementById('cpu-Gauge'));
+	chartMap.member= echarts.init(document.getElementById('member-cache-Gauge'));
+	chartMap.net= echarts.init(document.getElementById('NET-IO-compare-panel'));
+	chartMap.block= echarts.init(document.getElementById('BLOCK-IO-compare-panel'));
+	chartMap.cpuTimeStatus= echarts.init(document.getElementById('cpu-status-Lines'));
+	chartMap.mebTimeStatus= echarts.init(document.getElementById('member-status-Lines'));
+}
+/**加载echart图表数据*/
+function loadChartData(data){
+	loadCpuGauge(data)
+	loadMemberGauge(data)
+	loadNetIoCompare(data)
+	loadBlockIoCompare(data)
+}
+function loadCpuGauge(data){
+	cpuOpt={
+			 tooltip : {  formatter: "{a} <br/>{b} : {c}%"},
+			 toolbox: { feature: { restore: {},  saveAsImage: {}}},
+			 series: [ {
+			            name: 'CPU 使用', type: 'gauge',
+			            detail: {formatter:'{value}%',textStyle: { fontSize: 14 }},
+			            data: [{value: data.cupUsingSize, name: 'CPU'}]
+			        } ]
+	}
+	chartMap.cpu.setOption(cpuOpt, true)
+	appendCpuUsingSize(data)
+}
+function loadMemberGauge(data){
+	memberOpt={
+			 tooltip : {  formatter: "{a} <br/>"+data.memberCacheUsing+"<br/>{b} : {c}%" },
+			 toolbox: { feature: {  restore: {},saveAsImage: {} }  },
+			 series: [{
+			            name: '内存 使用', type: 'gauge',
+			            detail: {formatter:'{value}%',textStyle: { fontSize: 14 }},
+			            data: [{value: data.memberUsingSize, name: '内存',}]
+			        }]
+	}
+	chartMap.member.setOption(memberOpt, true)
+	appendMemberUsingSize(data)
+}
+
+var proOpt= {
+	    tooltip: { trigger: 'axis',position: function (pt) {  return [pt[0], '10%'];}},
+	    title: {left: 'center',text: '大数据量面积图', },
+	    xAxis: { type: 'category',name:"t/s",  boundaryGap: false,  },
+	    yAxis: { type: 'value', boundaryGap: [0, '100%'] },
+	    dataZoom:[
+	    	{ type: 'inside',start: 0, end: 50 },
+	        { start: 0,end: 50,handleSize: '80%',
+	        	handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+	        	handleStyle: {color: '#fff',shadowBlur: 3,shadowColor: 'rgba(0, 0, 0, 0.6)', shadowOffsetX: 2,shadowOffsetY: 2}
+	        }
+	    ],
+	    series: [ {type:'line', smooth:true,symbol: 'none', sampling: 'average',} ]
+	};
+	
+function appendCpuUsingSize(data){
+	var model=chartMap.cpuTimeStatus._model;
+	var time=[]
+	var cpuData=[];
+	var cpuOpt=proOpt;
+	if(model){
+		cpuOpt.dataZoom=model.option.dataZoom
+		time=model.option.xAxis[0].data;
+		cpuData=model.option.series[0].data
+	}
+	time.push(parseInt(data.time*10)/10)
+	cpuData.push(data.cupUsingSize)
+	cpuOpt.series[0].data=cpuData;
+	cpuOpt.series[0].name='cpu';
+	cpuOpt.title.text='cpu 运行记录';
+	cpuOpt.xAxis.data=time;
+	cpuOpt.yAxis.name="cpu %";
+	chartMap.cpuTimeStatus.setOption(cpuOpt)
+}
+function appendMemberUsingSize(data){
+	var model=chartMap.mebTimeStatus._model;
+	var time=[]
+	var mbData=[];
+	var mbOpt=proOpt;
+	if(model){
+		mbOpt.dataZoom=model.option.dataZoom
+		time=model.option.xAxis[0].data;
+		mbData=model.option.series[0].data
+	}
+	time.push(parseInt(data.time*10)/10)
+	mbData.push(data.memberUsingSize)
+	mbOpt.series[0].data=mbData;
+	mbOpt.series[0].name='memeber cache';
+	mbOpt.title.text='内存 运行记录';
+	mbOpt.xAxis.data=time;
+	mbOpt.yAxis.name="member cache %";
+	chartMap.mebTimeStatus.setOption(mbOpt)
+}
+
+var compOpt={
+		backgroundColor: '#eee',
+	    legend: {  data: ['IN', 'OUT'], align: 'left',left: 10},
+	    tooltip : { trigger:"axis" ,axisPointer:{type:"shadow"},formatter:function(param){
+	    	if(param.length){
+	    		if(param.length>1){
+	    			var p=param[0].axisValue+"<br/>";
+	    			$.each(param,function(i,el){
+	    				p+=el.marker+el.seriesName+" : "+ el.name+"<br/>"
+	    			})
+	    			return p;
+	    		}
+	    		param=param[0]
+	    	}
+	    	return param.seriesName+" : "+ param.name;
+	    }},
+	    xAxis: { },
+	    yAxis: {type:"value"},
+	    series: [
+	        {name: 'IN',  type: 'bar', barWidth:"90%", stack:'I/O', data: []},
+	        {name: 'OUT', type: 'bar', barWidth:"90%", stack:'I/O', data: []},
+	    ]
+}
+function loadNetIoCompare(data){
+	var netOpt=compOpt
+	netOpt.xAxis.data=['net I/O']
+	netOpt.xAxis.name=['net']
+	var inp=data.netInput
+	var out=data.netOutput
+	netOpt.series[0].data=[{value:getVal(inp),name:inp,label:{show:true,normal:{show:true,formatter:"{b}"}}}]
+	netOpt.series[1].data=[{value:0-getVal(out),name:out,label:{show:true,normal:{show:true,formatter:"{b}"}}}]
+	chartMap.net.setOption(netOpt, true)
+}
+function getVal(val){
+	var v=parseFloat(val);
+	val+='';
+	val=val.toUpperCase();
+	if(val.indexOf("KB")>-1 || val.indexOf("KIB")){
+		v=v*1024;
+	}else if(val.indexOf("MB")>-1 || val.indexOf("MIB")>-1){
+		v=v*1024*1024
+	}else if(val.indexOf("GB")>-1 || val.indexOf("GIB")>-1){
+		v=v*1024*1024*1024
+	}
+	return v;
+}
+
+function loadBlockIoCompare(data){
+	var blockOpt=compOpt
+	blockOpt.xAxis.data=['block I/O']
+	blockOpt.xAxis.name=['block']
+	var inp=data.blockInput
+	var out=data.blockOutput
+	blockOpt.series[0].data=[{value:getVal(inp),name:inp,label:{show:true,normal:{show:true,formatter:"{b}"}}}]
+	blockOpt.series[1].data=[{value:0-getVal(out),name:out,label:{show:true,normal:{show:true,formatter:"{b}"}}}]
+	chartMap.block.setOption(blockOpt, true)
+}
+
+</script>
+<body>
+	<div id="page-panel">
+		<div class="page-tool pull-right">
+						<button class="btn btn-primary" id="btn_c_update">修改</button>
+						<button class="btn btn-primary btn-run-status" status="N" th:attr="url=@{/container/start}" id="btn_c_run">运行</button>
+						<button class="btn btn-primary btn-run-status" status="Y" th:attr="url=@{/container/stop}" id="btn_c_stop">停止</button>
+						<button class="btn btn-primary btn-run-status"  th:attr="url=@{/container/start}" id="btn_c_restart">重启</button>
+		</div> 
+		<div class="panel panel-default fade in">
+			<input type="hidden" id="container_id" th:value="${id}"/>
+			<div class="container_info"></div>
+			<div class="container_monitor">
+				<div id="cpu-Gauge" class="gauge-panel"></div>
+				<div id="member-cache-Gauge" class="gauge-panel"></div>
+				<div id="cpu-status-Lines" class="using-time-status-panel"></div>
+				<div id="member-status-Lines" class="using-time-status-panel"></div>
+				<div id="NET-IO-compare-panel" class="compare-panel"></div>
+				<div id="BLOCK-IO-compare-panel" class="compare-panel"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
