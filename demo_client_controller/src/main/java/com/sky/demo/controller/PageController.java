@@ -5,12 +5,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.sky.cm.annotation.Limit;
+import com.sky.cm.annotation.Val;
 import com.sky.cm.core.SkyConfig;
 import com.sky.demo.dao.FlowSqlMapper;
 import com.sky.demo.data.service.DemoService;
@@ -20,6 +23,7 @@ import com.sky.pub.ResultUtil;
 import com.sky.transaction.annotation.MTransaction;
 
 @RestController
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PageController {
 	@Autowired
 	SkyConfig skyconfig;
@@ -29,6 +33,9 @@ public class PageController {
 	private DemoService demoService;
 	@Autowired
 	private DemoSqlService sqlServcie;
+	@Val("${demo.test.dd:test}")
+	private String str;
+	
 	
 	@RequestMapping("/page/{name}")
 	public ModelAndView goPage(@PathVariable String name) {
@@ -42,6 +49,7 @@ public class PageController {
 	}
 	@RequestMapping("/talk")
 	public Result<String> talk(String word) {
+		System.err.println(str);
 		return ResultUtil.getOk("you talk:"+word);
 	}
 	@RequestMapping("/property")
