@@ -79,19 +79,23 @@ public class SkyConfig {
 		SkyConfigRequest propertyInfo = SkyConfigRequest.property;
 		Map<String, Object> body = JSON.parseObject(JSON.toJSONString(configValue),Map.class);
 		body.put("key", key);
-		String result = httpCache(propertyInfo.getUrl(), propertyInfo.getMethod(), body);
-		if(result!=null) {
-			try {
-				Result<T> res_result = JSON.parseObject(result, Result.class);
-				if(res_result.isSuccess()) {
-					return res_result.getData();
-				}else {
-					log.warn(res_result.getMessage());
+		try {
+			String result = httpCache(propertyInfo.getUrl(), propertyInfo.getMethod(), body);
+			if(result!=null) {
+				try {
+					Result<T> res_result = JSON.parseObject(result, Result.class);
+					if(res_result.isSuccess()) {
+						return res_result.getData();
+					}else {
+						log.warn(res_result.getMessage());
+					}
+				} catch (Exception e) {
+					return null;
 				}
-			} catch (Exception e) {
-				return null;
 			}
+		} catch (Exception e) {
 		}
+		
 		return defaultValue;
 	}
 	@SuppressWarnings("unchecked")
@@ -114,7 +118,7 @@ public class SkyConfig {
 		String value=skyConfigCacheServiceImpl.doGet(url+"?"+JSON.toJSONString(params));
 		if(StringUtils.isEmpty(value)) {
 			value=http(url, method, params);
-			if(StringUtils.isEmpty(value)) {
+			if(!StringUtils.isEmpty(value)) {
 				//设置url  redis存储时间5s
 				skyConfigCacheServiceImpl.doStringSet(url, value, expressTime);
 			}
