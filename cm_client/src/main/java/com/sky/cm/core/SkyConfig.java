@@ -114,7 +114,7 @@ public class SkyConfig {
 		String value=skyConfigCacheServiceImpl.doGet(url+"?"+JSON.toJSONString(params));
 		if(StringUtils.isEmpty(value)) {
 			value=http(url, method, params);
-			if(StringUtils.isEmpty(value)) {
+			if(!StringUtils.isEmpty(value)) {
 				//设置url  redis存储时间5s
 				skyConfigCacheServiceImpl.doStringSet(url, value, expressTime);
 			}
