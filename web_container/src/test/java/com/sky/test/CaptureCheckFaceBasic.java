@@ -33,6 +33,9 @@ public class CaptureCheckFaceBasic extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private BufferedImage mImg;  
 	private static String openvcsrc="D:\\Program Files\\opencv\\opencv";
+	private static String face_alt=openvcsrc+"\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml";
+	// 从配置文件lbpcascade_frontalface.xml中创建一个人脸识别器，该文件位于opencv安装目录中
+	private static	CascadeClassifier faceDetector =null;
 	
 	private BufferedImage matToImg(Mat mat){  
 		int dataSize =mat.cols()*mat.rows()*(int)mat.elemSize();  
@@ -133,13 +136,11 @@ public class CaptureCheckFaceBasic extends JPanel {
 	 * opencv实现人脸识别
 	 * @param img
 	 */
-	public static Mat detectFace(Mat img) throws Exception
-	{
+	public static Mat detectFace(Mat img) throws Exception{
 
-		System.out.println("Running DetectFace ... ");
-		// 从配置文件lbpcascade_frontalface.xml中创建一个人脸识别器，该文件位于opencv安装目录中
-		CascadeClassifier faceDetector = new CascadeClassifier(openvcsrc+"\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml");
-
+		if(faceDetector==null) {
+			faceDetector= new CascadeClassifier(face_alt);
+		}
 
 		// 在图片中检测人脸
 		MatOfRect faceDetections = new MatOfRect();
