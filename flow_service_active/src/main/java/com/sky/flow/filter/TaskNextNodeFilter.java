@@ -20,6 +20,11 @@ import com.sky.flow.exception.FlowException;
 import com.sky.flow.pub.TaskContants;
 import com.sky.flow.util.SpringExpressionUtil;
 
+/**
+ * 	任务流程的下一节点过滤
+ * @author 王帆
+ * @date  2019年11月28日 下午3:06:45
+ */
 @Component
 public class TaskNextNodeFilter implements TaskNodeFilter{
 	@Autowired
@@ -42,7 +47,7 @@ public class TaskNextNodeFilter implements TaskNodeFilter{
 	}
 	
 	@Override
-	public TaskFlowNodeBean filter(TaskFlowInfoBean info, TaskFlowNodeBean node) throws FlowException {
+	public synchronized TaskFlowNodeBean filter(TaskFlowInfoBean info, TaskFlowNodeBean node) throws FlowException {
 		link=new StringBuilder();
 		flow=info.getFlow();
 		if(info.getNowNode()==null) {
@@ -82,6 +87,15 @@ public class TaskNextNodeFilter implements TaskNodeFilter{
 		return node;
 	}
 
+	/**
+	 * 根据节点id活动节点信息
+	 * @param flowId
+	 * @param nodeId
+	 * @return
+	 * @throws FlowException
+	 * @author 王帆
+	 * @date 2019年11月28日 下午3:02:14
+	 */
 	private FlowNodeContainerBean getFlowNode(String flowId,String nodeId) throws FlowException {
 		if(flow.getId().equals(flowId)) {
 			return TaskNodeFilterUtil.getFlowNode(flow,nodeId);
@@ -92,7 +106,7 @@ public class TaskNextNodeFilter implements TaskNodeFilter{
 	
 
 	/**
-	 * 执行流程走向判断
+	 * 执行流程走向判断，获取流程节点的下一节点信息。（如果需要自动判断的继续寻找下一节点），并记录节点链接走向
 	 * @param flowNowNode
 	 * @param jsonObject
 	 * @throws FlowException
