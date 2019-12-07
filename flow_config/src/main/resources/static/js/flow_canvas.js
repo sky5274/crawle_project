@@ -35,7 +35,7 @@ function showNodeTpis(){
 		tips.css({
 			position:"absolute",'font-size':'10px','border':'1px solid',
 			'background': 'lightyellow','padding':'5px','z-index':9999,
-			top:e.pageY+20,left:e.pageX+20
+			top:window.innerHeight-e.pageY>100?e.pageY+20:e.pageY-tips.height(),left:e.pageX+20
 		})
 		tips.append('<h6>'+key+'</h6>')
 		if(key=='node'){
@@ -50,7 +50,7 @@ function showNodeTpis(){
 	})
 	$("body").on("mousemove",".node-group,.link-group",function(e){
 		$(".tips_pane").css({
-			top:e.pageY+20,
+			top:window.innerHeight-e.pageY>100?e.pageY+20:e.pageY-$(".tips_pane").height(),
 			left:e.pageX+20
 		})
 	})
