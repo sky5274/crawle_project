@@ -17,7 +17,50 @@ function initFlowCanvas(flowId){
 	})
 	
 	initFlowCanvasFromData(flowId)
-	
+	showNodeTpis()
+}
+
+/**
+ * 显示节点tips
+ */
+var tips_flag=false
+function showNodeTpis(){
+	$("body").on("mouseover",".node-group,.link-group",function(e){
+		tips_flag=true
+		var ele=$(e.currentTarget)
+		var clazz=ele.attr("class")
+		var key=clazz.indexOf("node-group")>-1?"node":"link"
+		var val=JSON.parse($(ele).attr(key));
+		var tips=$("<div class='tips_pane'></div>")
+		tips.css({
+			position:"absolute",'font-size':'10px','border':'1px solid',
+			'background': 'lightyellow','padding':'5px','z-index':9999,
+			top:e.pageY+20,left:e.pageX+20
+		})
+		tips.append('<h6>'+key+'</h6>')
+		if(key=='node'){
+			tips.append("<p><span>节点编码：</span><span>"+val.key+"</span></p>")
+			tips.append("<p><span>节点名称：</span><span>"+val.name+"</span></p>")
+			tips.append("<p><span>节点类型：</span><span>"+val.type+"</span></p>")
+		}else{
+			tips.append("<p><span>条件：</span><span>"+val.condition+"</span></p>")
+		}
+		tips.find('p').css({'margin':'0px'})
+		$("body").append(tips)
+	})
+	$("body").on("mousemove",".node-group,.link-group",function(e){
+		$(".tips_pane").css({
+			top:e.pageY+20,
+			left:e.pageX+20
+		})
+	})
+	$("body").on("mouseleave",".node-group,.link-group",function(e){
+			if(tips_flag){
+				tips_flag=false
+				$(".tips_pane").fadeOut(200)
+				$(".tips_pane").remove()
+			}
+	})
 }
 
 function getInitDefFlowCanvas(flowId,ele,func){
