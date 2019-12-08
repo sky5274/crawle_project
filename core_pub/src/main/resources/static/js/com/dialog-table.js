@@ -141,7 +141,7 @@ function getElement(e){
 		
 	}
 	if(e.id){
-		ele.attr(id,e.id)
+		ele.attr('id',e.id)
 	}
 	if(e.type=='checkbox' || e.type=='radio'){
 		ele.css('max-width', '20px')
@@ -193,8 +193,12 @@ function getTableData(content,func){
 		}
 		if(val !=''){
 			data[$(this).attr("name")]=val;
-		}else if($(this).attr("requrie")=='true'){
-			$.alert({content:$(this).parents('.form-group').text()+"不能为空",type:"warn"})
+		}else if($(this).attr("require")=='true'){
+			var title=$(this).parents('.form-group').find('.control-label').text();
+			if(title.trim().length==0){
+				title=$(this).parents('.form-group').text();
+			}
+			$.alert({content:title+"不能为空",type:"warn"})
 			$(this).parent().css('border',"1px solid red")
 			flag=false;
 		}
