@@ -11,6 +11,7 @@ import com.sky.flow.exception.FlowException;
  * @date  2019年6月7日 下午5:24:53
  */
 public interface FlowEventEngineHandel {
+	/**流程事件处理方法*/
 	public String type();
 	
 	/**执行任务*/

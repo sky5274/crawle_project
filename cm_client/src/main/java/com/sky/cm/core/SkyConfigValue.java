@@ -18,6 +18,7 @@ public class SkyConfigValue {
 	private String serviceName;							//项目名称
 	private String profile;								//项目环境
 	private boolean enablelimit=true;					//项目服务限流
+	private boolean showGlobal;
 	private String version;								//项目版本
 	private String desc;								//项目说明
 	public Long getReadTimeout() {
@@ -67,6 +68,12 @@ public class SkyConfigValue {
 	}
 	public void setEnablelimit(boolean enablelimit) {
 		this.enablelimit = enablelimit;
+	}
+	public boolean isShowGlobal() {
+		return showGlobal;
+	}
+	public void setShowGlobal(boolean showGlobal) {
+		this.showGlobal = showGlobal;
 	}
 
 }

@@ -8,7 +8,7 @@ import com.sky.flow.exception.FlowException;
 public class TaskNodeFilterUtil {
 	
 	/**
-	 * 过滤流程节点信息
+	 *  根据节点id从流程中过滤流程节点信息
 	 * @param flow
 	 * @param nodeId
 	 * @return

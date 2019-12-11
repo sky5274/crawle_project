@@ -39,6 +39,7 @@ public class TaskNodeAuthoValidHandel {
 			//未设置流程权限人员的默认所有人都可以
 			return true;
 		}
+		//用户编码是否存在，是否限制环节人员
 		return hasUserCode(userCode) && Arrays.asList(node.getAuthCodes().split(",")).contains(userCode);
 	}
 	

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import com.alibaba.fastjson.JSON;
 import com.sky.cm.bean.LimitBean;
@@ -19,24 +23,25 @@ import com.sky.cm.bean.ProjectPropertyBean;
 import com.sky.cm.utils.HttpUtil;
 import com.sky.pub.Result;
 import com.sky.pub.util.SpringUtil;
-
 import okhttp3.Response;
 
 @Component
 public class SkyConfig {
 	@Autowired
 	private SkyConfigValue configValue;
+	@Autowired(required=false)
+	private SessionLocaleResolver localResolver;
 	@Autowired
 	private SkyConfigCacheServiceImpl  skyConfigCacheServiceImpl;
-	
+
 	private int expressTime=5*60;
-	
+
 	Log log=LogFactory.getLog(getClass());
-	
+
 	public SkyConfigValue getConfig() {
 		return configValue;
 	}
-	
+
 	public void registProject(Map<RequestMappingInfo, HandlerMethod> mappers) {
 		List<Map<String, Object>> mapperHandlerList=new LinkedList<>();
 		for(RequestMappingInfo reqmap:mappers.keySet()) {
@@ -64,7 +69,7 @@ public class SkyConfig {
 		Map<String, Object> body = JSON.parseObject(JSON.toJSONString(configValue),Map.class);
 		http(dump.getUrl(), dump.getMethod(), body);
 	}
-	
+
 	public String getProperty(String key) {
 		return getProperty(key,String.class);
 	}
@@ -79,24 +84,30 @@ public class SkyConfig {
 		SkyConfigRequest propertyInfo = SkyConfigRequest.property;
 		Map<String, Object> body = JSON.parseObject(JSON.toJSONString(configValue),Map.class);
 		body.put("key", key);
+		if(localResolver!=null) {
+			Locale local =localResolver.resolveLocale(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
+			if(local !=null && !Locale.getDefault().equals(local)) {
+				body.put("local", local.toString());
+			}
+		}else {
+			localResolver=SpringUtil.getBean(SessionLocaleResolver.class);
+		}
+		
+		T value=null;
 		try {
 			String result = httpCache(propertyInfo.getUrl(), propertyInfo.getMethod(), body);
 			if(result!=null) {
-				try {
-					Result<T> res_result = JSON.parseObject(result, Result.class);
-					if(res_result.isSuccess()) {
-						return res_result.getData();
-					}else {
-						log.warn(res_result.getMessage());
-					}
-				} catch (Exception e) {
-					return null;
+				Result<T> res_result = JSON.parseObject(result, Result.class);
+				if(res_result.isSuccess()) {
+					value= res_result.getData();
+				}else {
+					log.warn(res_result.getMessage());
 				}
 			}
 		} catch (Exception e) {
+			log.warn(e.getMessage());
 		}
-		
-		return defaultValue;
+		return value==null?defaultValue:value;
 	}
 	@SuppressWarnings("unchecked")
 	public List<ProjectPropertyBean> getProperties() {
@@ -113,7 +124,7 @@ public class SkyConfig {
 		}
 		return null;
 	}
-	
+
 	public String httpCache(String url,HttpMethod method ,Map<String, Object> params) {
 		String value=skyConfigCacheServiceImpl.doGet(url+"?"+JSON.toJSONString(params));
 		if(StringUtils.isEmpty(value)) {

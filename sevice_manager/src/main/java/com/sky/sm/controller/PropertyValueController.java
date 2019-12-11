@@ -1,16 +1,22 @@
 package com.sky.sm.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
-
+import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.multipart.MultipartFile;
 import com.sky.pub.Page;
 import com.sky.pub.PageRequest;
 import com.sky.pub.Result;
+import com.sky.pub.ResultCode;
 import com.sky.pub.ResultUtil;
 import com.sky.pub.common.exception.ResultException;
 import com.sky.sm.bean.ProjectInfoBean;
@@ -61,6 +67,37 @@ public class PropertyValueController {
 	@RequestMapping(value="update",method=RequestMethod.POST)
 	public Result<Boolean> updateProperty(@RequestBody PropertyValueEntity property) throws ResultException {
 		return ResultUtil.getOk(propertyValueService.updateProperty(property));
+	}
+	
+	private static List<String> limitFileType=Arrays.asList(".properties",".yml",".yaml");
+	/**
+	 * 	根据上传的属性文件全局替换或新增
+	 * @param property
+	 * @param file
+	 * @return
+	 * @throws ResultException
+	 * @author 王帆
+	 * @date 2019年12月8日 下午4:34:45
+	 */
+	@RequestMapping(value="upload",method=RequestMethod.POST)
+	public Result<Boolean> uploadProperties(PropertyValueEntity property,MultipartFile file) throws ResultException {
+		if(file==null) {
+			return ResultUtil.getFailed(ResultCode.VALID, "无上传文件");
+		}
+		String fileName = file.getOriginalFilename();
+		String type=fileName.substring(fileName.lastIndexOf("."));
+		if(!limitFileType.contains(type)) {
+			return ResultUtil.getFailed(ResultCode.VALID, String.format("服务只支持一下文件格式的属性解析，文件格式：%s", String.join(",", limitFileType)));
+		}
+		Properties pro=null;
+		try {
+			pro = parseProperties(fileName, file.getInputStream());
+		} catch (IOException e) {
+		}
+		if(pro==null) {
+			return ResultUtil.getFailed(ResultCode.VALID, String.format("文件properties 内容解析失败"));
+		}
+		return ResultUtil.getOk(propertyValueService.updateProperty(property,pro));
 	}
 	
 	/**
@@ -118,6 +155,31 @@ public class PropertyValueController {
 		property.setProject(project.getServiceName());
 		property.setProfile(project.getProfile());
 		property.setVersionCode(project.getVersion());
+		property.setLocal(project.getLocal());
 		return property;
+	}
+	
+	/**
+	 * 	解析数据流程的属性结果
+	 * @param fileName
+	 * @param stream
+	 * @return
+	 * @author 王帆
+	 * @date 2019年12月8日 下午4:44:55
+	 */
+	private Properties parseProperties(String fileName,InputStream stream) {
+		Properties pro=null;
+		if(fileName.endsWith(".properties")) {
+			pro=new Properties();
+			try {
+				pro.load(stream);
+			} catch (IOException e) {
+			}
+		}else if(fileName.endsWith(".yml") || fileName.endsWith(".yaml")) {
+			YamlPropertiesFactoryBean yml=new YamlPropertiesFactoryBean();
+			yml.setResources(new InputStreamResource(stream));
+			pro = yml.getObject();
+		}
+		return pro;
 	}
 }

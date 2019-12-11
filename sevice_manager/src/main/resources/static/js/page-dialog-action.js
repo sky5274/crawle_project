@@ -9,7 +9,14 @@ function windowAction(obj){
 			var flag=tabledata.isOk;
 			if(flag){
 				if(type=='sure'){
-					updatOrAddPostRequest({url:obj.actionUrl,data:tabledata.data,table:obj.table})
+					var func=obj.sureFunction;
+					var param={url:obj.actionUrl,data:tabledata.data,table:obj.table};
+					if(func){
+						func(param);
+					}else{
+						updatOrAddPostRequest(param);
+					}
+					
 				}
 			}
 			return flag;
