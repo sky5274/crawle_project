@@ -21,6 +21,7 @@ public class ProjectInfoBean implements Serializable{
 	private String port;
 	private String profile;
 	private String version;
+	private String local;
 	private List<HttpUrlInfo> urls;
 	
 	public String getServiceName() {
@@ -82,6 +83,12 @@ public class ProjectInfoBean implements Serializable{
 	}
 	public void setVersions(List<String> versions){
 		this.version= versions==null?null:String.join(",", versions);
+	}
+	public String getLocal() {
+		return local;
+	}
+	public void setLocal(String local) {
+		this.local = local;
 	}
 	public static class HttpUrlInfo implements Serializable{
 		/***/
