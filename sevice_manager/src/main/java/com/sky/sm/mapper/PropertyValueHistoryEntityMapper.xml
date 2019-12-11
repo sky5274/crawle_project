@@ -9,12 +9,13 @@
     <result column="profile" property="profile" jdbcType="VARCHAR" />
     <result column="version_code" property="versionCode" jdbcType="VARCHAR" />
     <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="local" property="local" jdbcType="VARCHAR" />
     <result column="version" property="version" jdbcType="VARCHAR" />
     <result column="createid" property="createid" jdbcType="INTEGER" />
     <result column="ts" property="ts" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, `key`, `value`, project, `profile`, version_code,is_global, pid, version, createid, ts
+    id, `key`, `value`, project, `profile`, version_code,is_global, pid,local, version, createid, ts
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -33,10 +34,10 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.sky.sm.bean.PropertyValueHistoryEntity" useGeneratedKeys="true" keyProperty="id">
-    insert into property_value_his (id, `key`, `value`,       project, `profile`, version_code, is_global,     pid, version, createid,      ts)
+    insert into property_value_his (id, `key`, `value`,       project, `profile`, version_code, is_global,     pid,local, version, createid,      ts)
     values (#{id,jdbcType=INTEGER}, #{key,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, 
       #{project,jdbcType=VARCHAR}, #{profile,jdbcType=VARCHAR}, #{versionCode,jdbcType=VARCHAR}, 	#{isGrobal,jdbcType=INTEGER},
-     #{pid,jdbcType=INTEGER}, 0, #{createid,jdbcType=INTEGER},now())
+     #{pid,jdbcType=INTEGER},#{local,jdbcType=VARCHAR}, 0, #{createid,jdbcType=INTEGER},now())
   </insert>
   <insert id="insertSelective" parameterType="com.sky.sm.bean.PropertyValueHistoryEntity" useGeneratedKeys="true" keyProperty="id">
     insert into property_value_his
@@ -48,6 +49,7 @@
       <if test="versionCode != null" >  version_code,      					</if>
       <if test="isGrobal != null" >    	is_global  						    </if>
       <if test="pid != null" >        	pid,      							</if>
+      <if test="local != null" >        local,      						</if>
       <if test="createid != null" >     createid,      						</if>
              							version,    
              							ts
@@ -58,8 +60,9 @@
       <if test="project != null" >      #{project,jdbcType=VARCHAR},      	</if>
       <if test="profile != null" >      #{profile,jdbcType=VARCHAR},      	</if>
       <if test="versionCode != null" >  #{versionCode,jdbcType=VARCHAR},    </if>
-      <if test="isGrobal != null" >    	#{isGrobal,jdbcType=INTEGER},     </if>
+      <if test="isGrobal != null" >    	#{isGrobal,jdbcType=INTEGER},     	</if>
       <if test="pid != null" >       	#{pid,jdbcType=INTEGER},      		</if>
+      <if test="local != null" >       	#{local,jdbcType=VARCHAR},      	</if>
       <if test="createid != null" >     #{createid,jdbcType=INTEGER},      	</if>
      									0,
             							now()
@@ -74,6 +77,7 @@
       <if test="profile != null" >      `profile` 	= #{profile,jdbcType=VARCHAR},      	</if>
       <if test="versionCode != null" >  version_code = #{versionCode,jdbcType=VARCHAR},     </if>
       <if test="isGrobal != null" >    	is_global   = #{isGrobal,jdbcType=INTEGER},     	</if>
+      <if test="local != null" >    	local   	= #{local,jdbcType=VARCHAR},     		</if>
       <if test="pid != null" >        	pid 		= #{pid,jdbcType=INTEGER},      		</if>
       <if test="createid != null" >     createid 	= #{createid,jdbcType=INTEGER},      	</if>
 										version 	= version+1,      
@@ -88,7 +92,8 @@
       project		= #{project,jdbcType=VARCHAR},
       `profile` 	= #{profile,jdbcType=VARCHAR},
       version_code 	= #{versionCode,jdbcType=VARCHAR},
-      is_global   = #{isGrobal,jdbcType=INTEGER},
+      is_global     = #{isGrobal,jdbcType=INTEGER},
+      local 		= #{local,jdbcType=VARCHAR},
       pid 			= #{pid,jdbcType=INTEGER},
       version 		= version+1,
       createid 		= #{createid,jdbcType=INTEGER},

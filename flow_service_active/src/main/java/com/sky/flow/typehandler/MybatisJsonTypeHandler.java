@@ -11,6 +11,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mysql.cj.jdbc.CallableStatement;
 
+/**
+ * ibatis json type for sql columns
+ * @author 王帆
+ * @date  2019年11月28日 下午3:10:32
+ */
 @MappedTypes(JSONObject.class)
 @MappedJdbcTypes(JdbcType.VARCHAR)
 public class MybatisJsonTypeHandler<T extends Object> extends BaseTypeHandler<T> {
@@ -64,7 +69,6 @@ public class MybatisJsonTypeHandler<T extends Object> extends BaseTypeHandler<T>
 
 	@Override
 	public T getNullableResult(java.sql.CallableStatement cs, int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
  

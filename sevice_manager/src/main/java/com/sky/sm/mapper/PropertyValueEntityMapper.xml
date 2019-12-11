@@ -10,6 +10,7 @@
     <result column="version_code" property="versionCode" jdbcType="VARCHAR" />
     <result column="version" property="version" jdbcType="INTEGER" />
     <result column="is_global" property="isGrobal" jdbcType="INTEGER" />
+    <result column="local" property="local" jdbcType="VARCHAR" />
     <result column="level" property="likeLevel" jdbcType="VARCHAR" />
     <result column="createid" property="createid" jdbcType="INTEGER" />
     <result column="ts" property="ts" jdbcType="TIMESTAMP" />
@@ -18,6 +19,7 @@
     <result column="project" property="project" jdbcType="VARCHAR" />
     <result column="profile" property="profile" jdbcType="VARCHAR" />
     <result column="version_code" property="version" jdbcType="VARCHAR" />
+    <result column="local" property="local" jdbcType="VARCHAR" />
     <result column="level" property="likeLevel" jdbcType="VARCHAR" />
     <collection property="properties" ofType="com.sky.sm.bean.PropertyValueBean">
 	    <result column="key" property="key" jdbcType="VARCHAR" />
@@ -25,13 +27,13 @@
     </collection>
   </resultMap>
   <sql id="Base_Column_List" >
-    pro.id, pro.`key`, pro.`value`, pro.project, pro.`profile`, pro.version_code,pro.is_global, pro.version, pro.createid, pro.ts
+    pro.id, pro.`key`, pro.`value`, pro.project, pro.`profile`, pro.version_code,pro.is_global,pro.local, pro.version, pro.createid, pro.ts
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from property_value
-    where id = #{id,jdbcType=INTEGER}
+    from property_value pro
+    where pro.id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from property_value
@@ -39,13 +41,27 @@
   </delete>
   <insert id="insert" parameterType="com.sky.sm.bean.PropertyValueEntity" useGeneratedKeys="true" keyProperty="id">
     insert into property_value (id, `key`, `value`, 
-      project, `profile`, version_code, is_global,
+      project, `profile`, version_code, is_global,local,
       version, createid, ts
       )
     values (#{id,jdbcType=INTEGER}, #{key,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, 
-      #{project,jdbcType=VARCHAR}, #{profile,jdbcType=VARCHAR}, #{versionCode,jdbcType=VARCHAR}, #{isGrobal},
+      #{project,jdbcType=VARCHAR}, #{profile,jdbcType=VARCHAR}, #{versionCode,jdbcType=VARCHAR}, #{isGrobal},#{local,jdbcType=VARCHAR}, 
       #{version,jdbcType=INTEGER}, #{createid,jdbcType=INTEGER}, now()
       )
+      ON DUPLICATE KEY UPDATE `value` = VALUES(`value`),version = version+1,ts=now()
+  </insert>
+  <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+    insert into property_value ( `key`, `value`,  project, `profile`,
+    	 version_code, is_global,local,
+      version, createid, ts
+      )
+      <foreach collection="list" item="it" separator="," open="values ">
+       (	 #{it.key,jdbcType=VARCHAR}, #{it.value,jdbcType=VARCHAR}, #{it.project,jdbcType=VARCHAR}, #{it.profile,jdbcType=VARCHAR}, 
+       		#{it.versionCode,jdbcType=VARCHAR}, IFNULL(#{it.isGrobal},0),#{it.local,jdbcType=VARCHAR}, 
+      		IFNULL(#{it.version,jdbcType=INTEGER},0), #{it.createid,jdbcType=INTEGER}, now()
+      )
+      </foreach>
+      ON DUPLICATE KEY UPDATE `value` = VALUES(`value`),version = version+1,ts=now()
   </insert>
   <insert id="insertSelective" parameterType="com.sky.sm.bean.PropertyValueEntity" useGeneratedKeys="true" keyProperty="id">
     insert into property_value
@@ -57,6 +73,7 @@
       <if test="versionCode != null" >	version_code,	</if>
       <if test="createid != null" >     createid,      	</if>
       <if test="isGrobal != null" >     is_global,      </if>
+      <if test="local != null" >     	local,      	</if>
       									version,      
               							ts     
     </trim>
@@ -68,6 +85,7 @@
       <if test="versionCode != null" >	#{versionCode,jdbcType=VARCHAR},	</if>
       <if test="createid != null" >     #{createid,jdbcType=INTEGER},      	</if>
       <if test="isGrobal != null" >     #{isGrobal,jdbcType=INTEGER},      	</if>
+      <if test="local != null" >     	#{local,jdbcType=VARCHAR},      	</if>
       									0,
       									now()
     </trim>
@@ -82,6 +100,7 @@
       <if test="versionCode != null" >	version_code= #{versionCode,jdbcType=VARCHAR},	</if>
       <if test="createid != null" >     createid 	= #{createid,jdbcType=INTEGER},     </if>
       <if test="isGrobal != null" >    	is_global   = #{isGrobal,jdbcType=INTEGER},     </if>
+      <if test="local != null" >    	local   	= #{local,jdbcType=VARCHAR},     	</if>
       									version 	= version+1,      					
       				 					ts 			= now()
     </set>
@@ -95,7 +114,8 @@
       `profile`		= #{profile,jdbcType=VARCHAR},
       version_code 	= #{versionCode,jdbcType=VARCHAR},
       createid 		= #{createid,jdbcType=INTEGER},
-      is_global   = #{isGrobal,jdbcType=INTEGER},
+      is_global     = #{isGrobal,jdbcType=INTEGER},
+      local   	    = #{local,jdbcType=VARCHAR},
       version 		= version+1,
       ts 			= now()
     where id = #{id,jdbcType=INTEGER}
@@ -109,6 +129,7 @@
   <sql id="simple-query-item">
   		<if test="pro.project !=null and pro.project !=''">				project 		=#{pro.project} and					</if>
   		<if test="pro.key !=null and pro.key !=''">						`key` 			=#{pro.key} and						</if>
+  		<if test="pro.local !=null and pro.local !=''">					local 		    =#{pro.local} and					</if>
   </sql>
   <sql id="simple-query-item-like">
 		<if test="pro.keyLike !=null"> 							
@@ -173,7 +194,7 @@
 		CASE when version_code ='${pro.versionCode}' then 2
 		 	<if test="pro.versionCode !=null and pro.versionCode!=''"> when version_code like concat('%','${pro.versionCode}','%') then 1</if>
 			<if test="pro.versionCodeLike !=null  and pro.versionCodeLike.indexOf(',') &lt; 0">
-			 when version_code concat('%','${pro.versionCodeLike}','%') then 1
+			 when version_code like concat('%','${pro.versionCodeLike}','%') then 1
 		  	</if>
 			<if test="pro.versionCodeLike !=null and pro.versionCodeLike.indexOf(',') &gt; -1">
 			<foreach collection="pro.versionCodeLike.split(',')" item="it" open="`version_code` in (" close=") then 2" separator=",">${it}</foreach>
@@ -182,6 +203,10 @@
 		id
 	FROM property_value 
 </sql>
+
+	<sql id="query-level-control">
+		<if test="pro.project !=null"> lvl.s_l> 0 and  </if>
+	</sql>
   
   <!-- 默认的查询条件 -->
   <sql id="base_query_contation">
@@ -194,11 +219,11 @@
 	  		<trim prefix="(is_global=1 and" suffix=")" suffixOverrides="and | or">
 	  			<include refid="simple-query-item"/>
 	  			<include refid="simple-query-item-like"/>
-	  			lvl.s_l> 0 and  
+	  			<include refid="query-level-control"/>
 		  	</trim>
 	  		<trim prefix="or ( is_global !=1 and" suffix=")" suffixOverrides="and | or">
 	  			<include refid="query-item-like"/>
-	  			lvl.s_l> 0 and 
+	  			<include refid="query-level-control"/>
 		  	</trim>
   		</if>
   	</trim>
@@ -241,7 +266,7 @@
   </sql>
   <sql id="base-change-table-order">
   	<if test="pro !=null and pro.showGlobal !=null and pro.showGlobal">
-  		order by level
+  		order by level DESC,`local`
   	</if>
   </sql>
 

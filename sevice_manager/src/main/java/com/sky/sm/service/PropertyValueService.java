@@ -1,6 +1,8 @@
 package com.sky.sm.service;
 
 import java.util.List;
+import java.util.Properties;
+
 import com.sky.pub.Page;
 import com.sky.pub.PageRequest;
 import com.sky.pub.common.exception.ResultException;
@@ -74,4 +76,15 @@ public interface PropertyValueService {
 	 * @date 2019年3月8日 下午2:22:53
 	 */
 	List<ProjectPropertyBean> getProperties(PropertyValueEntity property);
+
+	/**
+	 * 根据属性配置properties  更新或 新增配置数据
+	 * @param property
+	 * @param pro
+	 * @return
+	 * @author 王帆
+	 * @throws ResultException 
+	 * @date 2019年12月10日 下午3:50:29
+	 */
+	Boolean updateProperty(PropertyValueEntity property, Properties pro) throws ResultException;
 }

@@ -17,6 +17,15 @@ public interface PropertyValueEntityMapper {
     int insert(PropertyValueEntity record);
 
     int insertSelective(PropertyValueEntity record);
+    
+    /**
+     * 	批量新增配置属性
+     * @param records
+     * @return
+     * @author 王帆
+     * @date 2019年12月10日 下午4:03:56
+     */
+    int insertBatch(List<PropertyValueEntity> records);
 
     PropertyValueEntity selectByPrimaryKey(Integer id);
 

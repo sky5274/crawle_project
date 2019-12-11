@@ -181,7 +181,7 @@ function userActionDialog(obj){
     var usertitle='新增用户';
     
     var content=[
-		{title:'账号',name:"username",attr:'requrie=true'},
+		{title:'账号',name:"username",attr:'require=true'},
 		{title:'年龄',name:"age"},
 		{title:'国籍',name:"country"},
 		{title:'电话',name:"phone"},
@@ -215,7 +215,7 @@ function userActionDialog(obj){
 				var val=$(this).val();
 				if(val !=''){
 					data[$(this).attr("name")]=val;
-				}else if($(this).attr("requrie")=='true'){
+				}else if($(this).attr("require")=='true'){
 					$.alert({content:$(this).parents('.form-group').text()+"不能为空",type:"warn"})
 					$(this).parent().css('border',"1px solid red")
 					flag=false;
@@ -248,9 +248,9 @@ function useresPasswdDialog(id){
 		type:"confrim",
 		con:getTableContent([
 			{name:"id",value:id,hide:true},
-			{title:'旧密码',name:"password",attr:"requrie='true'"},
-			{title:'新密码',name:"newPassword",attr:"requrie='true'"},
-			{title:'确认密码',name:"rnewPassword",attr:"requrie='true'"},
+			{title:'旧密码',name:"password",attr:"require='true'"},
+			{title:'新密码',name:"newPassword",attr:"require='true'"},
+			{title:'确认密码',name:"rnewPassword",attr:"require='true'"},
 		]),
 		func:function(type,content){
 			$(content).find('input').parent().css("border",'')
@@ -260,7 +260,7 @@ function useresPasswdDialog(id){
 				var val=$(this).val();
 				if(val !=''){
 					data[$(this).attr("name")]=val;
-				}else if($(this).attr("requrie")=='true'){
+				}else if($(this).attr("require")=='true'){
 					$.alert({content:$(this).parents('.form-group').text()+"不能为空",type:"warn"})
 					$(this).parent().css('border',"1px solid red")
 					flag=false;

@@ -22,6 +22,8 @@ public class PropertyValueEntity extends BaseTableEntity{
     private String profile;
     //对应项目版本
     private String versionCode;
+    //本地化版本
+    private String local;
     
     private Integer isGrobal;
     /**
@@ -70,30 +72,28 @@ public class PropertyValueEntity extends BaseTableEntity{
     public void setVersionCode(String versionCode) {
         this.versionCode = versionCode == null ? null : versionCode.trim();
     }
-
-	
-
 	public Integer getIsGrobal() {
 		return isGrobal;
 	}
-
 	public void setIsGrobal(Integer isGrobal) {
 		this.isGrobal = isGrobal;
 	}
-
 	public boolean isShowGlobal() {
 		return showGlobal;
 	}
-
 	public void setShowGlobal(boolean showGlobal) {
 		this.showGlobal = showGlobal;
 	}
-
 	public String getLikeLevel() {
 		return likeLevel;
 	}
-
 	public void setLikeLevel(String likeLevel) {
 		this.likeLevel = likeLevel;
+	}
+	public String getLocal() {
+		return local;
+	}
+	public void setLocal(String local) {
+		this.local = local;
 	}
 }
