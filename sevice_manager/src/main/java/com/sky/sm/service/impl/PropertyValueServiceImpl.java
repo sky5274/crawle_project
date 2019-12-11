@@ -1,11 +1,15 @@
 package com.sky.sm.service.impl;
 
+import java.util.LinkedList;
 import java.util.List;
-
+import java.util.Locale;
+import java.util.Map.Entry;
+import java.util.Properties;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import com.sky.pub.Page;
 import com.sky.pub.PageRequest;
 import com.sky.pub.ResultAssert;
@@ -26,7 +30,7 @@ public class PropertyValueServiceImpl implements PropertyValueService{
 	private PropertyValueEntityMapper propertyValueMapper;
 	@Autowired
 	private PropertyValueHistoryEntityMapper propertyValueHistoryMapper;
-	
+
 	@Override
 	public Page<PropertyValueEntity> queryPageOfProperty(PageRequest<PropertyValueReqEntity> pageProperty) {
 		pageProperty.initPage();
@@ -75,14 +79,51 @@ public class PropertyValueServiceImpl implements PropertyValueService{
 	@Override
 	public String getPropertyValue(PropertyValueReqEntity property) {
 		List<PropertyValueEntity> list = propertyValueMapper.queryProperties(property);
-		if(list !=null && list.size()==1) {
+		if(!CollectionUtils.isEmpty(list)) {
+			boolean flag=property.getLocal()==null;
+			for(PropertyValueEntity pv:list) {
+				try {
+					if((flag?pv.getLocal()==null || Locale.getDefault().toString().equals(pv.getLocal()):property.getLocal().equals(pv.getLocal()))
+							&& pv.getValue() !=null && pv.getKey().equals(property.getKey())) {
+						return pv.getValue();
+					}
+				} catch (Exception e) {
+				}
+			}
 			return list.get(0).getValue();
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<ProjectPropertyBean> getProperties(PropertyValueEntity property) {
 		return propertyValueMapper.queryProjectProperties(property);
+	}
+
+	@Override
+	public Boolean updateProperty(PropertyValueEntity property, Properties pro) throws ResultException {
+		ResultAssert.isTure(pro==null || pro.isEmpty(), "配置资源为空");
+		List<String> errors=new LinkedList<String>();
+		if(property==null) {
+			errors.add("配置属性参数为空");
+		}else {
+			if(StringUtils.isEmpty(property.getProfile()))     		errors.add("项目");
+			if(StringUtils.isEmpty(property.getProfile()))     		errors.add("运行环境");
+			if(StringUtils.isEmpty(property.getVersionCode()))     	errors.add("运行版本");
+		}
+		//复制properties 数据，添加或更新到数据库中
+		List<PropertyValueEntity> list=new LinkedList<>();
+		for(Entry<Object, Object> e:pro.entrySet()) {
+			if(e!=null && e.getKey() !=null && e.getValue() !=null) {
+				PropertyValueEntity pv=new PropertyValueEntity();
+				BeanUtils.copyProperties(property, pv);
+				pv.setId(null);
+				pv.setVersion(null);
+				pv.setKey(e.getKey().toString());
+				pv.setValue(e.getValue().toString());
+				list.add(pv);
+			}
+		}
+		return propertyValueMapper.insertBatch(list)>0;
 	}
 }
