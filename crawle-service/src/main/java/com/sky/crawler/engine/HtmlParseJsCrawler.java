@@ -27,7 +27,6 @@ import okhttp3.Response;
  * @author 王帆
  * @date  2019年1月18日 下午1:35:48
  */
-@SuppressWarnings("restriction")
 public class HtmlParseJsCrawler extends BaseHTMLCrawlerBreadth{
 	private String initJsPath=CrawlerJsContant.initJs;
 	private String jsContents=null;

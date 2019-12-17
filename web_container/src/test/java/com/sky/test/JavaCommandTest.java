@@ -1,31 +1,13 @@
 package com.sky.test;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
-
 import com.alibaba.fastjson.JSON;
-import com.sky.container.controller.ContainerController;
-import com.sky.container.service.impl.CloudDockerServiceImpl;
 import com.sky.container.socket.ContainerMontiorSocketService;
 import com.sky.container.socket.stream.StreamReadEvent;
 import com.sky.container.util.CommandUtil;
-import com.sky.pub.Result;
-import com.sky.pub.controller.FileController;
-
-import ch.qos.logback.core.util.FileUtil;
 
 public class JavaCommandTest {
 	public static void main(String[] args) throws IOException {

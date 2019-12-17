@@ -7,7 +7,7 @@ import cn.edu.hfut.dmic.webcollector.model.Page;
 
 public abstract class CrawlerService {
 	private StringBuilder tempLog=new StringBuilder();
-	private Log log=LogFactory.getLog(getClass());
+	protected Log log=LogFactory.getLog(getClass());
 	
 	protected void writer(String str) {
 		tempLog.append(str);

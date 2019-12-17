@@ -83,6 +83,7 @@ public class RestTemplateUtil {
 		assertNotNull("param is null",param);
 		MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<String, String>();
 		
+		@SuppressWarnings("unchecked")
 		Map<String ,Object> paramMAP = JSON.parseObject(JSON.toJSONString(param), Map.class);
 		for(String key:paramMAP.keySet()) {
 			Object value = paramMAP.get(key);
@@ -100,6 +101,7 @@ public class RestTemplateUtil {
 			return path+"?"+(String)param;
 		}
 		StringBuilder paramStr=null;
+		@SuppressWarnings("unchecked")
 		Map<String ,Object> paramMAP = JSON.parseObject(JSON.toJSONString(param), Map.class);
 		for(String key:paramMAP.keySet()) {
 			if(extraAttr.contains(key) || key==null) {

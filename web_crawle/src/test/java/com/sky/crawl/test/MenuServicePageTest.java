@@ -100,7 +100,7 @@ public class MenuServicePageTest extends RestTemplateUtil{
 		}
 		Result<Boolean> result = testGetMenuNodeBYPageParam(restTemplate,path,menu,Result.class);
 		log.info("path: {}, action, predict:{} reponse data:{}",path,flag,JSON.toJSONString(result));
-		assertTrue(String.format("path:{} is aciton fialed,result success: %s",path,result.isSuccess()+""), result.isSuccess());
+		assertTrue(String.format("path:%s is aciton fialed,result success: %s",path,result.isSuccess()+""), result.isSuccess());
 		assertTrue(String.format("path: %s is predict %s,result status: %s",path,flag+"",result.isSuccess()+""), flag==result.getData());
 	}
 	

@@ -46,7 +46,7 @@ public class JavaSftpTest{
 			java.io.InputStream in=System.in;
 			java.io.PrintStream out=System.out;
 
-			java.util.Vector cmds=new java.util.Vector();
+			java.util.Vector<String> cmds=new java.util.Vector<String>();
 			byte[] buf=new byte[1024];
 			int i;
 			String str;
@@ -73,7 +73,7 @@ public class JavaSftpTest{
 				if(s<i){ cmds.addElement(new String(buf, s, i-s)); }
 				if(cmds.size()==0)continue;
 
-				String cmd=(String)cmds.elementAt(0);
+				String cmd=cmds.elementAt(0);
 				if(cmd.equals("quit")){
 					c.quit();
 					break;
@@ -92,7 +92,7 @@ public class JavaSftpTest{
 						continue;
 					}
 					try{
-						level=Integer.parseInt((String)cmds.elementAt(1));
+						level=Integer.parseInt(cmds.elementAt(1));
 						if(level==0){
 							session.setConfig("compression.s2c", "none");
 							session.setConfig("compression.c2s", "none");
@@ -108,7 +108,7 @@ public class JavaSftpTest{
 				}
 				if(cmd.equals("cd") || cmd.equals("lcd")){
 					if(cmds.size()<2) continue;
-					String path=(String)cmds.elementAt(1);
+					String path=cmds.elementAt(1);
 					try{
 						if(cmd.equals("cd")) c.cd(path);
 						else c.lcd(path);
@@ -120,7 +120,7 @@ public class JavaSftpTest{
 				}
 				if(cmd.equals("rm") || cmd.equals("rmdir") || cmd.equals("mkdir")){
 					if(cmds.size()<2) continue;
-					String path=(String)cmds.elementAt(1);
+					String path=cmds.elementAt(1);
 					try{
 						if(cmd.equals("rm")) c.rm(path);
 						else if(cmd.equals("rmdir")) c.rmdir(path);
@@ -133,10 +133,10 @@ public class JavaSftpTest{
 				}
 				if(cmd.equals("chgrp") || cmd.equals("chown") || cmd.equals("chmod")){
 					if(cmds.size()!=3) continue;
-					String path=(String)cmds.elementAt(2);
+					String path=cmds.elementAt(2);
 					int foo=0;
 					if(cmd.equals("chmod")){
-						byte[] bar=((String)cmds.elementAt(1)).getBytes();
+						byte[] bar=cmds.elementAt(1).getBytes();
 						int k;
 						for(int j=0; j<bar.length; j++){
 							k=bar[j];
@@ -147,7 +147,7 @@ public class JavaSftpTest{
 						if(foo==-1)continue;
 					}
 					else{
-						try{foo=Integer.parseInt((String)cmds.elementAt(1));}
+						try{foo=Integer.parseInt(cmds.elementAt(1));}
 						catch(Exception e){continue;}
 					}
 					try{
@@ -170,8 +170,9 @@ public class JavaSftpTest{
 				}
 				if(cmd.equals("ls") || cmd.equals("dir")){
 					String path=".";
-					if(cmds.size()==2) path=(String)cmds.elementAt(1);
+					if(cmds.size()==2) path=cmds.elementAt(1);
 					try{
+						@SuppressWarnings("rawtypes")
 						java.util.Vector vv=c.ls(path);
 						if(vv!=null){
 							for(int ii=0; ii<vv.size(); ii++){
@@ -192,7 +193,7 @@ public class JavaSftpTest{
 				}
 				if(cmd.equals("lls") || cmd.equals("ldir")){
 					String path=".";
-					if(cmds.size()==2) path=(String)cmds.elementAt(1);
+					if(cmds.size()==2) path=cmds.elementAt(1);
 					try{
 						java.io.File file=new java.io.File(path);
 						if(!file.exists()){
@@ -219,10 +220,10 @@ public class JavaSftpTest{
 						cmd.equals("put-resume") || cmd.equals("put-append")
 						){
 					if(cmds.size()!=2 && cmds.size()!=3) continue;
-					String p1=(String)cmds.elementAt(1);
+					String p1=cmds.elementAt(1);
 					//	  String p2=p1;
 					String p2=".";
-					if(cmds.size()==3)p2=(String)cmds.elementAt(2);
+					if(cmds.size()==3)p2=cmds.elementAt(2);
 					try{
 						SftpProgressMonitor monitor=new MyProgressMonitor();
 						if(cmd.startsWith("get")){
@@ -246,8 +247,8 @@ public class JavaSftpTest{
 				if(cmd.equals("ln") || cmd.equals("symlink") ||
 						cmd.equals("rename") || cmd.equals("hardlink")){
 					if(cmds.size()!=3) continue;
-					String p1=(String)cmds.elementAt(1);
-					String p2=(String)cmds.elementAt(2);
+					String p1=cmds.elementAt(1);
+					String p2=cmds.elementAt(2);
 					try{
 						if(cmd.equals("hardlink")){  c.hardlink(p1, p2); }
 						else if(cmd.equals("rename")) c.rename(p1, p2);
@@ -260,7 +261,7 @@ public class JavaSftpTest{
 				}
 				if(cmd.equals("df")){
 					if(cmds.size()>2) continue;
-					String p1 = cmds.size()==1 ? ".": (String)cmds.elementAt(1);
+					String p1 = cmds.size()==1 ? ".": cmds.elementAt(1);
 					SftpStatVFS stat = c.statVFS(p1);
 
 					long size = stat.getSize();
@@ -279,7 +280,7 @@ public class JavaSftpTest{
 				}
 				if(cmd.equals("stat") || cmd.equals("lstat")){
 					if(cmds.size()!=2) continue;
-					String p1=(String)cmds.elementAt(1);
+					String p1=cmds.elementAt(1);
 					SftpATTRS attrs=null;
 					try{
 						if(cmd.equals("stat")) attrs=c.stat(p1);
@@ -297,7 +298,7 @@ public class JavaSftpTest{
 				}
 				if(cmd.equals("readlink")){
 					if(cmds.size()!=2) continue;
-					String p1=(String)cmds.elementAt(1);
+					String p1=cmds.elementAt(1);
 					String filename=null;
 					try{
 						filename=c.readlink(p1);
@@ -310,7 +311,7 @@ public class JavaSftpTest{
 				}
 				if(cmd.equals("realpath")){
 					if(cmds.size()!=2) continue;
-					String p1=(String)cmds.elementAt(1);
+					String p1=cmds.elementAt(1);
 					String filename=null;
 					try{
 						filename=c.realpath(p1);

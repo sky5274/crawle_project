@@ -1,12 +1,7 @@
 package com.sky.auth.config.client.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoRestTemplateFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.web.client.RestTemplate;
 
 public class OauthClientWebSucurityConfig extends WebSecurityConfigurerAdapter {
 	

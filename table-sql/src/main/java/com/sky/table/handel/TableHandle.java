@@ -555,7 +555,7 @@ public class TableHandle {
 		return null;
 	}
 	
-	@SuppressWarnings({"unused","rawtypes"})
+	@SuppressWarnings({"rawtypes"})
 	private class ColumDataMap{
 		private List<Map> columndatas;
 		private Set<ParamBean> columNames;
