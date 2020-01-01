@@ -1,4 +1,4 @@
-package com.sky.cm.config;
+package com.sky.cm.config.advice;
 
 
 import java.lang.reflect.UndeclaredThrowableException;

@@ -10,16 +10,15 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
-import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.InjectionMetadata;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
@@ -33,8 +32,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
-import com.sky.cm.annotation.Val;
-import com.sky.cm.core.ConfigValueTypeConverter;
+import com.sky.cm.config.handle.AnnotationPropertyConvertHandle;
 
 /**
  * config value annotation auto inspect process
@@ -50,11 +48,11 @@ public class SkyConfigValueAnnotationBeanProcessor extends InstantiationAwareBea
 	private boolean requiredParameterValue = true;
 	private int order = Ordered.LOWEST_PRECEDENCE-10;
 	private ConfigurableListableBeanFactory beanFactory;
-	private TypeConverter typeConverter = new ConfigValueTypeConverter();
 	private final Map<String, InjectionMetadata> injectionMetadataCache =new ConcurrentHashMap<String, InjectionMetadata>(256);
+	@Autowired(required=false)
+	private AnnotationPropertyConvertHandle propertyConvertHandle;
 
 	public SkyConfigValueAnnotationBeanProcessor() {
-		autowiredAnnotationTypes.add(Val.class);
 	}
 
 
@@ -136,7 +134,10 @@ public class SkyConfigValueAnnotationBeanProcessor extends InstantiationAwareBea
 
 	@Override
 	public PropertyValues postProcessPropertyValues(PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeanCreationException {
-
+		if(propertyConvertHandle !=null) {
+			setAutowiredAnnotationTypes(propertyConvertHandle.getAnnotations());
+		}
+		
 		InjectionMetadata metadata = findAutowiringMetadata(beanName, bean.getClass(), pvs);
 		try {
 			metadata.inject(bean, beanName, pvs);
@@ -218,8 +219,7 @@ public class SkyConfigValueAnnotationBeanProcessor extends InstantiationAwareBea
 
 			elements.addAll(0, currElements);
 			targetClass = targetClass.getSuperclass();
-		}
-		while (targetClass != null && targetClass != Object.class);
+		}while (targetClass != null && targetClass != Object.class);
 
 		return new InjectionMetadata(clazz, elements);
 	}
@@ -274,10 +274,12 @@ public class SkyConfigValueAnnotationBeanProcessor extends InstantiationAwareBea
 		@Override
 		protected void inject(Object bean, String beanName, PropertyValues pvs) throws Throwable {
 			Field field = (Field) this.member;
-			Object value = typeConverter.convertIfNecessary(bean, field.getType(),field);
-			if (value != null) {
-				ReflectionUtils.makeAccessible(field);
-				field.set(bean, value);
+			if(propertyConvertHandle !=null) {
+				Object value=propertyConvertHandle.getTypeConverter().convertIfNecessary(bean, field.getType(),field);
+				if (value != null) {
+					ReflectionUtils.makeAccessible(field);
+					field.set(bean, value);
+				}
 			}
 		}
 	}

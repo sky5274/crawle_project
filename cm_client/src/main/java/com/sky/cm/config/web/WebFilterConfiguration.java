@@ -1,4 +1,4 @@
-package com.sky.cm.config;
+package com.sky.cm.config.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

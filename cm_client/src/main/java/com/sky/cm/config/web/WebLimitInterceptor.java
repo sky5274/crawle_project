@@ -1,4 +1,4 @@
-package com.sky.cm.config;
+package com.sky.cm.config.web;
 
 
 import java.io.IOException;
