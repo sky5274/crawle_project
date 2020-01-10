@@ -1,15 +1,12 @@
 package com.sky.auth.config.dao;
 
 import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 import com.sky.auth.config.entity.RoleEntity;
 import com.sky.auth.config.entity.UserDetailEntitiy;
 import com.sky.auth.config.entity.UserEntity;
 import com.sky.auth.config.entity.req.UserRequestEntity;
-import com.sky.pub.Page;
 import com.sky.pub.PageRequest;
 
 @Mapper

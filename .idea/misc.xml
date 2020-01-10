@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/rpc/pom.xml" />
+        <option value="$PROJECT_DIR$/MTtransaction/pom.xml" />
+        <option value="$PROJECT_DIR$/flow_service_active/pom.xml" />
+        <option value="$PROJECT_DIR$/flow_service/pom.xml" />
+        <option value="$PROJECT_DIR$/flow_config/pom.xml" />
+        <option value="$PROJECT_DIR$/flow_client_demo/pom.xml" />
+        <option value="$PROJECT_DIR$/demo_client_controller/pom.xml" />
+        <option value="$PROJECT_DIR$/data-batch-handel/pom.xml" />
+        <option value="$PROJECT_DIR$/data-batch-client/pom.xml" />
+        <option value="$PROJECT_DIR$/crawle-service/pom.xml" />
+        <option value="$PROJECT_DIR$/core_pub/pom.xml" />
+        <option value="$PROJECT_DIR$/config_user/pom.xml" />
+        <option value="$PROJECT_DIR$/config_auth/pom.xml" />
+        <option value="$PROJECT_DIR$/config-server/pom.xml" />
+        <option value="$PROJECT_DIR$/cm_client/pom.xml" />
+        <option value="$PROJECT_DIR$/client-parent/pom.xml" />
+        <option value="$PROJECT_DIR$/sevice_manager/pom.xml" />
+        <option value="$PROJECT_DIR$/table-sql/pom.xml" />
+        <option value="$PROJECT_DIR$/task_job/pom.xml" />
+        <option value="$PROJECT_DIR$/task_schedule/pom.xml" />
+        <option value="$PROJECT_DIR$/web_config_main/pom.xml" />
+        <option value="$PROJECT_DIR$/web_container/pom.xml" />
+        <option value="$PROJECT_DIR$/web_crawle/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>

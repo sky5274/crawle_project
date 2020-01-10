@@ -11,10 +11,10 @@ import junit.framework.Assert;
  * @author Sayi
  * @version
  */
+@SuppressWarnings("deprecation")
 public class CLI {
 
 
-	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 		JCommanderExample jct = new JCommanderExample();
 		String[] argv = { "-log", "2", "-groups", "unit" };

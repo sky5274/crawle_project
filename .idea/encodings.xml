@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/MTtransaction/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cm_client/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cm_client/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config-server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config_auth/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config_auth/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config_user/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config_user/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/core_pub/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/data-batch-handel/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/data-batch-handel/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/demo_client_controller/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/demo_client_controller/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/flow_client_demo/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/flow_client_demo/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/flow_config/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/flow_config/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/flow_service_active/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sevice_manager/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/table-sql/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/task_job/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/task_schedule/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web_config_main/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web_container/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web_container/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web_crawle/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web_crawle/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

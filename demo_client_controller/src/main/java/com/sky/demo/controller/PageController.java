@@ -3,7 +3,6 @@ package com.sky.demo.controller;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -15,7 +14,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sky.cm.annotation.Limit;
 import com.sky.cm.annotation.Val;
 import com.sky.cm.core.SkyConfig;
-import com.sky.demo.dao.FlowSqlMapper;
 import com.sky.demo.data.service.DemoService;
 import com.sky.demo.data.service.DemoSqlService;
 import com.sky.pub.Result;
@@ -27,8 +25,6 @@ import com.sky.transaction.annotation.MTransaction;
 public class PageController {
 	@Autowired
 	SkyConfig skyconfig;
-	@Autowired
-	private FlowSqlMapper sqlMapper;
 	@Autowired
 	private DemoService demoService;
 	@Autowired
@@ -50,7 +46,7 @@ public class PageController {
 	@RequestMapping("/talk")
 	public Result<String> talk(String word) {
 		System.err.println(str);
-		return ResultUtil.getOk("you talk:"+word);
+		return ResultUtil.getOk("you talk:"+word+" with:"+str);
 	}
 	@RequestMapping("/property")
 	public Result<String> getproperty(String key) {

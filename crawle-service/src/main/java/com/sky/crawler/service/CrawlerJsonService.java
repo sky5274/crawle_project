@@ -9,7 +9,7 @@ import com.sky.crawler.core.HttpCrawlerComponent;
 
 public abstract class CrawlerJsonService implements HttpCrawlerComponent{
 	private StringBuilder tempLog=new StringBuilder();
-	private Log log=LogFactory.getLog(getClass());
+	protected Log log=LogFactory.getLog(getClass());
 	
 	protected void writer(String str) {
 		tempLog.append(str);

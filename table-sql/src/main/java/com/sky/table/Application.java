@@ -42,6 +42,7 @@ public class Application{
 	}
 
 	public static void addTableData(TableHandle handel, DataSource source) {
+		@SuppressWarnings("rawtypes")
 		List<Map> datas=new LinkedList<>();
 		Map<String, Object> val1=new HashMap<>();
 		val1.put("key", "name");
