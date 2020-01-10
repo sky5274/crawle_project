@@ -145,6 +145,7 @@ public class RpcConfig {
 	* @throws InterruptedException
 	* @throws IOException
 	 */
+	@SuppressWarnings("unused")
 	private  int getRootPathIndex(RpcClientManager manager, String [] ulist) throws KeeperException, InterruptedException, IOException {
 		for(int i=0;i<ulist.length;i++) {
 			if(manager.exists(getPath(ulist,i))==null){

@@ -47,6 +47,7 @@ public class DefAuthenticationSuccessHandler extends SavedRequestAwareAuthentica
 		if(isAjax(request) || isJson(request)) {
 			String header = request.getHeader("Authorization");
 			String clientId =null;
+			@SuppressWarnings("unused")
 			String clientSecret = null;
 			if(header==null) {
 				clientId= request.getParameter("clientId");

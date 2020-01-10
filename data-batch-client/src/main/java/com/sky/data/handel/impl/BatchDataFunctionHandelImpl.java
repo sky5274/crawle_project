@@ -225,6 +225,7 @@ public class BatchDataFunctionHandelImpl implements BatchDataFunctionHandel{
 	 * @param func 
 	 * @date 2019年7月25日 下午2:44:53
 	 */
+	@SuppressWarnings("unused")
 	private JSONObject countFiled(JSONObject d, JSONObject value, List<FunctionBean> func) {
 
 		Set<String> kfeild = d.keySet();

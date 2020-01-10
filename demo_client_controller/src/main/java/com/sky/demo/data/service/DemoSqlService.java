@@ -2,13 +2,10 @@ package com.sky.demo.data.service;
 
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.sky.demo.dao.FlowSqlMapper;
 import com.sky.transaction.annotation.MTransaction;
-import com.sky.transaction.datasource.factory.ConnectTransactionNodeFactory;
 
 @Component
 public class DemoSqlService {

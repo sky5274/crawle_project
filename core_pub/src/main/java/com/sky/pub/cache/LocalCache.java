@@ -252,7 +252,6 @@ public class LocalCache<T> implements Serializable {
 		this.minActiveTimes = minActiveTimes;
 	}
 
-	@SuppressWarnings("hiding")
 	public static class CacheValue<T> implements Serializable {
 		private static final long serialVersionUID = 800800964682488492L;
 		private String key;

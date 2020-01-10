@@ -12,7 +12,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import com.sky.demo.test.MethodInterFace;
-import com.sky.demo.test.RpcConsumerTest;
 
 /**
  * spring  start listener
@@ -47,11 +46,6 @@ public class ApplicationReadListener1  implements ApplicationListener<ContextRef
 					MethodInterFace m = (MethodInterFace)applicationContext.getBean(name);
 					m.invoker("bean test");
 				}
-				
-				RpcConsumerTest interf = applicationContext.getBean(RpcConsumerTest.class);
-				interf.test();
-				MethodInterFace method2 = (MethodInterFace) applicationContext.getBean("rpc_"+MethodInterFace.class.getSimpleName());
-				method2.invoker("bean test2");
 			}
 		}).start();;
 

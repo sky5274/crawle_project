@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="config_auth" />
+        <module name="config-server" />
+        <module name="crawle-service" />
+        <module name="flow_service" />
+        <module name="demo_client_controller" />
+        <module name="task_job" />
+        <module name="flow_client_demo" />
+        <module name="flow_service_active" />
+        <module name="MTtransaction" />
+        <module name="web_container" />
+        <module name="data-batch-handel" />
+        <module name="core_pub" />
+        <module name="config_user" />
+        <module name="cm_client" />
+        <module name="task_schedule" />
+        <module name="flow_config" />
+        <module name="rpc" />
+        <module name="table-sql" />
+        <module name="service_manager" />
+        <module name="web_config_main" />
+        <module name="web_crawle" />
+        <module name="data-batch-client" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="8">
+      <module name="client-parent" target="1.8" />
+      <module name="cm_client" target="1.8" />
+      <module name="config-server" target="1.8" />
+      <module name="config_auth" target="1.8" />
+      <module name="config_user" target="1.8" />
+      <module name="core_pub" target="1.8" />
+      <module name="crawle-service" target="1.8" />
+      <module name="data-batch-client" target="8" />
+      <module name="data-batch-handel" target="1.8" />
+      <module name="demo_client_controller" target="8" />
+      <module name="flow_client_demo" target="1.8" />
+      <module name="flow_config" target="1.8" />
+      <module name="flow_service" target="1.8" />
+      <module name="flow_service_active" target="1.8" />
+      <module name="MTtransaction" target="8" />
+      <module name="project_crawle" target="1.8" />
+      <module name="rpc" target="8" />
+      <module name="service_manager" target="1.8" />
+      <module name="table-sql" target="8" />
+      <module name="task_job" target="1.8" />
+      <module name="task_schedule" target="1.8" />
+      <module name="web_config_main" target="1.8" />
+      <module name="web_container" target="1.8" />
+      <module name="web_crawle" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

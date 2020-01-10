@@ -26,7 +26,6 @@ import okhttp3.Response;
  * @author 王帆
  * @date  2019年1月24日 上午10:14:19
  */
-@SuppressWarnings("restriction")
 public class JsonParseJsCrawler extends BaseJsonCrawlerBreath{
 	private String initJsPath=CrawlerJsContant.initJs;
 	private String jsContents=null;

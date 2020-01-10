@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/MTtransaction/MTtransaction.iml" filepath="$PROJECT_DIR$/MTtransaction/MTtransaction.iml" />
+      <module fileurl="file://$PROJECT_DIR$/client-parent/client-parent.iml" filepath="$PROJECT_DIR$/client-parent/client-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cm_client/cm_client.iml" filepath="$PROJECT_DIR$/cm_client/cm_client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/config-server/config-server.iml" filepath="$PROJECT_DIR$/config-server/config-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/config_auth/config_auth.iml" filepath="$PROJECT_DIR$/config_auth/config_auth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/config_user/config_user.iml" filepath="$PROJECT_DIR$/config_user/config_user.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core_pub/core_pub.iml" filepath="$PROJECT_DIR$/core_pub/core_pub.iml" />
+      <module fileurl="file://$PROJECT_DIR$/crawle-service/crawle-service.iml" filepath="$PROJECT_DIR$/crawle-service/crawle-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data-batch-client/data-batch-client.iml" filepath="$PROJECT_DIR$/data-batch-client/data-batch-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data-batch-handel/data-batch-handel.iml" filepath="$PROJECT_DIR$/data-batch-handel/data-batch-handel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/demo_client_controller/demo_client_controller.iml" filepath="$PROJECT_DIR$/demo_client_controller/demo_client_controller.iml" />
+      <module fileurl="file://$PROJECT_DIR$/flow_client_demo/flow_client_demo.iml" filepath="$PROJECT_DIR$/flow_client_demo/flow_client_demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/flow_config/flow_config.iml" filepath="$PROJECT_DIR$/flow_config/flow_config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/flow_service/flow_service.iml" filepath="$PROJECT_DIR$/flow_service/flow_service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/flow_service_active/flow_service_active.iml" filepath="$PROJECT_DIR$/flow_service_active/flow_service_active.iml" />
+      <module fileurl="file://$PROJECT_DIR$/project_crawle.iml" filepath="$PROJECT_DIR$/project_crawle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rpc/rpc.iml" filepath="$PROJECT_DIR$/rpc/rpc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sevice_manager/service_manager.iml" filepath="$PROJECT_DIR$/sevice_manager/service_manager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/table-sql/table-sql.iml" filepath="$PROJECT_DIR$/table-sql/table-sql.iml" />
+      <module fileurl="file://$PROJECT_DIR$/task_job/task_job.iml" filepath="$PROJECT_DIR$/task_job/task_job.iml" />
+      <module fileurl="file://$PROJECT_DIR$/task_schedule/task_schedule.iml" filepath="$PROJECT_DIR$/task_schedule/task_schedule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web_config_main/web_config_main.iml" filepath="$PROJECT_DIR$/web_config_main/web_config_main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web_container/web_container.iml" filepath="$PROJECT_DIR$/web_container/web_container.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web_crawle/web_crawle.iml" filepath="$PROJECT_DIR$/web_crawle/web_crawle.iml" />
+    </modules>
+  </component>
+</project>
