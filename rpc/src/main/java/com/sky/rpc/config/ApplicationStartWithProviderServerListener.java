@@ -47,7 +47,7 @@ public class ApplicationStartWithProviderServerListener  implements ApplicationL
 		
 		//flow 服务或者flow  事件客户端
 		if(ProviderContant.hasProvider && !ProviderServer.isOpen()) {
-			if(ResouceProperties.isSocketServer()) {
+			if(ProviderServer.isSocketServer()) {
 				server=new ProviderSocketServer();
 			}else {
 				server=new ProviderNettyServer();

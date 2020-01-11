@@ -6,11 +6,12 @@ import java.util.Properties;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
+import com.sky.rpc.provider.ProviderServer;
 import com.sky.rpc.util.RpcSpringBeanUtil;
 
 /**
  * 资源文件读写信息
- *<p>Title: ResouceProperties.java</p>
+ *<p>Title: ResourceProperties.java</p>
  * <p>Description: </p>
  * <p>Copyright: Copyright (c) 2017</p>
  * <p>Company: </p>
@@ -50,9 +51,5 @@ public class ResouceProperties {
 			}
 		}
 		return value;
-	}
-	
-	public static boolean isSocketServer() {
-		return "socket".equals(getProperty("rpc.server.type"));
 	}
 }

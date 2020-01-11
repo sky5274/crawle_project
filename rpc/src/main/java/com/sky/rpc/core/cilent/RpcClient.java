@@ -6,7 +6,7 @@ import com.sky.rpc.base.RpcRequest;
 import com.sky.rpc.core.cilent.netty.RpcNettyClientHandel;
 import com.sky.rpc.core.client.socket.RpcSocketClientHandel;
 import com.sky.rpc.handle.factory.RpcRequetHandleFactory;
-import com.sky.rpc.resource.ResouceProperties;
+import com.sky.rpc.provider.ProviderServer;
 
 public class RpcClient <T>{
 	
@@ -26,7 +26,7 @@ public class RpcClient <T>{
 	}
 	public T request(RpcRequest request) throws Throwable {
 		RpcClientHandel rpcClientHandel;
-		if(ResouceProperties.isSocketServer()) {
+		if(ProviderServer.isSocketServer()) {
 			rpcClientHandel=new RpcSocketClientHandel();
 		}else {
 			rpcClientHandel=new RpcNettyClientHandel();
