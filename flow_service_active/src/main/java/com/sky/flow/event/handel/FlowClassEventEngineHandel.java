@@ -171,7 +171,7 @@ public class FlowClassEventEngineHandel implements FlowEventEngineHandel{
 						String[] names = node.getMethodParamNameMap().get(methodName);
 						RpcRequest req=new RpcRequest(clazzName,methodName,names,paramsTypes,getParam(Arrays.asList(names)).toArray());
 						try {
-							new RpcClient(new InetSocketAddress(node.getIp(),node.getPort())).request(req);
+							new RpcClient(new InetSocketAddress(node.getIp(),node.getPort())).request(req,Object.class);
 							return true;
 						} catch (Throwable e) {
 							log.error(e.getMessage(), e);

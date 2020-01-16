@@ -7,8 +7,8 @@ import com.sky.rpc.annotation.RpcProvider;
 public class RpcProductTest implements MethodInterFace{
 	
 	@Override
-	public void invoker(Object arg) {
+	public Object invoker(Object arg) {
 		System.err.println("provider test invoker method get args:"+arg);
-		
+		return arg+" invoke method";
 	}
 }
