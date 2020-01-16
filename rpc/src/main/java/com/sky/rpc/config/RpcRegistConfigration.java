@@ -6,6 +6,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
+
+import com.sky.rpc.provider.ProviderServer;
+import com.sky.rpc.provider.http.RpcHttpMetodInvokeHandle;
 import com.sky.rpc.regist.RpcConsumerRegistNodeHandel;
 import com.sky.rpc.regist.RpcProviderRegistNodeHande;
 import com.sky.rpc.util.RpcSpringBeanUtil;
@@ -28,6 +31,12 @@ public class RpcRegistConfigration implements ImportBeanDefinitionRegistrar{
 		 
 		 registBean(RpcConsumerRegistNodeHandel.class,registry);
 		 registBean(RpcProviderRegistNodeHande.class,registry);
+		 
+		 if(ProviderServer.rpcTypeLimit.indexOf(ProviderServer.getType())==2) {
+			 //注册 http-rpc endpiont bean
+			 registBean(RpcHttpMetodInvokeHandle.class, registry);
+		 }
+		 
 		 //rpc provider\consumer  regist aciotn
 		 RpcReadyRegistInfoConfigration config=new RpcReadyRegistInfoConfigration();
 		 config.setRegistry(registry);

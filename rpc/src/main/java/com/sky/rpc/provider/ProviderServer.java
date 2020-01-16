@@ -22,7 +22,7 @@ public abstract class ProviderServer extends Thread {
 	protected static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	protected Log log=LogFactory.getLog(getClass());
 	protected static Integer port;
-	protected static List<String> rpcTypeLimit=Arrays.asList("socketio","bootsocket","http");
+	public static List<String> rpcTypeLimit=Arrays.asList("socket","bootsocket","http");
 	protected static String rpcType;
 	/**provider server is open flag*/
 	protected volatile static boolean isOpen=false;
@@ -53,7 +53,7 @@ public abstract class ProviderServer extends Thread {
 	 * @date 2020年1月10日 下午4:32:55
 	 */
 	public static boolean isSocketServer() {
-		return "socketio".equals(ProviderServer.getType());
+		return rpcTypeLimit.get(0).equals(ProviderServer.getType());
 	}
 	
 	
@@ -86,6 +86,9 @@ public abstract class ProviderServer extends Thread {
 	}
 	public synchronized static void setOpen(boolean isOpen) {
 		ProviderServer.isOpen = isOpen;
+	}
+	public  static boolean canOpen() {
+		return rpcTypeLimit.indexOf(rpcType)<2;
 	}
 	
 	public abstract void close();

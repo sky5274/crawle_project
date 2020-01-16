@@ -9,7 +9,7 @@ public class Result <T> extends RpcBaseBean{
 	private boolean hasExp=false;
 	private T data;
 	private Throwable exp;
-	
+	public Result() {};
 	public Result(String id,T res){
 		super(id);
 		this.data=res;

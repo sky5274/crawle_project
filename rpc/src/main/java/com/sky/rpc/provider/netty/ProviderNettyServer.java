@@ -3,6 +3,7 @@ package com.sky.rpc.provider.netty;
 
 
 import com.sky.rpc.provider.ProviderServer;
+import com.sky.rpc.provider.socket.ProviderSocketServer;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -29,7 +30,8 @@ public class ProviderNettyServer extends ProviderServer{
 	ServerBootstrap bootstrap = new ServerBootstrap();
 
 	public void run() {
-		if(isOpen()) {
+		if(isOpen() && canOpen()) {
+			ProviderSocketServer.setOpen(true);
 			return;
 		}
 		setOpen(true);

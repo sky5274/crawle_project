@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.Properties;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
-
-import com.sky.rpc.provider.ProviderServer;
 import com.sky.rpc.util.RpcSpringBeanUtil;
 
 /**
