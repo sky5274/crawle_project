@@ -9,6 +9,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.stereotype.Component;
+
 import com.sky.rpc.core.cilent.netty.RpcNettyClientHandel;
 import io.netty.channel.Channel;
 
@@ -17,7 +19,7 @@ import io.netty.channel.Channel;
  * @author 王帆
  * @date  2019年6月7日 下午11:47:09
  */
-
+@Component
 public class ApplicationNettyClosedListener  implements ApplicationListener<ContextClosedEvent>,ApplicationContextAware{
 	ApplicationContext applicationContext;
 	Log log=LogFactory.getLog(getClass());

@@ -1,11 +1,12 @@
 package com.sky.rpc.core.cilent.http;
 
-import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
+import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sky.rpc.base.RpcRequest;
-import com.sky.rpc.core.cilent.RpcClientHandel;
+import com.sky.rpc.core.RpcTypeContant;
+import com.sky.rpc.core.cilent.RpcClientHandle;
 import com.sky.rpc.util.RpcHttpUtil;
 
 /**
@@ -14,17 +15,12 @@ import com.sky.rpc.util.RpcHttpUtil;
  *
  * @param <T>
  */
-public class RpcHttpClientInvokeHandle<T> implements RpcClientHandel{
+@Component
+public class RpcHttpClientInvokeHandle implements RpcClientHandle{
 	
-	private Type returnClass;
-
-	public RpcHttpClientInvokeHandle(Type type) {
-		this.returnClass=type;
-	}
-
-	@SuppressWarnings({ "unchecked"})
+	@SuppressWarnings("unchecked")
 	@Override
-	public T invoke(RpcRequest request, InetSocketAddress addr, int timeout) throws Throwable {
+	public <T> T invoke(RpcRequest request, InetSocketAddress addr, int timeout) throws Throwable {
 		String result = RpcHttpUtil.doPost(String.format("http://%s:%d/resttemplate/invoke", addr.getHostString(),addr.getPort()), request);
 		if(result ==null) {
 			return null;
@@ -33,6 +29,15 @@ public class RpcHttpClientInvokeHandle<T> implements RpcClientHandel{
 		if(obj.get("exception") !=null) {
 			 throw JSON.parseObject(JSON.toJSONString(obj.get("exception")),Exception.class);
 		}
-		return (T) JSON.parseObject(JSON.toJSONString(obj.get("data")),returnClass);
+		if(request.getReturnType() !=null) {
+			return (T) JSON.parseObject(JSON.toJSONString(obj.get("data")),request.getReturnType());
+		}else {
+			return (T) obj.get("data");
+		}
+	}
+
+	@Override
+	public String getRpcType() {
+		return RpcTypeContant.rpcTypeLimit.get(2);
 	}
 }

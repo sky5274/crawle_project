@@ -15,7 +15,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
-import com.sky.rpc.provider.socket.ProviderSocketServer;
+import com.sky.rpc.core.RpcTypeContant;
 import com.sky.rpc.resource.ResouceProperties;
 import com.sky.rpc.resource.RpcMethodUtil;
 
@@ -204,14 +204,14 @@ public class RpcConfig {
 			this.port=port;
 			this.setIntfaceName(intfaceName);
 			this.setClassName(className);
-			this.setRpcType(ProviderSocketServer.getType());
+			this.setRpcType(RpcTypeContant.getType());
 		}
 		
 		public nodeData(String ip,int port,Class<? extends Object> clazz) throws ClassNotFoundException {
 			this.ip=ip;
 			this.port=port;
 			this.setClassName(clazz.getName());
-			this.setRpcType(ProviderSocketServer.getType());
+			this.setRpcType(RpcTypeContant.getType());
 			Type[] intfaces = clazz.getGenericInterfaces();
 			if(intfaces!=null && intfaces.length>0) {
 				this.setIntfaceName(intfaces[0].getTypeName());

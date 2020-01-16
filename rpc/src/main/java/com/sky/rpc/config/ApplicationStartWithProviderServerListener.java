@@ -9,9 +9,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
+
 import com.sky.rpc.util.RpcSpringBeanUtil;
 import com.sky.rpc.zk.RpcConfig;
 import com.sky.rpc.core.RpcElement;
+import com.sky.rpc.core.RpcTypeContant;
 import com.sky.rpc.provider.ProviderContant;
 import com.sky.rpc.provider.ProviderServer;
 import com.sky.rpc.provider.netty.ProviderNettyServer;
@@ -23,6 +26,7 @@ import com.sky.rpc.regist.RpcRegistNodHandel;
  * @author 王帆
  * @date  2019年6月7日 下午11:47:09
  */
+@Component
 @SuppressWarnings("rawtypes")
 public class ApplicationStartWithProviderServerListener  implements ApplicationListener<ContextRefreshedEvent>,ApplicationContextAware{
 	ApplicationContext applicationContext;
@@ -46,7 +50,7 @@ public class ApplicationStartWithProviderServerListener  implements ApplicationL
 		
 		//flow 服务或者flow  事件客户端
 		if(ProviderContant.hasProvider && !ProviderServer.isOpen() && ProviderSocketServer.canOpen()) {
-			if(ProviderServer.isSocketServer()) {
+			if(RpcTypeContant.rpcTypeLimit.indexOf(RpcTypeContant.getType())==0) {
 				server=new ProviderSocketServer();
 			}else {
 				server=new ProviderNettyServer();

@@ -15,8 +15,8 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import com.sky.flow.rpc.proxy.FlowServceProxyFactory;
 import com.sky.rpc.base.RpcIp;
+import com.sky.rpc.core.RpcTypeContant;
 import com.sky.rpc.provider.ProviderContant;
-import com.sky.rpc.provider.ProviderServer;
 
 /**
  * service application scanner regist
@@ -34,7 +34,7 @@ public class ApplicationServiceRegistScanner {
 	}
 
 	public void regist(Resource[] resources) throws IOException, ClassNotFoundException {
-		if(ProviderServer.rpcTypeLimit.indexOf(ProviderServer.getType())!=2) {
+		if(RpcTypeContant.rpcTypeLimit.indexOf(RpcTypeContant.getType())!=2) {
 			@SuppressWarnings("rawtypes")
 			FlowServceProxyFactory proxy=new FlowServceProxyFactory();
 			RpcIp server = proxy.getDefServer();

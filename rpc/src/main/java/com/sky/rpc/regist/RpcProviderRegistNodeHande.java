@@ -1,11 +1,13 @@
 package com.sky.rpc.regist;
 
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.sky.rpc.annotation.RpcProvider;
 import com.sky.rpc.core.RpcElement;
 import com.sky.rpc.resource.ResouceProperties;
 
+@Component
 public class RpcProviderRegistNodeHande implements RpcRegistNodHandel<RpcProvider>{
 
 	@Override

@@ -1,6 +1,7 @@
 package com.sky.rpc.base;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,18 +27,23 @@ public class RpcRequest extends RpcBaseBean{
 	private String methodName;
 	/**方法参数*/
 	private Object[] args;
+	private Type returnType;
 	/**方法参数类型*/
 	private Class<?>[] parameterTypes;
 	private String[] parameterNames;
 	private Map<String, String> headers=new HashMap<String, String>();
 	public RpcRequest() {}
 	public RpcRequest(String className, Method method, Object[] args2)  {
-		this(className,method.getName(),RpcMethodUtil.getMethodParameterNames(method),method.getParameterTypes(),args2);
+		this(className,method.getName(),method.getGenericReturnType(),RpcMethodUtil.getMethodParameterNames(method),method.getParameterTypes(),args2);
 	}
 	public RpcRequest(String className, String methodName, String[] parameterNames,Class<?>[] parameterTypes, Object[] args)  {
+		this(className,methodName,null,parameterNames,parameterTypes,args);
+	}
+	public RpcRequest(String className, String methodName,Type returnType, String[] parameterNames,Class<?>[] parameterTypes, Object[] args)  {
 		super(className+"_"+System.currentTimeMillis());
 		this.className=className;
 		this.methodName=methodName;
+		this.setReturnType(returnType);
 		this.parameterNames=parameterNames;
 		this.setParameterTypes(parameterTypes);
 		this.args=args;
@@ -80,5 +86,11 @@ public class RpcRequest extends RpcBaseBean{
 	}
 	public void put(String key,String value) {
 		headers.put(key, value);
+	}
+	public Type getReturnType() {
+		return returnType;
+	}
+	public void setReturnType(Type returnType) {
+		this.returnType = returnType;
 	}
 }

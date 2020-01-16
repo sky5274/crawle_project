@@ -17,6 +17,6 @@ import com.sky.rpc.config.RpcRegistConfigration;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import(RpcRegistConfigration.class)
-public @interface EnableRpcRegistAble {
+public @interface EnableRpcRegistable {
 	String[] value() default "";
 }

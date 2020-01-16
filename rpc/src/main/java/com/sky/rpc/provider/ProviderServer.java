@@ -1,12 +1,11 @@
 package com.sky.rpc.provider;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.StringUtils;
+import com.sky.rpc.core.RpcTypeContant;
 import com.sky.rpc.resource.ResouceProperties;
 
 /**
@@ -22,12 +21,10 @@ public abstract class ProviderServer extends Thread {
 	protected static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	protected Log log=LogFactory.getLog(getClass());
 	protected static Integer port;
-	public static List<String> rpcTypeLimit=Arrays.asList("socket","bootsocket","http");
-	protected static String rpcType;
 	/**provider server is open flag*/
 	protected volatile static boolean isOpen=false;
 	public static String portKey="rpc.server.port";
-	public static String rpcTypeKey="rpc.server.type";
+	
 	
 	public ProviderServer() {
 		getPort();
@@ -36,25 +33,6 @@ public abstract class ProviderServer extends Thread {
 		setPort(port+"");
 	};
 	
-	public static String getType() {
-		if(rpcType ==null) {
-			rpcType=ResouceProperties.getProperty(rpcTypeKey);
-			if(!rpcTypeLimit.contains(rpcType)) {
-				rpcType=rpcTypeLimit.get(0);
-			}
-		}
-		return rpcType;
-	}
-	
-	/**
-	 * 是否是 java-socket 服务端
-	 * @return
-	 * @author 王帆
-	 * @date 2020年1月10日 下午4:32:55
-	 */
-	public static boolean isSocketServer() {
-		return rpcTypeLimit.get(0).equals(ProviderServer.getType());
-	}
 	
 	
 	public static int getPort() {
@@ -88,7 +66,7 @@ public abstract class ProviderServer extends Thread {
 		ProviderServer.isOpen = isOpen;
 	}
 	public  static boolean canOpen() {
-		return rpcTypeLimit.indexOf(rpcType)<2;
+		return RpcTypeContant.rpcTypeLimit.indexOf(RpcTypeContant.getType())<2;
 	}
 	
 	public abstract void close();
