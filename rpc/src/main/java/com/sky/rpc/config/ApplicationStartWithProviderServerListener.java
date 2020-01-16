@@ -9,7 +9,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import com.sky.rpc.resource.ResouceProperties;
 import com.sky.rpc.util.RpcSpringBeanUtil;
 import com.sky.rpc.zk.RpcConfig;
 import com.sky.rpc.core.RpcElement;
@@ -46,7 +45,7 @@ public class ApplicationStartWithProviderServerListener  implements ApplicationL
 		}
 		
 		//flow 服务或者flow  事件客户端
-		if(ProviderContant.hasProvider && !ProviderServer.isOpen()) {
+		if(ProviderContant.hasProvider && !ProviderServer.isOpen() && ProviderSocketServer.canOpen()) {
 			if(ProviderServer.isSocketServer()) {
 				server=new ProviderSocketServer();
 			}else {

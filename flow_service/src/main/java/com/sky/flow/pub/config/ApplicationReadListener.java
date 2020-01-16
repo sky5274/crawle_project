@@ -61,7 +61,7 @@ public class ApplicationReadListener  implements ApplicationListener<ContextRefr
 		}
 		
 		//flow 服务或者flow  事件客户端
-		if((flag || !StringUtils.isEmpty(version)) && !ProviderServer.isOpen()) {
+		if((flag || !StringUtils.isEmpty(version)) && !ProviderServer.isOpen() && ProviderSocketServer.canOpen()) {
 			if(ProviderServer.isSocketServer()) {
 				server=new ProviderSocketServer();
 			}else {

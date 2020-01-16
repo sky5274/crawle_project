@@ -28,7 +28,6 @@ public class ApplicationNettyClosedListener  implements ApplicationListener<Cont
 
 	@Override
 	public void onApplicationEvent(ContextClosedEvent event) {
-		System.err.println("clear netty channel");
 		Map<Long, Channel> map = RpcNettyClientHandel.getChannelMap();
 		for(Channel channel:map.values()) {
 			channel.close();
