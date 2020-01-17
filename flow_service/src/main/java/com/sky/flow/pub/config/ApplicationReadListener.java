@@ -48,7 +48,7 @@ public class ApplicationReadListener  implements ApplicationListener<ContextRefr
 					try {
 						RpcConfig.regist("/"+version, b, port);
 					} catch (Exception e) {
-						//throw new Error("flow event handel regist failed! event class:"+b.getClass().getName());
+						throw new Error("flow event handle regist failed! event class:"+b.getClass().getName());
 					}
 				}
 			}
