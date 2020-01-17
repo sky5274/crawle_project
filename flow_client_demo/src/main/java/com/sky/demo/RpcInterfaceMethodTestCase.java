@@ -19,7 +19,7 @@ public class RpcInterfaceMethodTestCase {
 	public static void main(String[] args) {
 		RpcClientHandle rpcClientHandel=new RpcHttpClientInvokeHandle();
 		Class<MethodInterFace> clazz = MethodInterFace.class;
-		RpcRequest request = new RpcRequest(clazz.getName(),clazz.getMethods()[0],new Object[] {Arrays.asList(232,"dews")});
+		RpcRequest request = new RpcRequest(clazz.getName(),clazz.getMethods()[0],new Object[] {232,"dews"});
 		InetSocketAddress addr=new InetSocketAddress("127.0.0.1", 8970);
 		List res = null;
 		try {

@@ -30,7 +30,13 @@ public class RpcHttpClientInvokeHandle implements RpcClientHandle{
 		}
 		JSONObject obj = JSON.parseObject(result);
 		if(obj.get("exception") !=null) {
-			 throw JSON.parseObject(JSON.toJSONString(obj.get("exception")),Exception.class);
+			Class<? extends Throwable> clazz=null;
+			try {
+				clazz= (Class<? extends Throwable>) Class.forName(obj.getString("throwClazz"));
+			} catch (Exception e) {
+				clazz=Exception.class;
+			}
+			throw JSON.parseObject(JSON.toJSONString(obj.get("exception")),clazz);
 		}
 		if(returnType !=null) {
 			return (T) JSON.parseObject(JSON.toJSONString(obj.get("data")),returnType);

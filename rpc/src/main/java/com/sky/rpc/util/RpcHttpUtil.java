@@ -27,7 +27,7 @@ public class RpcHttpUtil {
 			connection.setUseCaches(false);
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-			System.err.println(JSON.toJSONString(param));
+
 			out = new DataOutputStream(connection.getOutputStream());
 			out.write(JSON.toJSONString(param).getBytes("UTF-8"));
 			out.flush();
