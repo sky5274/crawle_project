@@ -9,6 +9,6 @@ public class RpcProductTest implements MethodInterFace{
 	@Override
 	public Object invoker(Object arg) {
 		System.err.println("provider test invoker method get args:"+arg);
-		return arg+" invoke method";
+		return arg;
 	}
 }

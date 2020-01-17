@@ -22,11 +22,12 @@ public class RpcHttpUtil {
 			connection.setRequestMethod("POST");
 			// 设置通用的请求属性
 			connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+			connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
 			connection.setRequestProperty("Connection", "Keep-Alive");
 			connection.setUseCaches(false);
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-
+			System.err.println(JSON.toJSONString(param));
 			out = new DataOutputStream(connection.getOutputStream());
 			out.write(JSON.toJSONString(param).getBytes("UTF-8"));
 			out.flush();

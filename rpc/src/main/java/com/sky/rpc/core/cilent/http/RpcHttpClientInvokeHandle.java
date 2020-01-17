@@ -1,5 +1,6 @@
 package com.sky.rpc.core.cilent.http;
 
+import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
@@ -21,6 +22,8 @@ public class RpcHttpClientInvokeHandle implements RpcClientHandle{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T invoke(RpcRequest request, InetSocketAddress addr, int timeout) throws Throwable {
+		Type returnType = request.getReturnType();
+		request.setReturnType(null);
 		String result = RpcHttpUtil.doPost(String.format("http://%s:%d/resttemplate/invoke", addr.getHostString(),addr.getPort()), request);
 		if(result ==null) {
 			return null;
@@ -29,8 +32,8 @@ public class RpcHttpClientInvokeHandle implements RpcClientHandle{
 		if(obj.get("exception") !=null) {
 			 throw JSON.parseObject(JSON.toJSONString(obj.get("exception")),Exception.class);
 		}
-		if(request.getReturnType() !=null) {
-			return (T) JSON.parseObject(JSON.toJSONString(obj.get("data")),request.getReturnType());
+		if(returnType !=null) {
+			return (T) JSON.parseObject(JSON.toJSONString(obj.get("data")),returnType);
 		}else {
 			return (T) obj.get("data");
 		}
