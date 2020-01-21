@@ -15,6 +15,7 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import com.sky.flow.rpc.proxy.FlowServceProxyFactory;
 import com.sky.rpc.base.RpcIp;
+import com.sky.rpc.core.RpcTypeContant;
 import com.sky.rpc.provider.ProviderContant;
 
 /**
@@ -26,40 +27,41 @@ public class ApplicationServiceRegistScanner {
 	private Log log=LogFactory.getLog(getClass());
 	ResourceLoader resourceLoader;
 	BeanDefinitionRegistry register;
-    
-    public ApplicationServiceRegistScanner(ResourceLoader resourceLoader2, BeanDefinitionRegistry registry) {
+
+	public ApplicationServiceRegistScanner(ResourceLoader resourceLoader2, BeanDefinitionRegistry registry) {
 		this.register=registry;
 		this.resourceLoader=resourceLoader2;
 	}
 
 	public void regist(Resource[] resources) throws IOException, ClassNotFoundException {
-		
-		@SuppressWarnings("rawtypes")
-		FlowServceProxyFactory proxy=new FlowServceProxyFactory();
-        RpcIp server = proxy.getDefServer();
-    	log.info("regist flow service >> url: "+server.getHost()+":"+server.getPort());
-         MetadataReaderFactory metaReader = new CachingMetadataReaderFactory(resourceLoader);
-         if(resources.length>0) {
-        	 ProviderContant.setHasProvider(true);
-         }
-         for (Resource r : resources) {
-             MetadataReader reader = metaReader.getMetadataReader(r);
-             registBean(Class.forName(reader.getClassMetadata().getClassName()),r);
-         }
-    }
-    
-    private void registBean(Class<?> intertface,Resource resource) {
-    	BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(intertface);
+		if(RpcTypeContant.rpcTypeLimit.indexOf(RpcTypeContant.getType())!=2) {
+			@SuppressWarnings("rawtypes")
+			FlowServceProxyFactory proxy=new FlowServceProxyFactory();
+			RpcIp server = proxy.getDefServer();
+			log.info("regist flow consumer service >> url: "+server.getHost()+":"+server.getPort());
+		}
+		MetadataReaderFactory metaReader = new CachingMetadataReaderFactory(resourceLoader);
+		if(resources.length>0) {
+			ProviderContant.setHasProvider(true);
+		}
+		for (Resource r : resources) {
+			MetadataReader reader = metaReader.getMetadataReader(r);
+			registBean(Class.forName(reader.getClassMetadata().getClassName()),r);
+		}
+	}
+
+	private void registBean(Class<?> intertface,Resource resource) {
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(intertface);
 		GenericBeanDefinition definition = (GenericBeanDefinition) builder.getRawBeanDefinition();
 		definition.getPropertyValues().add("interfaceClass", intertface);
-		
+
 		definition.setBeanClassName(FlowServceProxyFactory.class.getName());
 		definition.setResource(resource);
 		definition.setAutowireCandidate(true);
 		definition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_TYPE);
 		BeanDefinitionHolder definitionHolder=new BeanDefinitionHolder(definition,intertface.getSimpleName(),new String[] {intertface.getName(),"flow_"+intertface.getName()}) ;
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, register);
-    }
+	}
 
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader=resourceLoader;
@@ -72,5 +74,5 @@ public class ApplicationServiceRegistScanner {
 	public void setRegister(BeanDefinitionRegistry register) {
 		this.register = register;
 	}
-	
+
 }

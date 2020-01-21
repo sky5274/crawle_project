@@ -9,7 +9,8 @@ public class Result <T> extends RpcBaseBean{
 	private boolean hasExp=false;
 	private T data;
 	private Throwable exp;
-	
+	private Class<?> throwClazz;
+	public Result() {};
 	public Result(String id,T res){
 		super(id);
 		this.data=res;
@@ -17,8 +18,10 @@ public class Result <T> extends RpcBaseBean{
 	
 	public Result(String id,Throwable e) {
 		super(id);
-		hasExp=true;
+		this.hasExp=true;
 		this.exp=e;
+		this.setThrowClazz(e.getClass());
+		
 	}
 	
 	public boolean hasException() {
@@ -30,5 +33,11 @@ public class Result <T> extends RpcBaseBean{
 	}
 	public Throwable getException() {
 		return exp;
+	}
+	public Class<?> getThrowClazz() {
+		return throwClazz;
+	}
+	public void setThrowClazz(Class<?> throwClazz) {
+		this.throwClazz = throwClazz;
 	}
 }

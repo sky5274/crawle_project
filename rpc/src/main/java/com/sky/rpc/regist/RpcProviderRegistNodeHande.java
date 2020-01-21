@@ -1,11 +1,13 @@
 package com.sky.rpc.regist;
 
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.sky.rpc.annotation.RpcProvider;
 import com.sky.rpc.core.RpcElement;
 import com.sky.rpc.resource.ResouceProperties;
 
+@Component
 public class RpcProviderRegistNodeHande implements RpcRegistNodHandel<RpcProvider>{
 
 	@Override
@@ -37,6 +39,14 @@ public class RpcProviderRegistNodeHande implements RpcRegistNodHandel<RpcProvide
 	
 	private static String group;
 	private static String version;
+	
+	public static RpcElement getRpcElement(Class<?> clazz) {
+		RpcElement ele=new RpcElement();
+		ele.setGroup(getRpcGroup());
+		ele.setVersion(getRpcVersion());
+		ele.setInterfaceName(clazz.getName());
+		return ele;
+	}
 	
 	public static String getRpcGroup() {
 		if(group==null) {

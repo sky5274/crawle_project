@@ -16,6 +16,7 @@ import com.sky.rpc.resource.ResouceProperties;
 import com.sky.rpc.zk.RpcConfig;
 import com.sky.flow.annotation.RpcEvent;
 import com.sky.flow.service.TaskFlowActionService;
+import com.sky.rpc.core.RpcTypeContant;
 import com.sky.rpc.provider.ProviderServer;
 import com.sky.rpc.provider.netty.ProviderNettyServer;
 import com.sky.rpc.provider.socket.ProviderSocketServer;
@@ -47,7 +48,7 @@ public class ApplicationReadListener  implements ApplicationListener<ContextRefr
 					try {
 						RpcConfig.regist("/"+version, b, port);
 					} catch (Exception e) {
-						//throw new Error("flow event handel regist failed! event class:"+b.getClass().getName());
+						throw new Error("flow event handle regist failed! event class:"+b.getClass().getName());
 					}
 				}
 			}
@@ -61,8 +62,8 @@ public class ApplicationReadListener  implements ApplicationListener<ContextRefr
 		}
 		
 		//flow 服务或者flow  事件客户端
-		if((flag || !StringUtils.isEmpty(version)) && !ProviderServer.isOpen()) {
-			if(ResouceProperties.isSocketServer()) {
+		if((flag || !StringUtils.isEmpty(version)) && !ProviderServer.isOpen() && ProviderSocketServer.canOpen()) {
+			if(RpcTypeContant.rpcTypeLimit.indexOf(RpcTypeContant.getType())==0) {
 				server=new ProviderSocketServer();
 			}else {
 				server=new ProviderNettyServer();

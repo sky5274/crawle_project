@@ -79,8 +79,7 @@ public class ProviderMethodInvoker {
 		} catch (NoSuchMethodException |SecurityException e) {
 			throw new RpcException("["+addr+"] server can not find method: "+request.getMethodName()+" in class:"+request.getClassName());
 		} catch (Throwable e) {
-			Throwable ce=e.getCause();
-			throw new Throwable("["+addr+"] "+ce.getMessage(), ce);
+			throw new Throwable("["+addr+"] "+e.getMessage(), e);
 		}
 	}
 	

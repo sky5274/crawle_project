@@ -6,8 +6,10 @@ import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 
+@Component
 public class RpcSpringBeanUtil implements ApplicationContextAware{
 
 	private static ApplicationContext applicationContext = null;
