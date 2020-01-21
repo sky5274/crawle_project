@@ -69,16 +69,18 @@ public class SkyConfig {
 			StandardServletEnvironment senv = (StandardServletEnvironment)env;
 			senv.getPropertySources().iterator()
 				.forEachRemaining(s-> {
+					//将资源属性按照key-value的形式添加到property-map 中
 					Object source = s.getSource();
 					if(source instanceof Map) {
+						//属于map类型
 						propertyMap.putAll((Map<String, Object>) source);
 					}else if(source instanceof Properties) {
+						//属性property 类型
 						Properties p=(Properties) source;
 						p.keySet().stream().forEach(k-> propertyMap.put(k.toString(), p.get(k)));
 					}
 				});
 		}
-		System.err.println(propertyMap);
 		body.put("environment", propertyMap);
 		SkyConfigRequest regist = SkyConfigRequest.regist;
 		log.debug("regist result: "+http(regist.getUrl(), regist.getMethod(), body));
