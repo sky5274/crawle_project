@@ -1,84 +1,4 @@
-eureka:
-  client:
-    enabled: true
-    serviceUrl:
-      defaultZone: http://localhost:8910/eureka
-
 spring:
-  cloud:
-    config:
-      profile: dev
-      discovery:
-       enabled: true
-       serviceId: config-server
-      label: master
-  application:
-    name: config_auth
-<<<<<<< HEAD
-  profiles:
-    active: dev
-  thymeleaf:
-    cache: false 
-    mode: HTML5  
-    encoding: UTF-8
-    content-type: text/html; charset=utf-8
-    prefix: classpath:/templates/
-    suffix: .html
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    database: 0
-    timeout: 0
-    pool:
-      max-active: 8
-      max-wait: -1
-      max-idle: 8
-      min-idle: 0
-  datasource:
-    name: test
-    url: jdbc:mysql://localhost:3306/crawle?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true
-    username: temp
-    password: 123456
-    driver-class-name: com.mysql.jdbc.Driver
-    max-idle: 10 #指定连接池最大的空闲连接数量.
-    max-wait: 10000 #指定连接池等待连接返回的最大等待时间，毫秒单位.
-    min-idle: 5 #指定必须保持连接的最小值(For DBCP and Tomcat connection pools)
-    initial-size: 5 #指定启动连接池时，初始建立的连接数量
-    validation-query: SELECT 1 #指定获取连接时连接校验的sql查询语句.
-    test-on-borrow: false #获取连接时候验证，会影响性能
-    test-while-idle: true #当连接空闲时，是否执行连接测试.
-    time-between-eviction-runs-millis: 18800 
-
-server:
-  port: 8980
-  
-own:
-   config:
-      client:
-         id: test
-         secret: temp123456   
-      app:
-         secret: app_temp_demo1232
-  
-security:
-  basic:
-    enabled: false
-  user:
-    name: crawle_dev
-    password: dev_1090
-management:
-  security:
-    enabled: false
-    
-mybatis:
-  mapper-locations: classpath:com/sky/auth/config/mapper/*.xml
-Monitor:
-   type: dev
-
-logging:
-  level:   
-     com.sky: debug
-=======
   session:
     store-type: redis
   profiles:
@@ -134,9 +54,7 @@ security:
   user:
     name: test
     password: temp123456
-  oauth2:
-     resource:
-        filter-order:3
+ 
 management:
   security:
     enabled: false
@@ -149,4 +67,4 @@ Monitor:
 logging:
   level:   
      com.sky: debug
->>>>>>> refs/remotes/origin/dev
+

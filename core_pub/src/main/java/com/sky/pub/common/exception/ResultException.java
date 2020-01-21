@@ -28,9 +28,6 @@ public class ResultException extends Exception{
 	public ResultException(Object data,ResultCode code) {
 		this(code.getCode(),code.getMsg(),code==ResultCode.UNKONW_EXCEPTION? LogLevel.INFO:LogLevel.ERROR,data);
 	}
-	public ResultException(ResultCode code,Object data) {
-		this(code.getCode(),code.getMsg(),LogLevel.INFO,data);
-	}
 	public ResultException(ResultCode code,LogLevel level) {
 		this(code.getCode(),code.getMsg(),level);
 	}

@@ -1,47 +1,42 @@
 package com.sky.rpc.config;
 
 
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
-import com.sky.rpc.regist.RpcConsumerRegistNodeHandel;
-import com.sky.rpc.regist.RpcProviderRegistNodeHande;
-import com.sky.rpc.util.RpcSpringBeanUtil;
+import com.sky.rpc.annotation.EnableRpcRegistable;
 
 /**
- * rpc 配置服务
+ * rpc 配置服务注册
  * @author 王帆
  * @date  2019年7月9日 下午4:10:25
  */
 public class RpcRegistConfigration implements ImportBeanDefinitionRegistrar{
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		 // 注册rpc netty  closed listener
-		 registBean(ApplicationNettyClosedListener.class,registry);
-		 //注册  rpc provider server start listener
-		 registBean(ApplicationStartWithProviderServerListener.class,registry);
-		 
-		 //regist rpc node handel
-		 registBean(RpcSpringBeanUtil.class,registry);
-		 
-		 registBean(RpcConsumerRegistNodeHandel.class,registry);
-		 registBean(RpcProviderRegistNodeHande.class,registry);
-		 //rpc provider\consumer  regist aciotn
-		 RpcReadyRegistInfoConfigration config=new RpcReadyRegistInfoConfigration();
-		 config.setRegistry(registry);
-		 config.init();
-	}
-	
-	private GenericBeanDefinition registBean( Class<?> intertface, BeanDefinitionRegistry registry) {
-		return registBean(intertface.getSimpleName(),intertface,registry);
-	}
-	private GenericBeanDefinition registBean(String id, Class<?> intertface, BeanDefinitionRegistry registry) {
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(intertface);
-		GenericBeanDefinition definition = (GenericBeanDefinition) builder.getRawBeanDefinition();
-		definition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_TYPE);
-		registry.registerBeanDefinition(id,definition);
-		return definition;
+		
+		//regist the rpc class config scanner and do scan the component
+		ApplicationRpcScannerRegister registScanner=new ApplicationRpcScannerRegister(registry);
+		Map<String, Object> attrs = importingClassMetadata.getAnnotationAttributes(EnableRpcRegistable.class.getName());
+		Object vals=attrs.get("value");
+		Set<String> packegs=new HashSet<String>();
+		packegs.add("com.sky.rpc");
+		if( vals !=null ) {
+			String [] li=(String[]) vals;
+			if(li.length>0) {
+				packegs.addAll(Arrays.asList(li));
+			}
+		}
+		registScanner.scan(packegs.toArray(new String[packegs.size()]));
+		
+		//rpc provider\consumer  regist aciotn
+		RpcReadyRegistInfoConfigration config=new RpcReadyRegistInfoConfigration();
+		config.setRegistry(registry);
+		config.init();
 	}
 }

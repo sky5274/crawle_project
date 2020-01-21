@@ -8,12 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import com.sky.rpc.base.Result;
 import com.sky.rpc.base.RpcRequest;
-import com.sky.rpc.core.cilent.RpcClientHandel;
+import com.sky.rpc.core.RpcTypeContant;
+import com.sky.rpc.core.cilent.RpcClientHandle;
 import com.sky.rpc.core.cilent.netty.NettyClientMessageHandler;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -29,11 +30,13 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 
-public class RpcNettyClientHandel implements RpcClientHandel{
+@Component
+public class RpcNettyClientHandel implements RpcClientHandle{
 	Log logger = LogFactory.getLog(this.getClass());
 	private  EventLoopGroup group = new NioEventLoopGroup(2);
 	private  Bootstrap bootstrap ;
-	NettyClientMessageHandler clientHandler =new NettyClientMessageHandler();
+	@Autowired
+	NettyClientMessageHandler clientHandler;
 
 	public static Map<Long, Channel> channelMap=new ConcurrentHashMap<>();
 
@@ -108,5 +111,10 @@ public class RpcNettyClientHandel implements RpcClientHandel{
 		}else {
 			throw new Exception("netty client is null or not active");
 		}
+	}
+	
+	@Override
+	public String getRpcType() {
+		return RpcTypeContant.rpcTypeLimit.get(1);
 	}
 }

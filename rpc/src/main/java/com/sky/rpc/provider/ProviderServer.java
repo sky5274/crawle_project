@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.StringUtils;
+import com.sky.rpc.core.RpcTypeContant;
 import com.sky.rpc.resource.ResouceProperties;
 
 /**
@@ -23,6 +24,7 @@ public abstract class ProviderServer extends Thread {
 	/**provider server is open flag*/
 	protected volatile static boolean isOpen=false;
 	public static String portKey="rpc.server.port";
+	
 	
 	public ProviderServer() {
 		getPort();
@@ -62,6 +64,9 @@ public abstract class ProviderServer extends Thread {
 	}
 	public synchronized static void setOpen(boolean isOpen) {
 		ProviderServer.isOpen = isOpen;
+	}
+	public  static boolean canOpen() {
+		return RpcTypeContant.rpcTypeLimit.indexOf(RpcTypeContant.getType())<2;
 	}
 	
 	public abstract void close();
