@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-# pro_Pic_manager
-a simple web project ,it has the walker ,show panel and manager panel
-=======
 # 权限控制客户端
 1： 权限控制自主注册配置服务
 
 2：权限客户信息、token、登录接口开发
 
 3：权限客户对象
->>>>>>> refs/remotes/origin/dev
+
