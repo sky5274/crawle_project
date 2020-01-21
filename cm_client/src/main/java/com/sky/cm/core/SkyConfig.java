@@ -7,12 +7,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -47,6 +45,7 @@ public class SkyConfig {
 		return configValue;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void registProject(Map<RequestMappingInfo, HandlerMethod> mappers) {
 		List<Map<String, Object>> mapperHandlerList=new LinkedList<>();
 		for(RequestMappingInfo reqmap:mappers.keySet()) {
@@ -61,7 +60,6 @@ public class SkyConfig {
 			temp.put("method",methodInfoMap);
 			mapperHandlerList.add(temp);
 		}
-		@SuppressWarnings("unchecked")
 		Map<String, Object> body = JSON.parseObject(JSON.toJSONString(configValue),Map.class);
 		body.put("urls", mapperHandlerList);
 		body.put("port", SpringUtil.getEvnProperty("server.port"));
