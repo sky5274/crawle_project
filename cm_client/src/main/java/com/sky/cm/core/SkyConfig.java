@@ -6,14 +6,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.support.StandardServletEnvironment;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -60,6 +65,23 @@ public class SkyConfig {
 		Map<String, Object> body = JSON.parseObject(JSON.toJSONString(configValue),Map.class);
 		body.put("urls", mapperHandlerList);
 		body.put("port", SpringUtil.getEvnProperty("server.port"));
+		Environment env = SpringUtil.getEvn();
+		Map<String, Object> propertyMap=new HashMap<String, Object>();
+		if(env !=null && env instanceof StandardServletEnvironment) {
+			StandardServletEnvironment senv = (StandardServletEnvironment)env;
+			senv.getPropertySources().iterator()
+				.forEachRemaining(s-> {
+					Object source = s.getSource();
+					if(source instanceof Map) {
+						propertyMap.putAll((Map<String, Object>) source);
+					}else if(source instanceof Properties) {
+						Properties p=(Properties) source;
+						p.keySet().stream().forEach(k-> propertyMap.put(k.toString(), p.get(k)));
+					}
+				});
+		}
+		System.err.println(propertyMap);
+		body.put("environment", propertyMap);
 		SkyConfigRequest regist = SkyConfigRequest.regist;
 		log.debug("regist result: "+http(regist.getUrl(), regist.getMethod(), body));
 	}
