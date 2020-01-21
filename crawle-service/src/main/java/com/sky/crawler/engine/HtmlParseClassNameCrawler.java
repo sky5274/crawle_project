@@ -2,7 +2,7 @@ package com.sky.crawler.engine;
 
 import java.io.Writer;
 import com.sky.crawler.service.CrawlerService;
-import com.sky.crawler.service.CrawlerServiceFactoryUtil;
+import com.sky.crawler.service.BeanClassWithRpcFactoryUtil;
 import com.sky.pub.ResultCode;
 import com.sky.pub.common.exception.ResultException;
 import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
@@ -21,7 +21,7 @@ public class HtmlParseClassNameCrawler extends HtmlParseClassCrawler{
 	}
 	
 	public HtmlParseClassCrawler bulid() throws ResultException {
-		this.setCrawlerService(CrawlerServiceFactoryUtil.getClassBean(className, CrawlerService.class));
+		this.setCrawlerService(BeanClassWithRpcFactoryUtil.getClassBean(className, CrawlerService.class));
 		if(this.getCrawlerService()==null) {
 			throw new ResultException(ResultCode.UNKONW_EXCEPTION, "未确定 CrawlerService 服务");
 		}
