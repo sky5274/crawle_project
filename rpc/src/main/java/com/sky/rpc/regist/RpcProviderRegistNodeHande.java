@@ -40,6 +40,14 @@ public class RpcProviderRegistNodeHande implements RpcRegistNodHandel<RpcProvide
 	private static String group;
 	private static String version;
 	
+	public static RpcElement getRpcElement(Class<?> clazz) {
+		RpcElement ele=new RpcElement();
+		ele.setGroup(getRpcGroup());
+		ele.setVersion(getRpcVersion());
+		ele.setInterfaceName(clazz.getName());
+		return ele;
+	}
+	
 	public static String getRpcGroup() {
 		if(group==null) {
 			group=ResouceProperties.getProperty("rpc.group");
