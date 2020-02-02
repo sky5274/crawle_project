@@ -8,16 +8,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.support.StandardServletEnvironment;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -53,6 +56,7 @@ public class SkyConfig {
 		return skyConfigCacheServiceImpl.releaseKey();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void registProject(Map<RequestMappingInfo, HandlerMethod> mappers) {
 		List<Map<String, Object>> mapperHandlerList=new LinkedList<>();
 		for(RequestMappingInfo reqmap:mappers.keySet()) {
@@ -67,10 +71,28 @@ public class SkyConfig {
 			temp.put("method",methodInfoMap);
 			mapperHandlerList.add(temp);
 		}
-		@SuppressWarnings("unchecked")
+		Environment env = SpringUtil.getEvn();
+		Map<String, Object> propertyMap=new HashMap<String, Object>();
+		if(env !=null && env instanceof StandardServletEnvironment) {
+			StandardServletEnvironment senv = (StandardServletEnvironment)env;
+			senv.getPropertySources().iterator()
+				.forEachRemaining(s-> {
+					//将资源属性按照key-value的形式添加到property-map 中
+					Object source = s.getSource();
+					if(source instanceof Map) {
+						//属于map类型
+						propertyMap.putAll((Map<String, Object>) source);
+					}else if(source instanceof Properties) {
+						//属性property 类型
+						Properties p=(Properties) source;
+						p.keySet().stream().forEach(k-> propertyMap.put(k.toString(), p.get(k)));
+					}
+				});
+		}
 		Map<String, Object> body = JSON.parseObject(JSON.toJSONString(configValue),Map.class);
 		body.put("urls", mapperHandlerList);
 		body.put("port", SpringUtil.getEvnProperty("server.port"));
+		body.put("environment", propertyMap);
 		SkyConfigRequest regist = SkyConfigRequest.regist;
 		log.debug("regist result: "+http(regist.getUrl(), regist.getMethod(), body));
 	}
