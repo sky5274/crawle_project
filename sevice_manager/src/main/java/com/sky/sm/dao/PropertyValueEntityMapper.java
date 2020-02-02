@@ -55,6 +55,15 @@ public interface PropertyValueEntityMapper {
 	int accoutProperty(@Param("pro")PropertyValueReqEntity property);
 	
 	/**
+	 * 获取项目版本信息
+	 * @param property
+	 * @return
+	 * @author wangfan
+	 * @date 2020年2月2日 下午8:01:09
+	 */
+	PropertyValueEntity queryPropertyVersion(@Param("pro")PropertyValueReqEntity property);
+	
+	/**
 	 * 获取项目的属性配置对象
 	 * @param property
 	 * @return

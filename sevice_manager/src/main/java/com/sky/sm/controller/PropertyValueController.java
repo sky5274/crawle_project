@@ -149,6 +149,15 @@ public class PropertyValueController {
 		return ResultUtil.getOk(propertyValueService.getProperties(getPropertyValue(null, project)));
 	}
 	
+	@RequestMapping("/release/by/project")
+	public Result<String> getProjectPropertyRelease(ProjectInfoBean project) {
+		return ResultUtil.getOk(propertyValueService.getPropertyRelease(getPropertyValue(null, project)));
+	}
+	@RequestMapping("/release/update")
+	public Result<String> updateProjectPropertyRelease(ProjectInfoBean project) {
+		return ResultUtil.getOk(propertyValueService.updatePropertyRelease(getPropertyValue(null, project)));
+	}
+	
 	private PropertyValueReqEntity getPropertyValue(String key,ProjectInfoBean project) {
 		PropertyValueReqEntity property=new PropertyValueReqEntity();
 		property.setKey(key);
