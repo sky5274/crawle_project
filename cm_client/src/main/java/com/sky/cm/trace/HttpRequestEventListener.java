@@ -1,7 +1,6 @@
 package com.sky.cm.trace;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
 import com.alibaba.fastjson.JSON;
 import com.sky.cm.bean.RequestTraceBean;
 
@@ -25,16 +23,10 @@ public class HttpRequestEventListener extends RequestTraceEventListen<HttpServle
 		if("POST".equals(req.getMethod().toUpperCase())) {
 			//获取post请求的的requestbody
 			try {
-				BufferedReader reader = req.getReader();
-			    String line=null;
-				StringBuilder jb=new StringBuilder();
-				while ((line = reader.readLine()) != null)
-			      jb.append(line);
-				
-				info.setRequestBody(jb.toString());
-			} catch (IOException e) {
+				info.setRequestBody(org.springframework.util.StreamUtils.copyToString(req.getInputStream(), Charset.defaultCharset()));
+			} catch (Throwable e) {
+				e.printStackTrace();
 			}
-			
 		}else {
 			info.setRequestBody(req.getQueryString());
 		}
