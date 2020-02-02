@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header::head('属性枚举配置主页','/bootstrap/css/bootstrap-table.css,/css/page-tool.css,/bootstrap/menu/bootstrap_contextmenu.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/bootstrap/js/bootstrap-treeview.js,/js/com/dialog-table.js,/js/page-project-select.js,/js/page-dialog-action.js,/bootstrap/menu/bootStrap_contextmenu.js')"></head>
+<script type="text/javascript">
+$(function(){
+	initEvent();
+	
+	$("#property-enum-table").jTable({
+		url:"/property/enum/page/group",
+		uniqueId:'id',
+		method:"post",
+		ispost:true,
+		getParam:getQueryParam,
+		showColumns:true,
+		showRefresh:true,
+		showToggle:true,
+		toolbar:'#property-page-query-tool',
+		columns :[
+			{field: 'radio', radio: true}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "id", title : "id",align: 'center'},
+			{ field : "groupNo", title : "groupNo",align: 'center'},
+			{ field : "groupName", title : "groupName",align: 'center'},
+			{ field : "project", title : "项目名称",align: 'center'},
+			{ field : "profile", title : "项目环境分支",align: 'center'},
+			{ field : "versionCode", title : "项目版本",align: 'center'},
+			{ field : "version", title : "版本号", visible: false},
+			{ field : "ts", title : "时间",align: 'center',formatter:function(value,row){return value !=null?new Date(value).toLocaleString():'-'}},
+		],
+		onClickRow:function(row,ele){
+			groupId=row.id
+			$("#property-enum-value-table").jmTable("refresh",{url:"/property/enum/page/value"})
+		}
+	})
+	$("#property-enum-value-table").jTable({
+		uniqueId:'id',
+		method:"post",
+		ispost:true,
+		getParam:getQueryValueParam,
+		showColumns:true,
+		showRefresh:true,
+		showToggle:true,
+		columns :[
+			{field: 'radio', radio: true}, 
+			{
+				field: 'index', title: '序号',align: 'center', valign: 'middle', sortable: false,
+				formatter: function (value,row,index){return index+1; }
+			},
+			{ field : "id", title : "id",align: 'center'},
+			{ field : "enumNo", title : "enumNo",align: 'center'},
+			{ field : "enumName", title : "enumName",align: 'center'},
+			{ field : "local", title : "本地化",align: 'center'},
+			{ field : "version", title : "版本号", visible: false},
+			{ field : "ts", title : "时间",align: 'center',formatter:function(value,row){return value !=null?new Date(value).toLocaleString():'-'}},
+		],
+	})
+	
+	initContextMenu();
+})
+
+function getQueryParam(){
+	return $("#property-page-query-tool").pageQuery()
+}
+var groupId;
+function getQueryValueParam(){
+	return {groupId:groupId}
+}
+
+function initContextMenu(){
+	$.contextMenu({
+		 selector: "#property-enum-table>tbody>tr[class !=detail-view]",
+		 // define the elements of the menu
+		 items: {
+		 	addMenuGroup: {name: "新增枚举项", callback: function(key, opt){ $("#btn_property_enum_add").click()}},
+		 	updateMenuGroup: {name: "修改枚举项", callback: function(key, opt){ 
+		 		var row=getSelctRow("#property-enum-table");
+		 		updateEnumGroup(row)
+		 	}}
+		 }
+	});
+	$.contextMenu({
+		 selector: "#property-enum-value-table>tbody>tr[class !=detail-view]",
+		 // define the elements of the menu
+		 items: {
+		 	addMenuGroup: {name: "新增枚举", callback: function(key, opt){ 
+		 		var row=getSelctRow("#property-enum-table","请选择一条枚举组数据");
+		 		if(row){
+		 			activeEnumValue({
+		 				title:"新增枚举",
+		 				url:"/property/enum/add/value",
+		 				data:{groupId:row.id}
+		 			})
+		 		}
+		 	}},
+		 	updateMenuGroup: {name: "修改枚举", callback: function(key, opt){ 
+		 		var row=getSelctRow("#property-enum-value-table");
+		 		if(row){
+		 			activeEnumValue({
+		 				title:"修改枚举",
+		 				url:"/property/enum/update/value",
+		 				data:row
+		 			})
+		 		}
+		 	}},
+		 	delMenuGroup: {name: "删除枚举", callback: function(key, opt){ 
+		 		var row=getSelctRow("#property-enum-value-table");
+		 		if(row){
+		 			$.diaLog({
+		 				con:"是否删除该枚举配置？？",
+		 				type:"confrim",
+		 				func:function(type,content){
+		 					if(type=='sure'){
+		 						return updatOrAddPostRequest({url:'/property/enum/delete/value',data:row,table:"#property-enum-value-table"})
+		 					}
+		 				}
+		 			})
+		 			
+		 		}
+		 	}}
+		 }
+	});
+}
+
+function activeEnumValue(obj){
+	if(obj.data){
+		var cl=getColums(colv,obj.data)
+		windowAction({
+			title:obj.title,
+			table:"#property-enum-value-table",
+			columns:cl,
+			actionUrl:obj.url,
+		})
+	}
+}
+
+var col=[
+	{title:"服务",name:"project",require:true,
+		init:function(ele){
+			inputSelectInit({'ele':ele,'match':matchp,'parent':".item-content"})
+		}
+	},
+	{title:"服务环境",name:"profile"},
+	{title:"版本",name:"versionCode"},
+	{title:"groupNo",name:"groupNo"},
+	{title:"groupName",name:"groupName"},
+]
+var colv=[
+	{title:"enumNo",name:"enumNo"},
+	{title:"enumName",name:"enumName"},
+	{title:"local",name:"local"},
+]
+var match={
+		'projectLike':'serviceName',
+		'profileLike':'profile',
+		'versionCodeLike':'version',
+}
+var matchp={
+		'project':'serviceName',
+		'profile':'profile',
+		'versionCode':'version',
+}
+
+function initEvent(){
+	$("#property-page-query-tool").pageQueryTool({
+		columns:[
+			{title:"服务名称",name:"project",size:2,init:function(ele){
+				inputSelectInit({'ele':ele,'match':match,'parent':"#property-page-query-tool"})
+			}},
+			{title:"服务环境",name:"profile",size:2},
+			{title:"服务版本",name:"versionCode",size:2},
+			{title:"groupNo",name:"groupNo",size:2},
+		]
+	})
+	$("#btn_property_enum_search").on("click",function(){
+		$("#property-enum-table").jmTable("refresh")
+	})
+	
+	$("#btn_property_enum_modify").on("click",function(){
+		var row=getSelctRow("#property-enum-table");
+		updateEnumGroup(row)
+	})
+	$("#btn_property_enum_add").on("click",function(){
+		windowAction({
+			title:"新建枚举分组",
+			table:"#property-enum-table",
+			columns:col,
+			actionUrl:'/property/enum/add/group',
+		})
+	})
+}
+
+function updateEnumGroup(row){
+	if(row){
+		col=getColums(col,row)
+		windowAction({
+			title:"修改枚举分组",
+			table:"#property-enum-table",
+			columns:col,
+			actionUrl:'/property/enum/update/group',
+		})
+	}
+}
+
+</script>
+<body>
+	<div id="page-panel">
+		<div class="panel panel-default fade in">
+			<div class="panel-heading clearfix">
+				<h4 class="pull-left">属性枚举</h4>
+				<div class="page-tool pull-right">
+						<button class="btn btn-primary" id="btn_property_enum_search">查询</button>
+						<button class="btn btn-primary" id="btn_property_enum_add">添加</button>
+						<button class="btn btn-primary" id="btn_property_enum_modify">修改</button>
+				</div> 
+			</div>
+			<div id="page-contain" class="panel-body">
+				<div id="property-page-query-tool" class="page-tool form-inline"></div>
+				<div class="page-table">
+					<table id="property-enum-table"></table>
+					<table id="property-enum-value-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

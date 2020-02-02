@@ -1,7 +1,14 @@
 package com.sky.pub.util;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
+import org.springframework.util.CollectionUtils;
 
 /**
  * java  reflect util
@@ -53,5 +60,17 @@ public class JavaReflectUtil {
 			return getAllSuperClass(superClass,supers);
 		}
 		return supers;
+	}
+	
+	public static Set<Field> getAllFields(Class<?> clazz) {
+		Set<Field> fields=new LinkedHashSet<Field>(Arrays.asList(clazz.getDeclaredFields()));
+		List<Class<?>> supperClazzs = getAllSuperClass(clazz);
+		if(!CollectionUtils.isEmpty(supperClazzs)) {
+			supperClazzs.stream().forEach(c->fields.addAll(getFields(c)));
+		}
+		return fields;
+	}
+	public static Set<Field> getFields(Class<?> clazz) {
+		return new LinkedHashSet<Field>(Arrays.asList(clazz.getDeclaredFields()));
 	}
 }

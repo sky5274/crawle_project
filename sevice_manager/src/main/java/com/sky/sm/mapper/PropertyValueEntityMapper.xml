@@ -19,7 +19,6 @@
     <result column="project" property="project" jdbcType="VARCHAR" />
     <result column="profile" property="profile" jdbcType="VARCHAR" />
     <result column="version_code" property="version" jdbcType="VARCHAR" />
-    <result column="local" property="local" jdbcType="VARCHAR" />
     <result column="level" property="likeLevel" jdbcType="VARCHAR" />
     <collection property="properties" ofType="com.sky.sm.bean.PropertyValueBean">
 	    <result column="key" property="key" jdbcType="VARCHAR" />
@@ -271,7 +270,7 @@
   </sql>
 
 	<!-- 查询配置属性 -->  
-  <select id="queryProperties" resultMap="BaseResultMap" parameterType="com.sky.sm.bean.PropertyValueEntity">
+  <select id="queryProperties" resultMap="BaseResultMap">
     <include refid="base-change-table"/>
     <include refid="query_contation"/>
     <include refid="base-change-table-order"/>
@@ -286,7 +285,7 @@
     </if>
   </select>
   <!-- 根据条件统计配置属性数据数量 -->
-  <select id="accoutProperty" resultType="java.lang.Integer" parameterType="com.sky.sm.bean.req.PropertyValueReqEntity">
+  <select id="accoutProperty" resultType="java.lang.Integer">
   	 <if test="pro ==null or pro.showGlobal ==null or !pro.showGlobal">
   		select  count(1)
     	from property_value
@@ -305,5 +304,16 @@
   	 <include refid="base-change-table"/>
     <include refid="query_contation"/>
     <include refid="base-change-table-order"/>
+  </select>
+  <select id="queryPropertyVersion" resultMap="BaseResultMap" parameterType="com.sky.sm.bean.req.PropertyValueReqEntity">
+  	select pro.project, pro.`profile`, pro.version_code, max(pro.version) version
+    	from property_value pro
+    <trim prefix=" where " suffixOverrides="and | or">
+  		<if test="pro !=null">
+  			<include refid="query-item-like"/>
+	  		<if test="pro.isGrobal !=null">									is_global   = #{pro.isGrobal} and				</if>
+  		</if>
+  	</trim>
+    group by pro.project, pro.`profile`, pro.version_code
   </select>
 </mapper>

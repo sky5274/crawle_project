@@ -18,6 +18,8 @@ public class SkyConfigValue {
 	private String serviceName;							//项目名称
 	private String profile;								//项目环境
 	private boolean enablelimit=true;					//项目服务限流
+	private boolean enableLocal=false;					//项目服务国际化服务
+	private boolean autoRefresh=false;					//自动刷新配置
 	private boolean showGlobal;
 	private String version;								//项目版本
 	private String desc;								//项目说明
@@ -74,6 +76,18 @@ public class SkyConfigValue {
 	}
 	public void setShowGlobal(boolean showGlobal) {
 		this.showGlobal = showGlobal;
+	}
+	public boolean isEnableLocal() {
+		return enableLocal;
+	}
+	public void setEnableLocal(boolean enableLocal) {
+		this.enableLocal = enableLocal;
+	}
+	public boolean isAutoRefresh() {
+		return autoRefresh;
+	}
+	public void setAutoRefresh(boolean autoRefresh) {
+		this.autoRefresh = autoRefresh;
 	}
 
 }
