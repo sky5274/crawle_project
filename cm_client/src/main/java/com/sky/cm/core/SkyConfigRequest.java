@@ -7,6 +7,8 @@ public enum SkyConfigRequest {
 	load_off("/project/dump"),
 	property("/property/get"),
 	properties("/property/by/project"),
+	property_release("/property/release/by/project"),
+	property_enums("/property/enum/for/project"),
 	limit("/http/limit"),
 	trace_start("/http/trace/start",HttpMethod.POST),
 	trace_end("/http/trace/end",HttpMethod.POST)
