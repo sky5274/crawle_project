@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.sky.cm.annotation.Limit;
 import com.sky.cm.annotation.Val;
+import com.sky.cm.bean.PropertyEnumValueBean;
 import com.sky.cm.core.SkyConfig;
 import com.sky.demo.data.service.DemoService;
 import com.sky.demo.data.service.DemoSqlService;
 import com.sky.pub.Result;
 import com.sky.pub.ResultUtil;
+import com.sky.pub.util.SpringUtil;
 import com.sky.transaction.annotation.MTransaction;
 
 @RestController
@@ -45,12 +47,31 @@ public class PageController {
 	}
 	@RequestMapping("/talk")
 	public Result<String> talk(String word) {
-		System.err.println(str);
 		return ResultUtil.getOk("you talk:"+word+" with:"+str);
 	}
 	@RequestMapping("/property")
 	public Result<String> getproperty(String key) {
 		return ResultUtil.getOk(skyconfig.getProperty(key));
+	}
+	@RequestMapping("/property/enmu")
+	public Result<String> getpropertyEnum(String groupNo) {
+		return ResultUtil.getOk(SpringUtil.getEvnProperty(groupNo));
+	}
+	@RequestMapping("/property/value")
+	public Result<String> getpropertyValue(String key) {
+		return ResultUtil.getOk(SpringUtil.getEvnProperty(key));
+	}
+	@RequestMapping("/property/enum")
+	public Result<List<PropertyEnumValueBean>> getpropertyEnmu(String groupNo) {
+		return ResultUtil.getOk(skyconfig.getProjectEnums(groupNo));
+	}
+	@RequestMapping("/property/enum/value")
+	public Result<PropertyEnumValueBean> getpropertyEnmu(String groupNo,String enumNo) {
+		return ResultUtil.getOk(skyconfig.getProjectEnum(groupNo,enumNo));
+	}
+	@RequestMapping("/property/enum/bean")
+	public Result<EnumGroupTestBean> getpropertyEnmu(EnumGroupTestBean bean) {
+		return ResultUtil.getOk(skyconfig.parseProjectEnum(bean));
 	}
 	@RequestMapping("/writer")
 	public Result<Map<String, String[]>> say(HttpServletRequest req) {
