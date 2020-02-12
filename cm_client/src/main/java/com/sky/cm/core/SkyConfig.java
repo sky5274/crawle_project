@@ -295,6 +295,16 @@ public class SkyConfig {
 		return enumMap;
 	}
 
+	/**
+	 * 解析对象中的属性枚举赋值
+	 * @param <T>
+	 * @param obj
+	 * @param clazz
+	 * @param enumMap
+	 * @return
+	 * @author wangfan
+	 * @date 2020年2月12日 上午11:20:29
+	 */
 	private <T> T parseProjectEnum(T obj,Class<?> clazz,Map<Field, List<PropertyEnumValueBean>> enumMap) {
 		if(!CollectionUtils.isEmpty(enumMap) && obj !=null) {
 			for(Field field:enumMap.keySet()) {
@@ -311,7 +321,7 @@ public class SkyConfig {
 						}
 					}
 				} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		}
@@ -326,7 +336,29 @@ public class SkyConfig {
 	 * @author wangfan
 	 * @date 2020年2月1日 下午10:49:08
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> T parseProjectEnum(T obj) {
+		if(obj !=null) {
+			if(obj instanceof Collection) {
+				//集合情况
+				obj=(T) parseObjListProjectEnum((Collection<Object>)obj);
+			}else {
+				//非集合情况
+				obj=parseObjProjectEnum(obj);
+			}
+		}
+		return obj;
+	}
+	
+	/**
+	 * 解析对象中的枚举数据
+	 * @param <T>
+	 * @param obj
+	 * @return
+	 * @author wangfan
+	 * @date 2020年2月12日 上午11:17:05
+	 */
+	private <T> T parseObjProjectEnum(T obj) {
 		if(obj !=null) {
 			Class<? extends Object> clazz = obj.getClass();
 			Map<Field, List<PropertyEnumValueBean>> enumMap = getProjectEnumMap(clazz);
@@ -334,21 +366,16 @@ public class SkyConfig {
 		}
 		return obj;
 	}
-
-	/**
-	 * 使用反射注入属性枚举数据
-	 * @param <T>
-	 * @param objs
-	 * @return
-	 * @author wangfan
-	 * @date 2020年2月1日 下午10:49:51
-	 */
-	public <T> Collection<T> parseProjectEnum(Collection<T> objs) {
+	private <T extends Collection<Object>> T parseObjListProjectEnum(T objs) {
 		if(!CollectionUtils.isEmpty(objs)) {
-			Class<? extends Object> clazz = objs.iterator().next().getClass();
-			Map<Field, List<PropertyEnumValueBean>> enumMap = getProjectEnumMap(clazz);
-			for(T obj:objs) {
-				obj=parseProjectEnum(obj, clazz,enumMap);
+			Map<Object, Map<Field, List<PropertyEnumValueBean>>> proEnumMap=new HashMap<Object, Map<Field,List<PropertyEnumValueBean>>>(16);
+			proEnumMap.put(objs.iterator().next().getClass(), getProjectEnumMap(objs.iterator().next().getClass()));
+			for(Object obj:objs) {
+				Class<? extends Object> clazz=obj.getClass();
+				if(!proEnumMap.containsKey(clazz)) {
+					proEnumMap.put(clazz,  getProjectEnumMap(clazz));
+				}
+				obj=parseProjectEnum(obj, clazz,proEnumMap.get(clazz));
 			}
 		}
 		return objs;
