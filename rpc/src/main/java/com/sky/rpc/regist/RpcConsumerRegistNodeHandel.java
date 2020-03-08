@@ -1,10 +1,12 @@
 package com.sky.rpc.regist;
 
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.sky.rpc.annotation.RpcComsumer;
 import com.sky.rpc.core.RpcElement;
 
+@Component
 public class RpcConsumerRegistNodeHandel extends AbstractRpcConsumerRegistNodeHandel<RpcComsumer>{
 
 	@Override

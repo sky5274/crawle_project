@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Component;
 
 import com.sky.rpc.base.Result;
 import com.sky.rpc.base.RpcRequest;
@@ -20,6 +21,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 
 @SuppressWarnings("deprecation")
 @Sharable
+@Component
 public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter{
 	SynchronousQueue<Result<?>> queue=null;
     Log logger = LogFactory.getLog(this.getClass());

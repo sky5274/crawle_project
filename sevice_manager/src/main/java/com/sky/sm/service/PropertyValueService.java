@@ -87,4 +87,22 @@ public interface PropertyValueService {
 	 * @date 2019年12月10日 下午3:50:29
 	 */
 	Boolean updateProperty(PropertyValueEntity property, Properties pro) throws ResultException;
+
+	/**
+	 * 获取项目（最新）版本信息
+	 * @param propertyValue
+	 * @return
+	 * @author wangfan
+	 * @date 2020年2月2日 下午8:05:11
+	 */
+	String getPropertyRelease(PropertyValueReqEntity propertyValue);
+
+	/**
+	 * 执行项目版本发布
+	 * @param propertyValue
+	 * @return
+	 * @author wangfan
+	 * @date 2020年2月2日 下午8:05:35
+	 */
+	String updatePropertyRelease(PropertyValueEntity propertyValue);
 }

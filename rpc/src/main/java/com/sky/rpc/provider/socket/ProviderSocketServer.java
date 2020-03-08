@@ -17,7 +17,8 @@ public class ProviderSocketServer extends ProviderServer{
 	}
 	
 	public void run() {
-		if(ProviderServer.isOpen()) {
+		if(ProviderServer.isOpen() && canOpen()) {
+			ProviderSocketServer.setOpen(true);
 			return;
 		}
 		try {

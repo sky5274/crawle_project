@@ -3,6 +3,7 @@ package com.sky.sm.bean;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.util.StringUtils;
 
@@ -23,6 +24,7 @@ public class ProjectInfoBean implements Serializable{
 	private String version;
 	private String local;
 	private List<HttpUrlInfo> urls;
+	private Map<String, Object> environment;
 	
 	public String getServiceName() {
 		return serviceName;
@@ -89,6 +91,12 @@ public class ProjectInfoBean implements Serializable{
 	}
 	public void setLocal(String local) {
 		this.local = local;
+	}
+	public Map<String, Object> getEnvironment() {
+		return environment;
+	}
+	public void setEnvironment(Map<String, Object> environment) {
+		this.environment = environment;
 	}
 	public static class HttpUrlInfo implements Serializable{
 		/***/

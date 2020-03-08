@@ -33,7 +33,7 @@ public class RpcProxy{
 				new InvocationHandler() {
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				try {
-					return new RpcClient<T>(addr).request(serviceInterface,method,args,interfaceImpl);
+					return new RpcClient(addr).request(serviceInterface,method,args,interfaceImpl);
 				} catch (InvocationTargetException e){
 					//抛出造成的异常
 					throw e.getCause();
@@ -49,7 +49,7 @@ public class RpcProxy{
 				new InvocationHandler() {
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				try {
-					return new RpcClient<T>(addr,timeout).request(serviceInterface,method,args,interfaceImpl);
+					return new RpcClient(addr,timeout).request(serviceInterface,method,args,interfaceImpl);
 				} catch (InvocationTargetException e){
 					//抛出造成的异常
 					throw e.getCause();
@@ -67,7 +67,7 @@ public class RpcProxy{
 				nodeData ip = getRandomIp(node);
 				if(ip!=null) {
 					try {
-						return new RpcClient<T>(new InetSocketAddress(ip.getIp(), ip.getPort()),node.getTimeout()).request(serviceInterface,method,args,ip.getClassName());
+						return new RpcClient(new InetSocketAddress(ip.getIp(), ip.getPort()),node.getTimeout(),ip.getRpcType()).request(serviceInterface,method,args,ip.getClassName());
 					} catch (InvocationTargetException e){
 						//抛出造成的异常
 						throw e.getCause();

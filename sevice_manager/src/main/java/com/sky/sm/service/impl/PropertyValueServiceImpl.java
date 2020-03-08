@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -30,6 +31,8 @@ public class PropertyValueServiceImpl implements PropertyValueService{
 	private PropertyValueEntityMapper propertyValueMapper;
 	@Autowired
 	private PropertyValueHistoryEntityMapper propertyValueHistoryMapper;
+	@Autowired
+	private  RedisTemplate<String,String> redisTemplate; 
 
 	@Override
 	public Page<PropertyValueEntity> queryPageOfProperty(PageRequest<PropertyValueReqEntity> pageProperty) {
@@ -125,5 +128,33 @@ public class PropertyValueServiceImpl implements PropertyValueService{
 			}
 		}
 		return propertyValueMapper.insertBatch(list)>0;
+	}
+
+	private String getPropertyReleaseKey(PropertyValueEntity propertyValue) {
+		return String.format("%s#%s@%s", propertyValue.getProject(),propertyValue.getProfile(),propertyValue.getVersionCode());
+	}
+	private String getPropertyReleaseValue(PropertyValueEntity propertyValue) {
+		return String.format("%s#%s@%s-%s", propertyValue.getProject(),propertyValue.getProfile(),propertyValue.getVersionCode(),propertyValue.getVersion());
+	}
+	
+	@Override
+	public String getPropertyRelease(PropertyValueReqEntity propertyValue) {
+		String key = getPropertyReleaseKey(propertyValue);
+		String value = redisTemplate.opsForValue().get(key);
+		if(StringUtils.isEmpty(value)) {
+			PropertyValueEntity pv = propertyValueMapper.queryPropertyVersion(propertyValue);
+			if(pv !=null) {
+				value=getPropertyReleaseValue(pv);
+				redisTemplate.opsForValue().set(key, value);
+			}
+		}
+		return value;
+	}
+
+	@Override
+	public String updatePropertyRelease(PropertyValueEntity propertyValue) {
+		String value = getPropertyReleaseValue(propertyValue);
+		redisTemplate.opsForValue().set(getPropertyReleaseKey(propertyValue), value);
+		return value;
 	}
 }

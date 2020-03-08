@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 
@@ -35,6 +36,16 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月10日上午9:16:33
 	 */
 	protected abstract Class<V> getExtendClass();
+	
+	public String getPrefixKey() {
+		return this.getExtendClass().getSimpleName();
+	}
+	public String getPrefixKey(String key) {
+		if(StringUtils.isEmpty(key)) {
+			return getPrefixKey();
+		}
+		return key=getPrefixKey()+"_"+key;
+	}
 	private Logger log=Logger.getLogger(BaseRedisServiceImpl.class);
 
 	@Resource(name="redisTemplate")  
@@ -187,7 +198,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月21日上午9:51:59
 	 */
 	public Set<String> doGetObjKeys(String key) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: keys key="+key);
 		return this.getRedisTemplate().keys(key);
 	}
@@ -221,7 +232,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午9:45:02
 	 */
 	protected void doDeleteKey(String key) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: del key="+key);
 		this.getRedisTemplate().delete(key);
 	}
@@ -234,7 +245,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午4:46:28
 	 */
 	protected void doStringSet(String key,V value) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: set key="+key+", value="+value);
 		this.getValueOptions().set(key, value);
 	}
@@ -246,7 +257,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午4:46:28
 	 */
 	protected void doStringSet(String key,V value,long time) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: set key="+key+", value="+value+", time/s="+time);
 		this.getValueOptions().set(key, value,time,TimeUnit.MINUTES);
 	}
@@ -260,7 +271,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * @param unit
 	 */
 	protected void doStringSet(String key,V value,long time,TimeUnit unit) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: set key="+key+", value="+value+", time="+time+",timeUint="+unit);
 		this.getValueOptions().set(key, value,time,unit);
 	}
@@ -272,7 +283,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午4:46:28
 	 */
 	protected void setIfAbsent(String key,V value) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: setnx key="+key+", value="+value);
 		this.getValueOptions().setIfAbsent(key, value);
 	}
@@ -285,7 +296,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午4:49:57
 	 */
 	protected V doStringGet(String key) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: get key="+key);
 		return this.getValueOptions().get(key);
 	}
@@ -301,7 +312,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午6:49:53
 	 */
 	protected void doStringExprie(String key,long timeout,V value,TimeUnit unit) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: SETEX key="+key+", "+unit+"="+timeout+", value="+value);
 		this.getValueOptions().set(key, value,timeout,unit);
 	}
@@ -316,7 +327,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午4:50:22
 	 */
 	protected Boolean doKeyExpire(String key,long timeout,TimeUnit unit) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: EXP set key="+key+","+unit+"="+timeout);
 		return this.getRedisTemplate().expire(key, timeout, unit);
 	}
@@ -330,8 +341,12 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午7:10:31
 	 */
 	protected void doHashSet(String key, V value) {
-		log.debug("===> redis action: HSET key="+this.getExtendClass().getSimpleName()+", field="+key+", value ="+value);
-		this.getHashOptions().put(this.getExtendClass().getSimpleName(), key, JSON.toJSONString(value));
+		doHashSet(null, key, value);
+	}
+	protected void doHashSet(String prefix,String key, V value) {
+		prefix=getPrefixKey(prefix);
+		log.debug("===> redis action: HSET key="+prefix+", field="+key+", value ="+value);
+		this.getHashOptions().put(prefix, key, JSON.toJSONString(value));
 	}
 	/**
 	 * 仅当字段不存在时，才设置散列字段的值
@@ -342,8 +357,12 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午7:10:31
 	 */
 	protected void doHashSetIfAbsent(String key, V value) {
-		log.debug("===> redis action: HSET key="+this.getExtendClass().getSimpleName()+", field="+key+", value ="+value);
-		this.getHashOptions().putIfAbsent(this.getExtendClass().getSimpleName(), key, JSON.toJSONString(value));
+		doHashSetIfAbsent(null, key, value);
+	}
+	protected void doHashSetIfAbsent(String prefix,String key, V value) {
+		prefix=getPrefixKey(prefix);
+		log.debug("===> redis action: HSET key="+prefix+", field="+key+", value ="+value);
+		this.getHashOptions().putIfAbsent(prefix, key, JSON.toJSONString(value));
 	}
 
 	/**
@@ -354,8 +373,12 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * @return 
 	 */
 	protected V doHashGet(String key) {
-		log.debug("===> redis action: HGET key="+this.getExtendClass().getSimpleName()+", field="+key);
-		return JSON.parseObject(this.getHashOptions().get(this.getExtendClass().getSimpleName(), key),getExtendClass());
+		return doHashGet(null, key);
+	}
+	protected V doHashGet(String prefix,String key) {
+		prefix=getPrefixKey(prefix);
+		log.debug("===> redis action: HGET key="+prefix+", field="+key);
+		return JSON.parseObject(this.getHashOptions().get(prefix, key),getExtendClass());
 	}
 	/**
 	 * 获取所有给field对应的值
@@ -365,8 +388,12 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * @return 
 	 */
 	protected long doHashGetSize() {
-		log.debug("===> redis action: HLEN key="+this.getExtendClass().getSimpleName());
-		return this.getHashOptions().size(this.getExtendClass().getSimpleName());
+		return doHashGetSize(null);
+	}
+	protected long doHashGetSize(String prefix) {
+		prefix=getPrefixKey(prefix);
+		log.debug("===> redis action: HLEN key="+prefix);
+		return this.getHashOptions().size(prefix);
 	}
 
 	/**
@@ -376,8 +403,12 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午7:42:54
 	 */
 	protected void doHashDelete(String key) {
-		log.debug("===> redis action: HDEL key="+this.getExtendClass().getSimpleName()+", field="+key);
-		this.getHashOptions().delete(this.getExtendClass().getSimpleName(), key);
+		doHashDelete(null, key);
+	}
+	protected void doHashDelete(String prefix,String key) {
+		prefix=getPrefixKey(prefix);
+		log.debug("===> redis action: HDEL key="+prefix+", field="+key);
+		this.getHashOptions().delete(prefix, key);
 	}
 
 	/**
@@ -386,8 +417,12 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午8:28:06
 	 */
 	protected void doHashGetAllMap() {
-		log.debug("===> redis action: HGETALL key="+this.getExtendClass().getSimpleName());
-		this.getHashOptions().entries(this.getExtendClass().getSimpleName());
+		doHashGetAllMap(null);
+	}
+	protected void doHashGetAllMap(String prefix) {
+		prefix=getPrefixKey(prefix);
+		log.debug("===> redis action: HGETALL key="+prefix);
+		this.getHashOptions().entries(prefix);
 	}
 
 	/**
@@ -397,8 +432,12 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * @return 
 	 */
 	protected List<V> doHashGetValues() {
-		log.debug("===> redis action: HVALS key="+this.getExtendClass().getSimpleName());
-		List<String> list = this.getHashOptions().values(this.getExtendClass().getSimpleName());
+		return doHashGetValues(null);
+	}
+	protected List<V> doHashGetValues(String prefix) {
+		prefix=getPrefixKey(prefix);
+		log.debug("===> redis action: HVALS key="+prefix);
+		List<String> list = this.getHashOptions().values(prefix);
 		List<V> results=new LinkedList<>();
 		for(String s:list) {
 			results.add(JSON.parseObject(s,getExtendClass()));
@@ -413,8 +452,12 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午9:46:40
 	 */
 	protected Set<String> doHashGetKeys() {
-		log.debug("===> redis action: HKEYS key="+this.getExtendClass().getSimpleName());
-		return this.getHashOptions().keys(this.getExtendClass().getSimpleName());
+		return doHashGetKeys(null);
+	}
+	protected Set<String> doHashGetKeys(String prefix) {
+		prefix=getPrefixKey(prefix);
+		log.debug("===> redis action: HKEYS key="+prefix);
+		return this.getHashOptions().keys(prefix);
 	}
 	
 	/**
@@ -424,8 +467,12 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * @return 
 	 */
 	protected Boolean doHashIsHasKey(String key) {
-		log.debug("===> redis action: HEXISTS key ="+this.getExtendClass().getSimpleName()+"field="+key);
-		return this.getHashOptions().hasKey(this.getExtendClass().getSimpleName(),key);
+		return doHashIsHasKey(null,key);
+	}
+	protected Boolean doHashIsHasKey(String prefix,String key) {
+		prefix=getPrefixKey(prefix);
+		log.debug("===> redis action: HEXISTS key ="+prefix+"field="+key);
+		return this.getHashOptions().hasKey(prefix,key);
 	}
 	
 	/**
@@ -436,7 +483,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * @return 
 	 */
 	protected Long doListGetSize(String key) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: LLEN key ="+key);
 		return this.getListOptions().size(key);
 	}
@@ -449,7 +496,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午9:04:22
 	 */
 	protected List<V> doListGetAll(String key) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: LRANGE key ="+key+",start=0 stop=size");
 		return this.getListOptions().range(key, 0, this.getListOptions().size(key));
 	}
@@ -464,7 +511,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午9:06:41
 	 */
 	protected List<V> doListGetLimit(String key,long start,Long end){
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: LRANGE key ="+key+",start="+start+", stop="+end);
 		return this.getListOptions().range(key, start,end);
 	}
@@ -477,7 +524,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午9:10:23
 	 */
 	protected void doListAddTop(String key,V value) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: LPUSH key ="+key+",value="+value);
 		this.getListOptions().leftPush(key, value);
 	}
@@ -490,7 +537,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午9:12:43
 	 */
 	protected void doListAddEnd(String key,V value) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: RPUSH key ="+key+",value="+value);
 		this.getListOptions().rightPush(key, value);
 	}
@@ -504,7 +551,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午9:15:54
 	 */
 	protected void  doListDelet(String key, long i, V value) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: LREM key="+key+",count="+i+",value="+value);
 		this.getListOptions().remove(key, i, value);
 	}
@@ -518,7 +565,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * @return 
 	 */
 	protected V doListGetByIndex(String key, long index) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: LINDEX key="+key+",index="+index);
 		return this.getListOptions().index(key, index);
 	}
@@ -532,7 +579,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 */
 	@SuppressWarnings("unchecked")
 	protected void doSetAdd(String key,V value) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: SADD key="+key+",value="+value);
 		this.getCollectionOptions().add(key, value);
 	}
@@ -545,7 +592,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午9:30:40
 	 */
 	protected Long doSetGetSize(String key) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: SCARD key="+key);
 		return this.getCollectionOptions().size(key);
 	}
@@ -557,7 +604,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午9:30:40
 	 */
 	protected Set<V> doSetGetAll(String key) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: SMEMBERS key="+key);
 		return this.getCollectionOptions().members(key);
 	}
@@ -571,7 +618,7 @@ public abstract class BaseRedisServiceImpl<V> {
 	 * 2017年10月1日下午9:35:45
 	 */
 	protected Long doSetDelete(String key,V value) {
-		key=this.getExtendClass().getSimpleName()+"_"+key;
+		key=getPrefixKey(key);
 		log.debug("===> redis action: SREM  key="+key);
 		return this.getCollectionOptions().remove(key, value);
 	}

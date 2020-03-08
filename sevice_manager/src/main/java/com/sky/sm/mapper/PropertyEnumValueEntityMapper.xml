@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.sm.dao.PropertyEnumValueEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.sky.sm.bean.PropertyEnumValueEntity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="enum_no" property="enumNo" jdbcType="VARCHAR" />
+    <result column="enum_name" property="enumName" jdbcType="VARCHAR" />
+    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="local" property="local" jdbcType="VARCHAR" />
+    <result column="createid" property="createid" jdbcType="INTEGER" />
+    <result column="ts" property="ts" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ProjectEnumMap" type="com.sky.sm.bean.ProjectPropertyEnumBean" >
+    <result column="project" property="project" jdbcType="VARCHAR" />
+    <result column="profile" property="profile" jdbcType="VARCHAR" />
+    <result column="version_code" property="versionCode" jdbcType="VARCHAR" />
+    <result column="group_no" property="groupNo" jdbcType="VARCHAR" />
+    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+    <collection property="enums" ofType="com.sky.sm.bean.PropertyEnumValueBean">
+	    <result column="enum_no" property="enumNo" jdbcType="VARCHAR" />
+	    <result column="local" property="local" jdbcType="VARCHAR" />
+	    <result column="enum_name" property="enumName" jdbcType="VARCHAR" />
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    pro.id, pro.enum_no, pro.enum_name,pro.group_id, pro.local, pro.version, pro.createid, pro.ts
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from property_enum_value pro
+    where pro.id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from property_enum_value
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.sky.sm.bean.PropertyEnumValueEntity" useGeneratedKeys="true" keyProperty="id">
+    insert into property_enum_value (id, enum_no, enum_name, group_id,
+     	local,version, createid, ts
+      )
+    values (#{id,jdbcType=INTEGER}, #{enumNo,jdbcType=VARCHAR}, #{enumName,jdbcType=VARCHAR},  #{groupId,jdbcType=INTEGER}, 
+      #{local,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER}, #{createid,jdbcType=INTEGER}, now()
+      )
+      ON DUPLICATE KEY UPDATE enum_name = VALUES(enum_name),version = version+1,ts=now()
+  </insert>
+  <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+    insert into property_enum_value ( enum_no, enum_name,  group_id,
+    	 version_code, is_global,local,
+      version, createid, ts
+      )
+      <foreach collection="list" item="it" separator="," open="values ">
+       (	 #{it.enumNo,jdbcType=VARCHAR}, #{it.enumName,jdbcType=VARCHAR},#{it.groupId,jdbcType=INTEGER}, 
+       	#{it.local,jdbcType=VARCHAR},IFNULL(#{it.version,jdbcType=INTEGER},0), #{it.createid,jdbcType=INTEGER}, now()
+      )
+      </foreach>
+      ON DUPLICATE KEY UPDATE enum_name = VALUES(enum_name),version = version+1,ts=now()
+  </insert>
+  <insert id="insertSelective" parameterType="com.sky.sm.bean.PropertyEnumValueEntity" useGeneratedKeys="true" keyProperty="id">
+    insert into property_enum_value
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="enumNo != null" >      	enum_no,     	</if>
+      <if test="enumName != null" >     enum_name,      </if>
+      <if test="groupId != null" >      group_id,      	</if>
+      <if test="createid != null" >     createid,      	</if>
+      <if test="local != null" >     	local,      	</if>
+      									version,      
+              							ts     
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="enumNo != null" >      #{enumNo,jdbcType=VARCHAR},      	</if>
+      <if test="enumName != null" >     #{enumName,jdbcType=VARCHAR},      	</if>
+      <if test="groupId != null" >      #{groupId,jdbcType=VARCHAR},      	</if>
+      <if test="createid != null" >     #{createid,jdbcType=INTEGER},      	</if>
+      <if test="local != null" >     	#{local,jdbcType=VARCHAR},      	</if>
+      									0,
+      									now()
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sky.sm.bean.PropertyEnumValueEntity" >
+    update property_enum_value
+    <set >
+      <if test="enumNo != null" >      	enum_no 	= #{enumNo,jdbcType=VARCHAR},      	</if>
+      <if test="enumName != null" >     enum_name	= #{enumName,jdbcType=VARCHAR},     </if>
+      <if test="groupId != null" >      group_id 	= #{groupId,jdbcType=VARCHAR},      </if>
+      <if test="createid != null" >     createid 	= #{createid,jdbcType=INTEGER},     </if>
+      <if test="local != null" >    	local   	= #{local,jdbcType=VARCHAR},     	</if>
+      									version 	= version+1,      					
+      				 					ts 			= now()
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sky.sm.bean.PropertyEnumValueEntity" >
+    update property_enum_value
+    set enum_no 	= #{enumNo,jdbcType=VARCHAR},
+      enum_name 	= #{enumName,jdbcType=VARCHAR},
+      `group_id`	= #{groupId,jdbcType=VARCHAR},
+      createid 		= #{createid,jdbcType=INTEGER},
+      local   	    = #{local,jdbcType=VARCHAR},
+      version 		= version+1,
+      ts 			= now()
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <sql id="simple-query-item">
+  		<if test="pro.groupId !=null and pro.groupId !=''">				group_id 		=#{pro.groupId} and					</if>
+  		<if test="pro.enumNo !=null and pro.enumNo !=''">				enum_no 		=#{pro.enum_no} and					</if>
+  		<if test="pro.local !=null and pro.local !=''">					local 		    =#{pro.local} and					</if>
+  </sql>
+ 
+  <sql id="query_contation">
+  	<trim prefix=" where " suffixOverrides="and | or">
+  		<include refid="simple-query-item"/>
+  	</trim>
+  </sql>
+  
+  <sql id="base-change-table">
+  		select  <include refid="Base_Column_List" />
+    	from property_enum_value pro
+  </sql>
+
+	<!-- 查询配置属性枚举数据 -->  
+  <select id="queryPropertyEnumValues" resultMap="BaseResultMap">
+    <include refid="base-change-table"/>
+    <include refid="query_contation"/>
+  </select>
+	<!-- 分页查询配置属性枚举数据 -->  
+  <select id="queryPropertyEnumValueList" resultMap="BaseResultMap" >
+  	<include refid="base-change-table"/>
+    <include refid="query_contation"/>
+    <if test="page !=null and page.current !=null and page.pageSize !=null">
+    	limit #{page.current},#{page.pageSize}
+    </if>
+  </select>
+  <!-- 根据条件统计配置属性枚举数据数据数量 -->
+  <select id="accoutPropertyEnumValue" resultType="java.lang.Integer">
+  		select  count(1)
+    	from property_enum_value
+    <include refid="query_contation"/>
+  </select>
+  
+  <!-- 查询项目的配置属性枚举数据 -->
+  <select id="queryProjectEnums" resultMap="ProjectEnumMap">
+  	select  <include refid="Base_Column_List" />
+  	,enu.group_no,enu.group_name,enu.project, enu.`profile`, enu.version_code
+    from property_enum_value pro
+    inner join property_enum enu on pro.group_id=enu.id
+	<trim prefix=" where " suffixOverrides="and | or">
+  		<if test="pro.local !=null and pro.local !=''">					pro.local 		    =#{pro.local} and						</if>
+	  	<if test="pro.profile !=null and pro.profile !=''">				enu.`profile` 		=#{pro.profile} and						</if>
+	  	<if test="pro.versionCode !=null and pro.versionCode !=''">		enu.version_code 	=#{pro.versionCode} and					</if>
+  		<if test="pro.project !=null and pro.project !=''">				enu.project 		=#{pro.project} and						</if>
+  		<if test="pro.groupNo !=null and pro.groupNo !=''">				enu.group_no 		=#{pro.groupNo} and						</if>
+  	</trim>    
+  </select>
+  <select id="queryProjectEnumValue" resultMap="ProjectEnumMap">
+  	select  <include refid="Base_Column_List" />
+  	,enu.group_no,enu.group_name,enu.project, enu.`profile`, enu.version_code
+    from property_enum_value pro
+    inner join property_enum enu on pro.group_id=enu.id
+	<trim prefix=" where " suffixOverrides="and | or">
+  		<if test="enumNo !=null and enumNo !=''">						pro.enum_no 		=#{enumNo} and							</if>
+  		<if test="pro.local !=null and pro.local !=''">					pro.local 		    =#{pro.local} and						</if>
+	  	<if test="pro.profile !=null and pro.profile !=''">				enu.`profile` 		=#{pro.profile} and						</if>
+	  	<if test="pro.versionCode !=null and pro.versionCode !=''">		enu.version_code 	=#{pro.versionCode} and					</if>
+  		<if test="pro.project !=null and pro.project !=''">				enu.project 		=#{pro.project} and						</if>
+  		<if test="pro.groupNo !=null and pro.groupNo !=''">				enu.group_no 		=#{pro.groupNo} and						</if>
+  	</trim>    
+  </select>
+  <select id="queryProjectEnumByGroupId" parameterType="java.lang.Integer" resultMap="ProjectEnumMap">
+  	select  <include refid="Base_Column_List" />
+  	,enu.group_no,enu.group_name,enu.project, enu.`profile`, enu.version_code
+    from property_enum_value pro
+    inner join property_enum enu on pro.group_id=enu.id
+	where enu.id=#{groupId}
+  </select>
+</mapper>

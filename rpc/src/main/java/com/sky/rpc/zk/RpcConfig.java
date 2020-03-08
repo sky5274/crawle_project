@@ -15,6 +15,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
+import com.sky.rpc.core.RpcTypeContant;
 import com.sky.rpc.resource.ResouceProperties;
 import com.sky.rpc.resource.RpcMethodUtil;
 
@@ -192,6 +193,7 @@ public class RpcConfig {
 	public static class nodeData {
 		private String ip;
 		private int port;
+		private String rpcType;
 		private String intfaceName;
 		private String className;
 		private Map<String, Class[]> methodParamTypeMap=new HashMap<>();
@@ -201,13 +203,15 @@ public class RpcConfig {
 			this.ip=ip;
 			this.port=port;
 			this.setIntfaceName(intfaceName);
-			this.setClassName(className);;
+			this.setClassName(className);
+			this.setRpcType(RpcTypeContant.getType());
 		}
 		
 		public nodeData(String ip,int port,Class<? extends Object> clazz) throws ClassNotFoundException {
 			this.ip=ip;
 			this.port=port;
 			this.setClassName(clazz.getName());
+			this.setRpcType(RpcTypeContant.getType());
 			Type[] intfaces = clazz.getGenericInterfaces();
 			if(intfaces!=null && intfaces.length>0) {
 				this.setIntfaceName(intfaces[0].getTypeName());
@@ -253,6 +257,12 @@ public class RpcConfig {
 		}
 		public void setMethodParamNameMap(Map<String, String[]> methodParamNameMap) {
 			this.methodParamNameMap = methodParamNameMap;
+		}
+		public String getRpcType() {
+			return rpcType;
+		}
+		public void setRpcType(String rpcType) {
+			this.rpcType = rpcType;
 		}
 		
 	}

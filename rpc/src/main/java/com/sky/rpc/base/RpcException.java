@@ -9,5 +9,8 @@ public class RpcException extends Exception{
 	public RpcException(String string) {
 		super(string);
 	}
+	public RpcException(String string,Throwable e) {
+		super(string,e);
+	}
 
 }
