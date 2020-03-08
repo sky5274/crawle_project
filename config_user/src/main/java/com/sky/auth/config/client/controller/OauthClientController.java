@@ -20,7 +20,7 @@ import com.sky.pub.Result;
 @RestController
 @ConditionalOnBean(UserInfoRestTemplateFactory.class)
 public class OauthClientController {
-	@Autowired
+	@Autowired(required=false)
 	private com.sky.auth.config.client.service.OauthClientService OauthClientService;
 	@Value("${security.basic.url:http://localhost:8980}")
 	private String baseUrl;
