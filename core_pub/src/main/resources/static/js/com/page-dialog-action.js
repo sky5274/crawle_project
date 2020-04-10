@@ -3,9 +3,10 @@ function windowAction(obj){
 	$.diaLog({
 		title:obj.title,
 		type:"confrim",
+		width:obj.width,
 		con:getTableContent(obj.columns),
 		func:function(type,content){
-			var tabledata=getTableData(content);
+			var tabledata=getTableData(content,obj.parseForm);
 			var flag=tabledata.isOk;
 			if(flag){
 				if(type=='sure'){
@@ -15,11 +16,31 @@ function windowAction(obj){
 							tabledata.data=d;
 						}
 					}
-					updatOrAddPostRequest({url:obj.actionUrl,data:tabledata.data,table:obj.table,isPost:obj.isPost})
+					updatOrAddPostRequest({url:obj.actionUrl,data:tabledata.data,table:obj.table,btn:obj.btn,loadding:obj.loadding,success:obj.success,isPost:obj.isPost})
 				}
 			}
 			return flag;
 		}
+	})
+}
+
+/**默认弹框from 函数*/
+function defActiveWindowFun(obj){
+	for(var i in obj.columns){
+		var c=obj.columns[i];
+		var val=obj.data[c.name]
+		if(val !=undefined){
+			c.value=val
+		}
+		obj.columns[i]=c
+	}
+	windowAction({
+		title:obj.title,
+		width:obj.width?obj.width:700,
+		table:obj.table,
+		success:obj.success,
+		columns:obj.columns,
+		actionUrl:obj.url,
 	})
 }
 
@@ -44,12 +65,19 @@ function getColums(col,row){
 	return col
 }
 
-function getSelctRow(table,alert){
-	var row=$(table).bootstrapTable('getSelections')[0];
-	if(row==undefined){
+/*获取表格已选择的数据*/
+function getSelctRows(table,alert){
+	var rows=$(table).bootstrapTable('getSelections');
+	if(rows==undefined || rows.length==0){
 		$.diaLog({con:alert?alert:"请选择一条数据"})
 	}
-	return row;
+	return rows;
+}
+function getSelctRow(table,alert){
+	var rows=getSelctRows(table,alert);
+	if(rows!=undefined && rows.length>0){
+		return rows[0];
+	}
 }
 
 function updatOrAddPostRequest(obj){
@@ -58,11 +86,15 @@ function updatOrAddPostRequest(obj){
 			url:obj.url,
 			data:obj.data,
 			async:false,
+			btn:obj.btn,
 			loadding:obj.loadding?obj.loadding:true,
 			success:function(res){
 				$.diaLog({con:"操作成功"})
 				if(obj.table){
 					$(obj.table).jmTable("refresh")	
+				}
+				if(obj.success){
+					obj.success(obj.data)
 				}
 				flag=true;
 			}

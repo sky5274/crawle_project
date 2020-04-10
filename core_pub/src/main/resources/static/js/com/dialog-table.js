@@ -11,7 +11,7 @@
 			if(param.columns==undefined || !Array.isArray(param.columns)){
 				return;
 			}
-			var isChange=false
+			var isChange=false || param.type==obj.type
 			$.each(param.columns,function(i,cl){
 				if(cl.Exact){
 					isChange=true;
@@ -21,7 +21,9 @@
 			param=$.extend(true,obj,param)
 			if(isChange){
 				param.columns.push({on:'精准',off:"模糊",clazz:Exact_like_switch,checked:false,type:"switch",change:function(ele,data){
-					
+					if(param.exactFunc){
+						param.exactFunc(data,$(_this))
+					}
 				}})
 			}
 			if(param.clear){
@@ -45,13 +47,14 @@
 			$(this).find("input").each(function(){
 				var nameKey=isExcat?'exact':'name'
 				var key=$(this).attr(nameKey);
-				if(key && key == '' ){
+				if(key==undefined || key == '' ){
 					key=$(this).attr("name")
 				}
 				if(key && key !='' && key !='undefined'){
+					var val=$(this).val();
 					if($(this).attr("type")=='checkbox' || $(this).attr("type")=='radio'){
 						data[key]=$(this).prop("checked")
-					}else if($(this).val()!=''){
+					}else if(val!='' && val !='undefined'){
 						data[key]=$(this).val()
 					}
 				}
@@ -77,15 +80,16 @@ function addFromTable(content,list){
 				content.append('<input type="hidden" name="'+getNotNullText(e.name)+'" value="'+getNotNullText(e.value)+'"/>')
 			}else{
 				var size=e.size?e.size:10
-				var item=$('<div class="item-lable form-group clearfix"><lable class="col-sm-2 control-label">'+getNotNullText(e.title)+':</lable><div class="col-sm-'+size+' form-item"></div></div>')
+				var item=$('<div class="item-lable form-group clearfix"><lable class="col-sm-'+(12-size)+' control-label">'+getNotNullText(e.title)+':</lable><div class="col-sm-'+size+' form-item"></div></div>')
 				$(item).find("div.form-item").append(getElement(e));;
+				$(item).find("lable").css("padding", "7px 10px")
 				content.append(item)
 			}
 		})
 	}
 }
 function getNotNullText(txt){
-	return txt?txt:''
+	return txt || txt!='undefined'?txt:''
 }
 
 /**form item 封装2*/
@@ -126,8 +130,13 @@ function getElement(e){
 		if(e.type!=undefined && e.type=='switch'){
 			if(e.on){attr+='data-on-label="'+e.on+'"'}
 			if(e.off){attr+='data-off-label="'+e.off+'"'}
-			ele=$('<div class="switch '+(e.clazz?e.clazz:'')+'" '+attr+'> <input type="checkbox" name="'+getNotNullText(e.name)+'" /></div>')
+			ele=$('<div class="switch input-group '+(e.clazz?e.clazz:'')+'" '+attr+'> <input type="checkbox" name="'+getNotNullText(e.name)+'" /></div>')
 			ele.bootstrapSwitch()
+			ele.css( "height", "35px")
+			ele.find("span,label").css({
+				'height': '33px',
+				'padding': '6px',
+			})	
 			$(ele).on('switch-change', function (ev, data) {
 			    $(this).data('value',data.value)
 			    $(this).data('data',data)
