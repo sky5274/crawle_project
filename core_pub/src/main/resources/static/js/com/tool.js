@@ -12,9 +12,35 @@
 				data:{},
 				type:'GET',
 				async:true,
-				dataType:"text",	
+				dataType:"json",	
 		}
 		obj=$.extend(obj,option)
+		if(obj.prepare){
+			//前置准备函数
+			obj.prepare(obj.data,function(d){
+				if(d){
+					obj.data$.extend(obj.data,d);
+				}
+				ajaxFunc(obj,option)
+			})
+		}else{
+			ajaxFunc(obj,option)
+		}
+	}
+	
+	/*解析url 前缀*/
+	function parseUrl(url){
+		if(url && url.indexOf("://")<0){
+			try {
+				url=API.config.baseUrl+url
+			} catch (e) {
+			}
+		}
+		return url
+	}
+	
+	/*ajax 函数*/
+	function ajaxFunc(obj,option){
 		if(obj.loadding){
 			obj.beforeSend=function(){
 				if(option.beforeSend){
@@ -29,16 +55,7 @@
 				$.loading(obj.loadtarget).close()
 			}
 		}
-		var url;
-		if(obj.url.indexOf("://")<0){
-			try {
-				url=API.config.baseUrl+obj.url
-			} catch (e) {
-				url=obj.url
-			}
-		}else{
-			url=obj.url
-		}
+		var url=parseUrl(obj.url);
 		$.ajax({
 			url:url,
 			data:obj.data,
@@ -62,9 +79,9 @@
 			},
 			success:function(data,textStatus){
 				if(data==null || data.code==undefined || data.code=="0"|| data.code=="-1" || obj.ignore==true || data.success){
-						if(obj.success){
-								obj.success(data,textStatus)
-						}
+					if(obj.success){
+						obj.success(data,textStatus)
+					}
 				}else if(data.code=="-2"){
 					getInitParent(parent).location.href=basePath+"/login";
 				}else{
@@ -75,7 +92,20 @@
 							console.log(obj.url+'>>>'+data.message)
 							$.diaLog({con:data.message,closed:true})
 						}else{
-							$.diaLog({con:obj.url+'>>>'+data.message,closed:true})
+							if(data.exception){
+								$.diaLog({
+									con:obj.url+'>>>'+data.message,
+									init:function(dialog){
+										$(dialog).find(".modal-footer").prepend("<button class='down-exception btn btn-default' >下载</button>")
+										$(dialog).find(".down-exception").on("click",function(){
+											download("log.txt",data.exception)
+										})
+									}
+								})
+							}else{
+								$.diaLog({con:obj.url+'>>>'+data.message,closed:true})
+							}
+							
 						}
 					}
 				}
@@ -96,7 +126,6 @@
 				if(obj.error){
 					obj.error()
 				}else{
-					console.log(url)
 					if(e.responseJSON){
 						if(e.responseJSON.message){
 							$.diaLog({con: e.responseJSON.message,closed:true})
@@ -149,7 +178,6 @@
 	function jTable(tar,obj){
 		var param ={
 				method: 'get',
-			    url: "",
 				cache: false,
 				striped: true,
 				dataField: "list",
@@ -169,7 +197,7 @@
 					}else{
 						params=param;
 					}
-					params.current=param.offset;
+					params.current=(param.offset/param.limit)+1;
 					params.pageSize=param.limit;
 					return params;
 				},
@@ -199,6 +227,9 @@
 			param.contentType='application/json';
 		}
 		param=$.extend(param,obj)
+		
+		//解析url
+		param.url=parseUrl(param.url)
 		$(tar).bootstrapTable(param)
 	}
 	var cartPage=function(param){
@@ -223,14 +254,19 @@
 				$(this.cart_panel).css({"width":"100%","height":"100%","margin-bottom": "0"})
 				$(this.cart_panel).find(".cart-back").css({"height":"30px","width":"100%"})
 				$(this.cart_panel).find("iframe").css({"height":"calc(100% - 30px)","width":"100%"})
+				if(obj.showback==false){
+					$(this.cart_panel).find(".cart-back").hide();
+				}else{
+					$(this.cart_panel).find(".cart-back").on('click',function(){
+						$(_this.cart_panel).fadeOut();
+						$(obj.parent).fadeIn();
+					})
+				}
 //				$(this.cart_panel).find(".cart-back").css({"height":"30px","width":"100%","position": "absolute","top": "0px","z-index": 2})
 //				$(this.cart_panel).find("iframe").css({"height":"100%","width":"100%","position": "absolute","top": "0px"})
-				$(this.cart_panel).find(".cart-back").on('click',function(){
-					$(_this.cart_panel).fadeOut();
-					$(obj.parent).fadeIn();
-				})
 			}
-			this.cart_panel.find("iframe").attr("src",obj.src)
+			
+			this.cart_panel.find("iframe").attr("src",parseUrl(obj.src))
 			this.cart_panel.fadeIn();
 		},
 		showPanel:function(){
@@ -332,6 +368,41 @@
 		})
 	}
 	
+	function parseEle(tar,obj){
+		$(tar).find("input,textArea").each(function(i,e){
+			var n=$(this).attr("name")
+			if(n!=undefined && n !=''){
+				var v=obj[n];
+				if(v !=undefined){
+					$(this).val(v);
+				}
+			}
+		})
+		$(tar).find("select").each(function(i,e){
+			var n=$(this).attr("name")
+			if(n!=undefined && n !=''){
+				var v=obj[n];
+				if(v){
+					$(this).children().prop("selected", false);
+					$(this).children('[value="'+v+'"]').prop("selected", true);
+				}
+			}
+		})
+	}
+	function parseObj(tar){
+		var obj={}
+		$(tar).find("input,textArea,select").each(function(i,e){
+			var n=$(this).attr("name")
+			if(n!=undefined && n !=''){
+				var v=$(this).val()
+				if(v !=''){
+					obj[n]=v
+				}
+			}
+		})
+		return obj;
+	}
+	
 	
 	$.fn.extend({
 		jTable:function(param){
@@ -342,6 +413,12 @@
 		},
 		inputSelect:function(param){
 			return new inputSelect($(this),param)
+		},
+		parseEle:function(param){
+			return new parseEle($(this),param)
+		},
+		parseObj:function(){
+			return new parseObj($(this))
 		},
 		
 	})
@@ -567,7 +644,6 @@ function date(format, timestamp){
             // nothing special 
             ret = s; 
         } 
-        console.log(ret)
         return ret; 
     }); 
 }
@@ -588,3 +664,71 @@ function sprintf(str) {
     });
     return flag ? str : '';
 };
+
+/**
+ * 创建文件
+ * @param filename
+ * @param text
+ * @returns
+ */
+function download(filename, text) {
+	  var element = document.createElement('a');
+	  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+	  element.setAttribute('download', filename);
+	  
+	  element.style.display = 'none';
+	  document.body.appendChild(element);
+	  element.click();
+	  document.body.removeChild(element);
+	}
+
+/*元素全局显示*/
+$(function(){
+	listenFullScreenEvent();
+})
+/*全屏事件监听*/
+function listenFullScreenEvent(){
+	document.addEventListener('fullscreenchange', 		function() { FullScreenChangeEvent(document.fullscreen)},false);
+	document.addEventListener('mozfullscreenchange',	function() { FullScreenChangeEvent(document.mozFullScreen)},false);
+	document.addEventListener('webkitfullscreenchange',	function() { FullScreenChangeEvent(document.webkitIsFullScreen)},false);
+	document.addEventListener('msfullscreenchange',		function() { FullScreenChangeEvent(document.msFullscreenElement)},false);
+}
+
+function FullScreenChangeEvent(flag){
+	if(FULLFUC){FULLFUC(flag)}
+	if(!flag){
+		FULLELE=undefined;
+	}
+}
+
+var FULLELE;
+var FULLFUC;
+/*加载全屏元素，以及全局过程事件*/
+function launchIntoFullscreen(element,func) {
+	FULLELE=element;
+	FULLFUC=func;
+    if(element.requestFullscreen){
+        element.requestFullscreen();
+    } else if(element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+    } else if(element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+    }else if(element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+    }
+}
+/*退出全屏*/
+function exitFullscreen() {
+    if(document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if(document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if(document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    }
+}
+/*全屏元素*/
+function FullScreenEle(){
+	return FULLELE;
+}
+
