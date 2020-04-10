@@ -1,6 +1,6 @@
 ;(function($,win,doc){
 	var Message=function(cond,parent){
-		this.parent=parent!=undefined ?$(parent):$("body",window.top.document)
+		this.parent=parent!=undefined ?$(parent):getFullParent();
 		this.settings={
 				src:'',
 				type:"alert",
@@ -63,6 +63,7 @@
 						$(dialog).modal('toggle')
 					}
 				})
+				$(dialog).modal({backdrop:false,show:true});
 				$(dialog).on('hide.bs.modal',function(){
 					$(this).remove()
 				})
@@ -114,7 +115,7 @@
 				'    <h4 class="modal-title" id="myModalLabel">'+this.settings.title+'</h4>'+
 				' </div>'+
 				' <div id="modal_body_content" class="modal-body"></div>'+
-				'<div class="modal-footer">';
+					'<div class="modal-footer">';
 					if(i==1){
 						con+='<button type="button" data-type="cancle" class="btn btn-default" data-dismiss="modal">'+this.settings.cancel+'</button>'
 					}
@@ -128,11 +129,20 @@
 				dialog.find("#modal_body_content").append(this.settings.con)
 				var _this=this;
 				this.parent.append(dialog);
+				if(this.parent !=$("body")){
+					setTimeout(function(){$("body .modal-backdrop").remove()},180)
+				}
 					if(this.settings.src.length>0){
 //						$.loading().show()
 						dialog.find(".modal-body").css("height",this.settings.height?this.settings.height:"500px")
 						dialog.find(".modal-body").append("<iframe id='iframe_"+id+"' frameborder='no' border='0'  style='width:100%;height:98%'></iframe>")
 						var iframe=dialog.find(".modal-body iframe")
+						if(this.settings.src.indexOf("://")<0){
+							try {
+								this.settings.src=API.config.baseUrl+this.settings.src
+							} catch (e) {
+							}
+						}
 						iframe.attr("src",this.settings.src)
 						_this.initModalEvn(dialog,id);
 						//快捷调用
@@ -249,19 +259,122 @@
 				}
 			}
 	}
+	
+	var Load=function(param){
+		this.settings={
+				src:'',
+				type:"alert",
+				hidden:true,
+				drag:false,
+				closed:false,
+				top:30,
+				con:"",
+				init:function(){},  //页面初始化事件
+				func:function(){}
+		}
+		if(param!=null || cons!=""){
+			$.extend(this.settings,param)
+		}
+		this.parent=getFullParent();
+		var id=param.type+"_"+Math.round(Math.random()*100);
+		var con='<div class="dialog modal fade" id="'+id+'" tabindex="-1" role="dialog" aria-hidden="'+this.settings.hidden+'" >'+
+			'<div class="modal-backdrop" style="opacity:0.5;z-index:-1"></div>'+
+			'<div class="modal-dialog">'+
+			' <div class="modal-content">'+
+			' <div class="modal-header">'+
+			'     <button class="close" data-dismiss="modal" aria-hidden="true">&times;</button>'+
+			' </div>'+
+			' <div id="modal_body_content" class="modal-body">'+param.con+'</div>'+
+			'</div>'+
+		'</div>'
+		this.eleId=id;
+		this.ele=$(con)
+		this.ele.attr("id",id)
+		this.parent.append(this.ele)
+		this.showLoad();
+	}
+	Load.prototype={
+			initParam:function(param){
+				if(param!=null ){
+					$.extend(this.settings,param)
+				}
+			},
+			showLoad:function(){
+				this.initModalEvn(this.ele,this.eleId);
+				this.initModalEvent(this.ele,this.eleId);
+				$(this.ele).modal({backdrop:false,show:true});
+			},
+			hide:function(){
+				$(this.ele).modal({backdrop:false,show:false});
+			},
+			initModalEvent:function(dialog,id){
+				var _this=this;
+				$(dialog).modal({backdrop:false,show:true});
+				$(dialog).on('hide.bs.modal',function(){
+					$(this).remove()
+				})
+				if(this.settings.drag){
+					$(dialog).draggable();//为模态对话框添加拖拽
+					$(dialog).css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
+				}
+			},
+			initModalEvn:function(dialog,id){
+				//页面初始化事件
+				var _this=this;
+				this.settings.init(dialog);
+				this.parent.find("#"+id).modal('toggle')
+				var H=$(_this.parent).height()
+				window.setTimeout(function(){
+					$(_this.parent).children(".modal-backdrop").remove();
+					var h=$(dialog).find(".modal-body").height()
+					var con_w=$(dialog).find(".modal-content").width();
+					//$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
+				},500)
+				if(this.settings.width){
+					//根据百分比适配宽度
+					if((this.settings.width+"").indexOf('%')>-1){
+						window.setTimeout(function(){
+							$(dialog).find(".modal-dialog").css("width", parseInt(_this.settings.width)+"%")
+						},300)
+					}else{
+						$(dialog).find(".modal-dialog").css({"width":parseInt(this.settings.width)+"px"})
+					}
+				}
+				if(this.settings.height){
+					if((this.settings.height+"").indexOf('%')>-1){
+						$(dialog).find(".modal-dialog").css({"height":parseInt(this.settings.height)+'%',"overflow-y": "auto"})
+					}else{
+						$(dialog).find(".modal-dialog").css({"height":parseInt(this.settings.height)+"px","overflow-y": "auto"})
+						
+					}
+				}else{
+					$(dialog).find(".modal-dialog").css({"max-height":"500px","overflow-y": "auto"})
+				}
+				$(dialog).find(".modal-content").css({"height":'100%'})
+				$(dialog).find(".modal-body").css({"height":'calc( 100% - 33px)'})
+				
+				$(dialog).find(".modal-content").resize(function(){
+					var H=$(_this.parent).height()
+					var h=$(this).height()
+					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
+				})
+			},
+			stop:function(){
+				this.settings.flag=false;
+			},
+	}
 
-	var panel=function(con){
-		 var contetn='<div class="modal-header">'+
-						'     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>'+
-						' </div>'+
-						'<div class="modal-content">'+con+'</div>';
+	var panel=function(param){
 		var option={
-				width:800,
+				width:'800',
 				height:500,
 				bg_color:"white",
-				con:contetn,
+				con:'',
 				hidden:false,
 				type:"panel"
+		}
+		if(param!=null || cons!=""){
+			$.extend(option,param)
 		}
 		$(".modal_panel").remove();
 		this.panel=new Load(option);
@@ -278,8 +391,10 @@
 			hide:function(){
 				this.panel.hide();
 			},
-			reload:function(con){
-				$(this.panel.LOAD).find(".modal-content").html(con).fadeIn()
+			reload:function(param){
+				$(this.panel.LOAD).find(".modal-content").html(param.con).fadeIn()
+				this.panel.initParam(param)
+				this.panel.showLoad();
 			}
 	}
 	var showImg=function(img){
@@ -394,6 +509,7 @@
 		}
 	});  
 
+	/*获取最顶层的iframe parent*/
 	function getInitParent(parent){
 		if(parent==undefined){
 			parent=window.parent;
@@ -403,6 +519,16 @@
 		}else{
 			return getInitParent(parent.parent)
 		}
+	}
+	
+	/*考虑全屏上级元素*/
+	function getFullParent(){
+		var ele;
+		try {
+			ele=eval('FullScreenEle()')
+		} catch (e) {
+		}
+		return ele?$(ele):$(getInitParent().document.body)
 	}
 	
 	
@@ -431,7 +557,7 @@
 		loading:function(tar){
 			var parent;
 			var body= tar==undefined || $(tar).length==0 ?'body':$(tar)
-			if(tar==undefined || self!=top){
+			if(tar==undefined || self!=top || eval('FullScreenEle()') !=undefined){
 				parent=$(body,window.top.document)
 			}else{
 				parent=$(body)
@@ -446,15 +572,15 @@
 				console.error("could not find parent")
 			}
 		},
-		panel:function(con){
+		panel:function(param){
 			var p;
 			var body=$("body",window.top.document)
 			if($(body).data("panel")==undefined){
-				p=new panel(con)
+				p=new panel(param)
 				$(body).data("panel",p)
 			}else{
 				p=$(body).data("panel")
-				p.reload(con)
+				p.reload(param)
 			}
 			return p;
 		},
