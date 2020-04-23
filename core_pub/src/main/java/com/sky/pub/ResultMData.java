@@ -4,11 +4,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * result message data
+ * result message data with mutilate msg
  * @author 王帆
  * @date  2019年7月11日 上午10:27:09
  */
-public class ResultMData<T> extends Result<T>{
+public class ResultMData<T> extends ResultExceptionData<T>{
 
 	/***/
 	private static final long serialVersionUID = 1L;
