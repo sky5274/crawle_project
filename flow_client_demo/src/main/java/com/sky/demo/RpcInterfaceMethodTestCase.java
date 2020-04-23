@@ -7,8 +7,8 @@ import java.util.List;
 
 import com.sky.demo.test.MethodInterFace;
 import com.sky.rpc.base.RpcRequest;
-import com.sky.rpc.core.cilent.RpcClientHandle;
-import com.sky.rpc.core.cilent.http.RpcHttpClientInvokeHandle;
+import com.sky.rpc.core.client.RpcClientHandle;
+import com.sky.rpc.core.client.http.RpcHttpClientInvokeHandle;
 
 /**
  * rpc interface method test cash

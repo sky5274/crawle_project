@@ -14,7 +14,7 @@ import com.sky.rpc.base.Result;
 import com.sky.rpc.base.RpcRequest;
 import com.sky.rpc.call.RpcCallBack;
 import com.sky.rpc.core.RpcTypeContant;
-import com.sky.rpc.core.cilent.RpcClientHandle;
+import com.sky.rpc.core.client.RpcClientHandle;
 import com.sky.rpc.provider.ProviderMethodInvoker;
 
 @Component

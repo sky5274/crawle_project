@@ -7,7 +7,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import org.apache.zookeeper.KeeperException;
-import com.sky.rpc.core.cilent.RpcClient;
+
+import com.sky.rpc.core.client.RpcClient;
 import com.sky.rpc.zk.RpcConfig;
 import com.sky.rpc.zk.RpcConfig.nodeData;
 
