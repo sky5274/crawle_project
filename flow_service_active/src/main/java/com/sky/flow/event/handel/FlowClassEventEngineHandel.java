@@ -27,7 +27,7 @@ import com.sky.flow.util.SpringBeanUtil;
 import com.sky.rpc.base.RpcRequest;
 import com.sky.rpc.call.RpcConnectCall;
 import com.sky.rpc.call.RpcConnectCallFactory;
-import com.sky.rpc.core.cilent.RpcClient;
+import com.sky.rpc.core.client.RpcClient;
 import com.sky.rpc.resource.ResouceProperties;
 import com.sky.rpc.resource.RpcMethodUtil;
 import com.sky.rpc.zk.RpcConfig;
