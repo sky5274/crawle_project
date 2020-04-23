@@ -12,7 +12,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,19 +30,30 @@ public class RedisConnectAdvice {
 	private Long timee=null;
 	String method=null;
 	@Resource
-	private JedisConnectionFactory connects;
+	private RedisConnectionFactory connectFactory;
 	
-	@Pointcut("execution(* com.sky.pub.service.impl.BaseRedis*+.*(..))")
+	@Pointcut("execution(* cn.microvideo.pub.service.impl.BaseRedis*+.*(..))")
 	public void point(){}
 	
 	@Before("point()")
 	public void before(JoinPoint joinpoint){
 		times=System.currentTimeMillis();
-		log.debug("ooo redis Connect to ["+connects.getHostName()+":"+connects.getPort()+
-				",password="+connects.getPassword()+
-				", database:"+connects.getDatabase()+
-				",time:"+LocalDate.now()+" "+LocalTime.now()+
-				"]");
+		if(connectFactory instanceof JedisConnectionFactory) {
+			JedisConnectionFactory connects=(JedisConnectionFactory)connectFactory;
+			log.debug("ooo redis Connect to ["+connects.getHostName()+":"+connects.getPort()+
+					",password="+connects.getPassword()+
+					", database:"+connects.getDatabase()+
+					",time:"+LocalDate.now()+" "+LocalTime.now()+
+					"]");
+		}else if(connectFactory instanceof LettuceConnectionFactory) {
+			LettuceConnectionFactory connects=(LettuceConnectionFactory)connectFactory;
+			log.debug("ooo redis Connect to ["+connects.getHostName()+":"+connects.getPort()+
+					",password="+connects.getPassword()+
+					", database:"+connects.getDatabase()+
+					",time:"+LocalDate.now()+" "+LocalTime.now()+
+					"]");
+		}
+		
 	}
 
 	@After("point()")
