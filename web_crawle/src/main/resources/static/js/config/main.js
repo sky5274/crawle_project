@@ -3,7 +3,7 @@ function addModel(ele,tar){
 	if(tab_url!="#" && tab_url !=""){
 		var code=$(ele).attr("code")
 		var tabId="tab_"+code;
-		var tab=$(tar.tab).find("#"+tabId)
+		var tab=$(tar.tab).find("#"+tabId).parent()
 		if(tab.length==0){
 			tab=$('<li class="tab-item"><a href="#con_'+code+'" data-toggle="tab" id="'+tabId+'">'+$(ele).text()+'</a><i onClick="delTab(this)" class="tab-close" data-toggle="tooltip" title="closed">&times;</i> </li>');
 			$(tar.tab).append(tab);
@@ -15,8 +15,8 @@ function addModel(ele,tar){
 			tab_act.removeClass("active")
 			$(tar.content).find(".active").removeClass("active")
 			$(tar.content).find("#con_"+code).addClass("active")
-			tab.addClass("active");
 		}
+		tab.addClass("active");
 	}
 }
 
@@ -29,14 +29,24 @@ function delTab(ele){
 	if(parent.find("li.active").length==0){
 		var item=parent.find("li").eq(0);
 		if(item.length>0){
+			item.addClass("active")
+			var tab_con=$(item.find("a").attr("href"))
+			$(tab_con).parent().find(".active").removeClass("active")
+			$(tab_con).addClass("active")
 			item.find("a").addClass("active")
-			parent.find(item.find('a').attr("href")).addClass("active")
+			activeMenuTiem($("#menu-group-list a[code='"+item.find("a").attr("href").replace("#con_","")+"']").parent())
 		}
 	}
 }
 
+function activeMenuTiem(tar){
+	$("#menu-group-list").find(".active").removeClass("active")
+	$(tar).addClass("active")
+}
+
 function initMneuPage(){
 	$("#menu-group-list").on("click","li",function(ele){
+		activeMenuTiem(this)
 		var pre=$(this).parents("li").find(".glyphicon-chevron-down");
 		if(pre.length>0){
 			return false;
