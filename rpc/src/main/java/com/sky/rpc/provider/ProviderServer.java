@@ -1,5 +1,6 @@
 package com.sky.rpc.provider;
 
+import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.commons.logging.Log;
@@ -7,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.StringUtils;
 import com.sky.rpc.core.RpcTypeContant;
 import com.sky.rpc.resource.ResouceProperties;
+import com.sky.rpc.zk.RpcClientManager;
 
 /**
  * 服务端
@@ -21,9 +23,12 @@ public abstract class ProviderServer extends Thread {
 	protected static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	protected Log log=LogFactory.getLog(getClass());
 	protected static Integer port;
+	protected static String host;
 	/**provider server is open flag*/
 	protected volatile static boolean isOpen=false;
 	public static String portKey="rpc.server.port";
+	public static String ipKey="rpc.server.ip";
+	public static String urlKey="rpc.server.url";
 	
 	
 	public ProviderServer() {
@@ -33,17 +38,47 @@ public abstract class ProviderServer extends Thread {
 		setPort(port+"");
 	};
 	
+	/**
+	 * 获取服务定义的ip或域名
+	 * @return
+	 * @author 王帆
+	 * @date 2020年4月25日 下午2:56:00
+	 */
+	public static String getHost() {
+		if(host ==null) {
+			boolean flag=false;
+			String url=ResouceProperties.getProperty(urlKey);
+			if(!StringUtils.isEmpty(url)) {
+				flag=true;
+				try {
+					URL u=new URL(url);
+					setHost(u.getHost());
+					setPort(u.getPort()+"");
+				}catch (Exception e) {
+					flag=false;
+				}
+			}
+			if(!flag) {
+				setHost(ResouceProperties.getProperty(ipKey));
+			}
+		}
+		return ProviderServer.host;
+	}
 	
+	public static void setHost(String host) {
+		if(StringUtils.isEmpty(host)) {
+			host=RpcClientManager.getIp();
+		}
+		try {
+			ProviderServer.host=host;
+			System.setProperty(ipKey, host);
+		} catch (Exception e) {
+		}
+	}
 	
 	public static int getPort() {
 		if(ProviderServer.port==null) {
-			String sys_port = System.getProperty(portKey);
-			if(StringUtils.isEmpty(sys_port)) {
-				String port_str = ResouceProperties.getProperty(portKey);
-				if(port_str!=null) {
-					sys_port=port_str;
-				}
-			}
+			String sys_port = ResouceProperties.getProperty(portKey);
 			setPort(sys_port);
 		}
 		return ProviderServer.port;

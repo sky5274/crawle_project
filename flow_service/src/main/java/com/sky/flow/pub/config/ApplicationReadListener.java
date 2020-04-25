@@ -40,13 +40,14 @@ public class ApplicationReadListener  implements ApplicationListener<ContextRefr
 	@Override
 	public synchronized void onApplicationEvent(ContextRefreshedEvent event) {
 		String version = ResouceProperties.getProperty("flow.server.version");
+		String host=ProviderServer.getHost();
 		int port = ProviderServer.getPort();
 		if(!StringUtils.isEmpty(version)){
 			Map<String, Object> beanmaps = applicationContext.getBeansWithAnnotation(RpcEvent.class);
 			if(!beanmaps.values().isEmpty()) {
 				for(Object b:beanmaps.values()) {
 					try {
-						RpcConfig.regist("/"+version, b, port);
+						RpcConfig.regist("/"+version, b);
 					} catch (Exception e) {
 						throw new Error("flow event handle regist failed! event class:"+b.getClass().getName());
 					}
@@ -68,7 +69,7 @@ public class ApplicationReadListener  implements ApplicationListener<ContextRefr
 			}else {
 				server=new ProviderNettyServer();
 			}
-			log.info("rpc flow server start in port:"+port);
+			log.info("rpc flow server start in host: "+host+" port:"+port);
 			server.start();
 		}
 	}
