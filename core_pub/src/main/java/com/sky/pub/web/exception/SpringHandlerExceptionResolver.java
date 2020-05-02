@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -87,9 +88,9 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 						isRespondBody=true;
 					}
 				}
-				Object bean = handler.getBean();
-				if(bean!=null){
-					if(bean.getClass().getAnnotation(RestController.class)!=null && method.getReturnType().getName().equals(Model.class.getName())){
+				 Class<?> beanClass = handler.getBeanType();
+				if(beanClass!=null){
+					if(beanClass.getAnnotation(RestController.class)!=null){
 						isRespondBody=true;
 					}
 				}
@@ -192,7 +193,8 @@ public class SpringHandlerExceptionResolver implements HandlerExceptionResolver 
 	 * @return
 	 */
 	private boolean isJson(HttpServletRequest request) {
-		return "application/json".equalsIgnoreCase(request.getHeader("Content-Type"));
+		String contextType = request.getHeader("Content-Type");
+		return StringUtils.isEmpty(contextType)?false:contextType.toLowerCase().contains("application/json");
 	}
 
 	/**
