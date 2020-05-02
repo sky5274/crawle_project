@@ -88,13 +88,11 @@ public class ApplicationStartWithProviderServerListener  implements ApplicationL
 	 * @date 2020年1月21日 上午10:41:24
 	 */
 	private void registProviderNode(Class<?> clazz, RpcElement ele) {
-		int port = ProviderServer.getPort();
-		
 		//rpc provider class interface info regist into zookeeper
 		Class<?>[] interfaces = clazz.getInterfaces();
 		if(interfaces !=null) {
 			for(Class<?> intf:interfaces) {
-				registProviderClassNode(ele,intf,clazz,port);
+				registProviderClassNode(ele,intf,clazz);
 			}
 		}
 		
@@ -103,13 +101,13 @@ public class ApplicationStartWithProviderServerListener  implements ApplicationL
 		if(!CollectionUtils.isEmpty(superClasses)) {
 			for(Class<?> intf:superClasses) {
 				if(!Object.class.getName().equals(intf.getName())) {
-					registProviderClassNode(ele,intf,clazz,port);
+					registProviderClassNode(ele,intf,clazz);
 				}
 			}
 		}
 		
 		//rpc provider class info regist into zookeeper
-		registProviderClassNode(ele,clazz,clazz,port);
+		registProviderClassNode(ele,clazz,clazz);
 	}
 	
 	/**
@@ -119,9 +117,9 @@ public class ApplicationStartWithProviderServerListener  implements ApplicationL
 	 * @param clazz
 	 * @param port
 	 */
-	private void registProviderClassNode(RpcElement ele, Class<?> intf, Class<?> clazz, int port) {
+	private void registProviderClassNode(RpcElement ele, Class<?> intf, Class<?> clazz) {
 		try {
-			RpcConfig.regist(ele.writeUrl(), intf.getName(),clazz.getName(), port);
+			RpcConfig.regist(ele.writeUrl(), intf.getName(),clazz.getName());
 		} catch (Exception e) {
 			String msg=null;
 			if(intf.getName().equals(clazz.getName())) {

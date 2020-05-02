@@ -16,6 +16,7 @@ import org.apache.zookeeper.data.Stat;
 import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.sky.rpc.core.RpcTypeContant;
+import com.sky.rpc.provider.ProviderServer;
 import com.sky.rpc.resource.ResouceProperties;
 import com.sky.rpc.resource.RpcMethodUtil;
 
@@ -67,10 +68,10 @@ public class RpcConfig {
 	 * @param className 
 	 * @throws Exception 
 	 */
-	public static void regist(String url, String className,String targetName,int port) throws Exception {
+	public static void regist(String url, String className,String targetName) throws Exception {
 		//节点属性
-		String nodeData=JSON.toJSONString(new nodeData(RpcClientManager.getIp(), port, className,targetName));
-		regist(url,port,className,nodeData);
+		String nodeData=JSON.toJSONString(new nodeData(ProviderServer.getHost(), ProviderServer.getPort(), className,targetName));
+		regist(url,className,nodeData);
 		
 	}
 	
@@ -86,14 +87,25 @@ public class RpcConfig {
 	 * @author 王帆
 	 * @date 2019年6月21日 上午9:21:20
 	 */
-	public static void regist(String url, Object bean, int port) throws ClassNotFoundException, KeeperException, InterruptedException, IOException {
+	public static void regist(String url, Object bean) throws ClassNotFoundException, KeeperException, InterruptedException, IOException {
 		Class<? extends Object> clazz = bean.getClass();
 		//节点信息，携带bean的方法的注册信息
-		String nodeData=JSON.toJSONString(new nodeData(RpcClientManager.getIp(),port,clazz));
-		regist(url,port,clazz.getName(),nodeData);
+		String nodeData=JSON.toJSONString(new nodeData(ProviderServer.getHost(), ProviderServer.getPort(),clazz));
+		registNodeInZk(url,clazz.getName(),nodeData);
 	}
 	
-	private static void regist(String url,int port,String className, String nodeData) throws KeeperException, InterruptedException, IOException {
+	/**
+	 * 注册node 节点到zookeeper 中
+	 * @param url
+	 * @param className
+	 * @param nodeData
+	 * @throws KeeperException
+	 * @throws InterruptedException
+	 * @throws IOException
+	 * @author 王帆
+	 * @date 2020年4月25日 下午2:35:19
+	 */
+	private static void registNodeInZk(String url,String className, String nodeData) throws KeeperException, InterruptedException, IOException {
 		String[] uarray = url.substring(1).split("/");
 		log.info("node url:"+url+" --"+JSON.toJSONString(uarray));
 		RpcClientManager manager = getManager();
