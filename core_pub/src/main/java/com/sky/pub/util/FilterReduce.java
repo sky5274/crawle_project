@@ -1,5 +1,6 @@
 package com.sky.pub.util;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -40,7 +41,20 @@ public class FilterReduce {
 				break;
 			}
 		}
-		return filterChild(map,topKey,filter);
+		//顶端tree 跟节点
+		T topObj=null;
+		for(T obj:list) {
+			if(topKey.equals(filter.getId(obj))){
+				topObj=obj;
+				break;
+			}
+		}
+		if(topObj==null) {
+			return filterChild(map,topKey,filter);
+		}else {
+			filter.setChild(topObj,filterChild(map,topKey,filter));
+			return new LinkedList<T>(Arrays.asList(topObj));
+		}
 	}
 
 	/**
