@@ -89,14 +89,14 @@ function addFromTable(content,list){
 	}
 }
 function getNotNullText(txt){
-	return txt || txt!='undefined'?txt:''
+	return txt && txt!='undefined' && txt!='null' ?txt:''
 }
 
 /**form item 封装2*/
 function addFromItem(content,list){
 	$.each(list,function(i,e){
 		if(e.hide){
-			content.append('<input type="hidden" name="'+e.name+'" value="'+e.value+'"/>')
+			content.append('<input type="hidden" name="'+e.name+'" value="'+getNotNullText(e.value)+'"/>')
 		}else if(e.ele && e.ele=='button'){
 			var btn=$('<button class="btn btn-primary '+(e.clazz?e.clazz:'')+'" '+(e.id?'id="'+e.id+'"':'')+'>'+getNotNullText(e.title)+'</button>')
 			initEleEvent(e,btn)
@@ -120,12 +120,17 @@ function getElement(e){
 		attr+=e.require?"require=true":""
 	var ele
 	if(e.ele == 'select'){
-		ele=$('<select class="pull-left  form-control" '+attr+' name="'+e.name+'" value="'+(e.value==undefined || e.value==null?'':e.value)+'"></select>"=')
+		ele=$('<select class="pull-left  form-control" '+attr+' name="'+e.name+'" value="'+(getNotNullText(e.value))+'"></select>"=')
 		if(e.data){
 			$.each(e.data,function(i,d){
 				ele.append('<option data="'+JSON.stringify(d)+'" value="'+d.value+'">'+d.name+'</option>')
 			})
 		}
+		$(ele).find("option[value='"+e.value+"']").attr("selected",true);
+	}else if(e.ele =='textArea'){
+		ele= $('<textArea class="pull-left  form-control" '+attr+'  name="'+e.name+'">'+(getNotNullText(e.value))+'</textArea>')
+	}else if(e.ele =='button'){
+		ele=$('<button class="btn btn-primary '+(e.clazz?e.clazz:'')+'" '+(e.id?'id="'+e.id+'"':'')+'>'+getNotNullText(e.title)+'</button>')
 	}else {
 		if(e.type!=undefined && e.type=='switch'){
 			if(e.on){attr+='data-on-label="'+e.on+'"'}
@@ -145,7 +150,7 @@ function getElement(e){
 			    }
 			});
 		}else{
-			ele= $('<input class="pull-left  form-control" type="'+(e.type?e.type:'text')+'" '+attr+' placeholder="'+(e.placeholder?e.placeholder:'')+'"  name="'+e.name+'" value="'+(e.value==undefined || e.value==null?'':e.value)+'"/>')
+			ele= $('<input class="pull-left  form-control" type="'+(e.type?e.type:'text')+'" '+attr+' placeholder="'+(e.placeholder?e.placeholder:'')+'"  name="'+e.name+'" value="'+(getNotNullText(e.value))+'"/>')
 		}
 		
 	}
@@ -195,7 +200,7 @@ function getTableData(content,func){
 	$(content).find('input').parent().css("border",'')
 	var data={}
 	var flag=true;
-	var code=$(content).find("input,select").each(function(i,ele){
+	var code=$(content).find("input,select,textArea").each(function(i,ele){
 		var val=$(this).val();
 		if(func){
 			data=func(ele,data);

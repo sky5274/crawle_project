@@ -5,6 +5,7 @@ function windowAction(obj){
 		type:"confrim",
 		width:obj.width,
 		con:getTableContent(obj.columns),
+		init:obj.init,
 		func:function(type,content){
 			var tabledata=getTableData(content,obj.parseForm);
 			var flag=tabledata.isOk;
