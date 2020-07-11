@@ -30,11 +30,18 @@
 	
 	/*解析url 前缀*/
 	function parseUrl(url){
+		var protocol=window.location.protocol
 		if(url && url.indexOf("://")<0){
 			try {
 				url=API.config.baseUrl+url
+				if(url.indexOf("http:")==0 && protocol !='http:'){
+					url=protocol+url.substr(url.indexOf('://')+1);
+				}
 			} catch (e) {
 			}
+		}
+		if(url && url.indexOf('://')==0){
+			url=protocol+url.substr(1);
 		}
 		return url
 	}
@@ -132,6 +139,7 @@
 						}
 					}
 				}
+				this.complete()
 			}
 		})
 	}
@@ -213,7 +221,6 @@
 				search: false,
 				showColumns: false,
 				showRefresh: false,
-				minimumCountColumns: 2,
 				clickToSelect: true,
 				onLoadError:function(){
 					if(obj.error){
@@ -732,3 +739,62 @@ function FullScreenEle(){
 	return FULLELE;
 }
 
+/**json fromate (json 格式化)*/
+var formatJson = function (json, options) {
+    var reg = null,
+        formatted = '',
+        pad = 0,
+        PADDING = '    ';
+    options = options || {};
+    options.newlineAfterColonIfBeforeBraceOrBracket = (options.newlineAfterColonIfBeforeBraceOrBracket === true) ? true : false;
+    options.spaceAfterColon = (options.spaceAfterColon === false) ? false : true;
+    if (typeof json !== 'string') {
+        json = JSON.stringify(json);
+    } else {
+        json = JSON.parse(json);
+        json = JSON.stringify(json);
+    }
+    reg = /([\{\}])/g;
+    json = json.replace(reg, '\r\n$1\r\n');
+    reg = /([\[\]])/g;
+    json = json.replace(reg, '\r\n$1\r\n');
+    reg = /(\,)/g;
+    json = json.replace(reg, '$1\r\n');
+    reg = /(\r\n\r\n)/g;
+    json = json.replace(reg, '\r\n');
+    reg = /\r\n\,/g;
+    json = json.replace(reg, ',');
+    if (!options.newlineAfterColonIfBeforeBraceOrBracket) {
+        reg = /\:\r\n\{/g;
+        json = json.replace(reg, ':{');
+        reg = /\:\r\n\[/g;
+        json = json.replace(reg, ':[');
+    }
+    if (options.spaceAfterColon) {
+        reg = /\:/g;
+        json = json.replace(reg, ':');
+    }
+    (json.split('\r\n')).forEach(function (node, index) {
+            var i = 0,
+                indent = 0,
+                padding = '';
+            if (node.match(/\{$/) || node.match(/\[$/)) {
+                indent = 1;
+            } else if (node.match(/\}/) || node.match(/\]/)) {
+                if (pad !== 0) {
+                    pad -= 1;
+                }
+            } else {
+                indent = 0;
+            }
+            for (i = 0; i < pad; i++) {
+                padding += PADDING;
+            }
+            if(node != "") {
+                formatted += padding + node + '\r\n';
+            }
+            pad += indent;
+        }
+    );
+    return formatted;
+};
