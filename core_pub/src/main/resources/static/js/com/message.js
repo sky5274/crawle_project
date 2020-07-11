@@ -79,7 +79,9 @@
 				this.parent.find("#"+id).modal('toggle')
 				var H=$(_this.parent).height()
 				window.setTimeout(function(){
-					$(_this.parent).children(".modal-backdrop").remove();
+					if(self!=top){
+						$(_this.parent).children(".modal-backdrop").remove();
+					}
 					var h=$(dialog).find(".modal-body").height()
 					var con_w=$(dialog).find(".modal-content").width();
 					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
@@ -96,7 +98,7 @@
 					}
 				}
 				$(dialog).find(".modal-body").css({"max-height":"500px","overflow-y": "auto"})
-				$(dialog).find(".modal-content").resize(function(){
+				$(dialog).find(".modal-body").on('resize',function(){
 					var H=$(_this.parent).height()
 					var h=$(this).height()
 					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
@@ -130,7 +132,7 @@
 				var _this=this;
 				this.parent.append(dialog);
 				if(this.parent !=$("body")){
-					setTimeout(function(){$("body .modal-backdrop").remove()},180)
+					setTimeout(function(){if(self!=top){$("body .modal-backdrop").remove()}},180)
 				}
 					if(this.settings.src.length>0){
 //						$.loading().show()
@@ -284,13 +286,12 @@
 			' <div class="modal-header">'+
 			'     <button class="close" data-dismiss="modal" aria-hidden="true">&times;</button>'+
 			' </div>'+
-			' <div id="modal_body_content" class="modal-body">'+param.con+'</div>'+
+			' <div id="modal_body_content" class="modal-body">'+'</div>'+
 			'</div>'+
 		'</div>'
 		this.eleId=id;
 		this.ele=$(con)
 		this.ele.attr("id",id)
-		this.parent.append(this.ele)
 		this.showLoad();
 	}
 	Load.prototype={
@@ -300,6 +301,8 @@
 				}
 			},
 			showLoad:function(){
+				this.ele.find("#modal_body_content").html(this.settings.con)
+				this.parent.append(this.ele)
 				this.initModalEvn(this.ele,this.eleId);
 				this.initModalEvent(this.ele,this.eleId);
 				$(this.ele).modal({backdrop:false,show:true});
@@ -317,15 +320,21 @@
 					$(dialog).draggable();//为模态对话框添加拖拽
 					$(dialog).css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
 				}
+				if(this.settings.init){
+					window.setTimeout(function(){
+						_this.settings.init(_this.ele)
+					},500)
+				}
 			},
 			initModalEvn:function(dialog,id){
 				//页面初始化事件
 				var _this=this;
-				this.settings.init(dialog);
 				this.parent.find("#"+id).modal('toggle')
 				var H=$(_this.parent).height()
 				window.setTimeout(function(){
-					$(_this.parent).children(".modal-backdrop").remove();
+					if(self!=top){
+						$(_this.parent).children(".modal-backdrop").remove();
+					}
 					var h=$(dialog).find(".modal-body").height()
 					var con_w=$(dialog).find(".modal-content").width();
 					//$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
@@ -353,11 +362,22 @@
 				$(dialog).find(".modal-content").css({"height":'100%'})
 				$(dialog).find(".modal-body").css({"height":'calc( 100% - 33px)'})
 				
-				$(dialog).find(".modal-content").resize(function(){
-					var H=$(_this.parent).height()
-					var h=$(this).height()
-					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
-				})
+				if(this.settings.height.indexOf('100%')<0){
+					$(dialog).find(".modal-content").resize(function(){
+						var H=$(_this.parent).height()
+						var h=$(this).height()
+						$(dialog).css("margin-top",(H-h)/4+"px")
+					})
+				}else{
+					$(dialog).find('.modal-dialog').css('margin','0px')
+					window.setTimeout(function(){
+						$(dialog).css('padding','0px !important')
+						$(dialog).css('padding-left','0px !important')
+						$(dialog).css('margin','0px !important')
+					},600)
+				}
+				
+				this.settings.init(dialog);
 			},
 			stop:function(){
 				this.settings.flag=false;
@@ -392,9 +412,10 @@
 				this.panel.hide();
 			},
 			reload:function(param){
-				$(this.panel.LOAD).find(".modal-content").html(param.con).fadeIn()
+				$(this.panel.parent).find("#"+this.panel.eleId).html(param.con).fadeIn()
 				this.panel.initParam(param)
-				this.panel.showLoad();
+				this.panel.parent=getFullParent();
+				this.show();
 			}
 	}
 	var showImg=function(img){
@@ -598,4 +619,81 @@
 		}
 
 	})
-})(jQuery,window,document)
+})(jQuery,window,document);
+
+(function ($, window, undefined) {
+    var elems = $([]),
+        jq_resize = $.resize = $.extend($.resize, {}),
+        timeout_id,
+        str_setTimeout = 'setTimeout',
+        str_resize = 'resize',
+        str_data = str_resize + '-special-event',
+        str_delay = 'delay',
+        str_throttle = 'throttleWindow';
+    jq_resize[str_delay] = 250;
+    jq_resize[str_throttle] = true;
+    $.event.special[str_resize] = {
+        setup: function () {
+            if (!jq_resize[str_throttle] && this[str_setTimeout]) {
+                return false;
+            }
+            var elem = $(this);
+            elems = elems.add(elem);
+            $.data(this, str_data, {
+                w: elem.width(),
+                h: elem.height()
+            });
+            if (elems.length === 1) {
+                loopy();
+            }
+        },
+        teardown: function () {
+            if (!jq_resize[str_throttle] && this[str_setTimeout]) {
+                return false;
+            }
+            var elem = $(this);
+            elems = elems.not(elem);
+            elem.removeData(str_data);
+            if (!elems.length) {
+                clearTimeout(timeout_id);
+            }
+        },
+        add: function (handleObj) {
+            if (!jq_resize[str_throttle] && this[str_setTimeout]) {
+                return false;
+            }
+            var old_handler;
+
+            function new_handler(e, w, h) {
+                var elem = $(this),
+                    data = $.data(this, str_data);
+                data.w = w !== undefined ? w : elem.width();
+                data.h = h !== undefined ? h : elem.height();
+                old_handler.apply(this, arguments);
+            }
+
+            if ($.isFunction(handleObj)) {
+                old_handler = handleObj;
+                return new_handler;
+            } else {
+                old_handler = handleObj.handler;
+                handleObj.handler = new_handler;
+            }
+        }
+    };
+
+    function loopy() {
+        timeout_id = window[str_setTimeout](function () {
+            elems.each(function () {
+                var elem = $(this),
+                    width = elem.width(),
+                    height = elem.height(),
+                    data = $.data(this, str_data);
+                if (width !== data.w || height !== data.h) {
+                    elem.trigger(str_resize, [data.w = width, data.h = height]);
+                }
+            });
+            loopy();
+        }, jq_resize[str_delay]);
+    }
+})(jQuery, this);
