@@ -75,7 +75,6 @@
 			initModalEvn:function(dialog,id){
 				//页面初始化事件
 				var _this=this;
-				this.settings.init(dialog);
 				this.parent.find("#"+id).modal('toggle')
 				var H=$(_this.parent).height()
 				window.setTimeout(function(){
@@ -103,6 +102,7 @@
 					var h=$(this).height()
 					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
 				})
+				this.settings.init(dialog);
 			},
 			stop:function(){
 				this.settings.flag=false;
@@ -146,11 +146,14 @@
 							}
 						}
 						iframe.attr("src",this.settings.src)
-						_this.initModalEvn(dialog,id);
 						//快捷调用
-						this.settings.callFrame=function(key,param){
-							 return dialog.find("iframe").eq(0)[0].contentWindow[key](param);
+						this.settings.callFrame=function(key,...param){
+							var callfunc=dialog.find("iframe").eq(0)[0].contentWindow[key];
+							if(callfunc){
+								return callfunc.apply(null,param);
+							}
 						}
+						_this.initModalEvn(dialog,id);
 //						$(iframe).load(function() { 
 //							console.log("page load")
 //							$.loading().close();
@@ -184,8 +187,11 @@
 			getContent:function(){
 				return this.content;
 			},
-			callFrame:function(key,param){
-				 $(this.content).find("iframe")[0].contentWindow[key](param);
+			callFrame:function(key,...param){
+				var callfunc=$(this.content).find("iframe")[0].contentWindow[key];
+				if(callfunc){
+					return callfunc.apply(null,param);
+				}
 			},
 			initEVENT:function(){
 				/**默认事件*/
