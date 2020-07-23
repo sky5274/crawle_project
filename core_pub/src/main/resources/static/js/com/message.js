@@ -307,7 +307,26 @@
 				}
 			},
 			showLoad:function(){
-				this.ele.find("#modal_body_content").html(this.settings.con)
+				if(this.settings.src.length>0){
+					this.ele.find("#modal_body_content").html("<iframe id='iframe_"+this.eleId+"' frameborder='no' border='0'  style='width:100%;height:98%'></iframe>")
+					var iframe=this.ele.find("#modal_body_content iframe")
+					if(this.settings.src.indexOf("://")<0){
+						try {
+							this.settings.src=API.config.baseUrl+this.settings.src
+						} catch (e) {
+						}
+					}
+					iframe.attr("src",this.settings.src)
+					//快捷调用
+					this.settings.callFrame=function(key,...param){
+						var callfunc=iframe.eq(0)[0].contentWindow[key];
+						if(callfunc){
+							return callfunc.apply(null,param);
+						}
+					}
+				}else{
+					this.ele.find("#modal_body_content").html(this.settings.con)
+				}
 				this.parent.append(this.ele)
 				this.initModalEvn(this.ele,this.eleId);
 				this.initModalEvent(this.ele,this.eleId);
@@ -326,11 +345,11 @@
 					$(dialog).draggable();//为模态对话框添加拖拽
 					$(dialog).css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
 				}
-				if(this.settings.init){
-					window.setTimeout(function(){
-						_this.settings.init(_this.ele)
-					},500)
-				}
+//				if(this.settings.init){
+//					window.setTimeout(function(){
+//						_this.settings.init(_this.ele)
+//					},500)
+//				}
 			},
 			initModalEvn:function(dialog,id){
 				//页面初始化事件
@@ -368,7 +387,7 @@
 				$(dialog).find(".modal-content").css({"height":'100%'})
 				$(dialog).find(".modal-body").css({"height":'calc( 100% - 33px)'})
 				
-				if(this.settings.height.indexOf('100%')<0){
+				if(this.settings.height && (this.settings.height+"").indexOf('100%')<0){
 					$(dialog).find(".modal-content").resize(function(){
 						var H=$(_this.parent).height()
 						var h=$(this).height()
