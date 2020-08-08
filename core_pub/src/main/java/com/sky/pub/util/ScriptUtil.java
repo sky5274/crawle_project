@@ -1,13 +1,11 @@
 package com.sky.pub.util;
 
 import java.io.InputStreamReader;
-
+import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-
 import com.sky.pub.contant.PubFileContant;
-
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 /**
@@ -15,7 +13,6 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
  * @author 王帆
  * @date  2019年8月13日 下午3:30:41
  */
-@SuppressWarnings("restriction")
 public class ScriptUtil {
 	
 	public static ScriptEngine getScriptEngine() {
@@ -50,11 +47,17 @@ public class ScriptUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T invoke(ScriptEngine engine,String functionName,Object... args) throws ScriptException {
-		ScriptObjectMirror functionScript = getScriptFunction(engine,functionName);
-		if(functionScript!=null) {
-			return  (T) functionScript.call(null, args);
+		Invocable invocable = (Invocable) engine;
+		T res=null;
+		try {
+			res=(T)invocable.invokeFunction(functionName, args);
+		} catch (NoSuchMethodException | ScriptException e) {
+			ScriptObjectMirror functionScript = getScriptFunction(engine,functionName);
+			if(functionScript!=null) {
+				res= (T) functionScript.call(null, args);
+			}
 		}
-		return null;
+		return res;
 	}
 	
 	/**
@@ -89,14 +92,14 @@ public class ScriptUtil {
 	}
 	
 	/**
-	 * 转换js方法系统对象
+	 *	 转换js方法系统对象
 	 * @param script
 	 * @return
 	 * @author 王帆
 	 * @date 2019年8月13日 下午3:41:42
 	 */
 	private static ScriptObjectMirror getScript(Object script) {
-		if(script!=null && ScriptObjectMirror.class.getName().equals(script.getClass().getName())) {
+		if(script instanceof ScriptObjectMirror) {
 			return (ScriptObjectMirror)script;
 		}
 		return null;
