@@ -26,9 +26,9 @@
 		    <scope>provided</scope>
 		</dependency>
 		<dependency>
-		    <groupId>com.oracle</groupId>
-		    <artifactId>ojdbc14</artifactId>
-		    <version>10.2.0.5.0</version>
+		    <groupId>com.oracle.database.jdbc</groupId>
+		    <artifactId>ojdbc10</artifactId>
+		    <version>19.6.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
