@@ -83,7 +83,7 @@ public class ControllerAdvice {
 	    			}
 	    			argMap.put(params[i], arg);
 	    		}
-	    		log.debug(String.format("%s %s   被%s 调用", prefix,method,ControllAdvice.getIpAddress(req)));
+	    		log.debug(String.format("%s %s   被%s 调用", prefix,method,getIpAddress(req)));
 	    		String queryString = req.getQueryString();
 	    		log.debug(String.format("%s url:%s %s", prefix,url+(StringUtils.isEmpty(queryString)?"":" ?"+queryString),ListUtils.isEmpty(argMap.keySet())?"":"  args:"+JSON.toJSONString(argMap)));
 	        }
