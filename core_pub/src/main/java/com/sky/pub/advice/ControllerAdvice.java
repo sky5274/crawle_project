@@ -13,15 +13,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSON;
-import cn.microvideo.base.pub.util.ListUtils;
 import org.aopalliance.aop.Advice;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.AfterReturningAdvice;
@@ -44,13 +46,23 @@ public class ControllerAdvice {
 	private static List<String> excuteUrl=Arrays.asList("/error");
 	private static Date times=null;
 	private static Date timee=null;
-	
+//	@Bean
+//	@Order(0)
+//	public Advisor controllerAdvisor(){
+//		//切面，类上含有Controller或其继承自注解
+//		Pointcut pointcut = new AnnotationMatchingPointcut(Controller.class,true);
+//		Advice advice = new MethodAroundAdvice();
+//		return new DefaultPointcutAdvisor(pointcut, advice);
+//	}
+
 	@Bean
-    public Advisor dataSourceAdvisor(){
-        Pointcut pointcut = new AnnotationMatchingPointcut(RequestMapping.class, true);
-        Advice advice = new MethodAroundAdvice();
-        return new DefaultPointcutAdvisor(pointcut, advice);
-    }
+	@Order(1)
+	public Advisor controllerMethodAdvisor(){
+		//切面，类上含有Controller或其继承自注解,方法上含有 RequestMapping 的注解
+		Pointcut pointcut = new AnnotationMatchingPointcut(Controller.class,RequestMapping.class);
+		Advice advice = new MethodAroundAdvice();
+		return new DefaultPointcutAdvisor(pointcut, advice);
+	}
 	
 	 private static class MethodAroundAdvice implements MethodBeforeAdvice, AfterReturningAdvice{
 	    	
@@ -85,7 +97,7 @@ public class ControllerAdvice {
 	    		}
 	    		log.debug(String.format("%s %s   被%s 调用", prefix,method,getIpAddress(req)));
 	    		String queryString = req.getQueryString();
-	    		log.debug(String.format("%s url:%s %s", prefix,url+(StringUtils.isEmpty(queryString)?"":" ?"+queryString),ListUtils.isEmpty(argMap.keySet())?"":"  args:"+JSON.toJSONString(argMap)));
+	    		log.debug(String.format("%s url:%s %s", prefix,url+(StringUtils.isEmpty(queryString)?"":" ?"+queryString),CollectionUtils.isEmpty(argMap.keySet())?"":"  args:"+JSON.toJSONString(argMap)));
 	        }
 
 	        @Override
