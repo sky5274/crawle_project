@@ -11,6 +11,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import com.sky.flow.bean.FlowBean;
 import com.sky.flow.bean.FlowGroupBean;
@@ -179,9 +180,13 @@ public class FlowServiceImpl implements FlowActionService,FlowQueryService,FlowS
 		if(node.getEvents() !=null && !node.getEvents().isEmpty()) {
 			flowNodeEventMapper.deleteByNode(node.getFlowId(),node.getId());
 			List<FlowNodeEventBean> list = node.getEvents();
+			int i=0;
 			for(FlowNodeEventBean event:list) {
 				event.setFlowId(node.getFlowId());
 				event.setNodeId(node.getId());
+				if(event.getOrder()==null) {
+					event.setOrder(i++);
+				}
 			}
 			addFlowNodeEvent(list);
 		}
@@ -201,6 +206,24 @@ public class FlowServiceImpl implements FlowActionService,FlowQueryService,FlowS
 		addNodeRelativeContent(node);
 		return node;
 	}
+	
+	/**
+	 * 校验流程节点 是否存在+节点版本是否一致
+	 * @param node
+	 * @throws FlowException
+	 * @author wangfan
+	 * @date 2021年2月12日 下午9:10:45
+	 */
+	private void validFlowNodeDataBean(FlowNodeBean node) throws FlowException{
+		FlowNodeBean n = flowNodeMapper.selectByPrimaryKey(node.getId());
+		if(n ==null) {
+			throw new FlowException(String.format("流程节点【%s】信息未查询到",node.getId()));
+		}
+		if(n.getVersion() !=node.getVersion()) {
+			throw new FlowException(String.format("流程节点【%s】信息已变更",node.getId()));
+		}
+	}
+	
 
 	@Override
 	public int updateFlowNode(FlowNodeContainerBean node) throws FlowException {
@@ -208,7 +231,9 @@ public class FlowServiceImpl implements FlowActionService,FlowQueryService,FlowS
 		validFlowNodeAction(node);
 		int size=0;
 		if(StringUtils.isEmpty(node.getContainerId())) {
-			 size= flowNodeMapper.updateByPrimaryKeySelective(node);
+			/*校验流程节点 是否存在+版本是否一致*/
+			validFlowNodeDataBean(node);
+			size= flowNodeMapper.updateByPrimaryKeySelective(node);
 		}
 		//添加节点关联内容
 		addNodeRelativeContent(node);
@@ -217,8 +242,16 @@ public class FlowServiceImpl implements FlowActionService,FlowQueryService,FlowS
 
 	@Override
 	public int disableFlowNode(FlowNodeBean node) throws FlowException {
+		/*校验流程节点 是否存在+版本是否一致*/
+		validFlowNodeDataBean(node);
 		node.setStatus(-1);
 		return flowNodeMapper.updateByPrimaryKeySelective(node);
+	}
+	@Override
+	public int deleteFlowNode(FlowNodeBean node) throws FlowException {
+		/*校验流程节点 是否存在+版本是否一致*/
+		validFlowNodeDataBean(node);
+		return flowNodeMapper.deleteByPrimaryKey(node.getId());
 	}
 	
 	/*----------------------节点链接----------------------------------------*/
@@ -333,6 +366,24 @@ public class FlowServiceImpl implements FlowActionService,FlowQueryService,FlowS
 			throw new FlowException("流程分组为空");
 		}
 	}
+	
+	/**
+	 * 校验流程在系统中的数据状态
+	 * @param flow
+	 * @throws FlowException
+	 * @author wangfan
+	 * @date 2021年2月12日 下午9:04:43
+	 */
+	private void validFlowDataBean(FlowBean flow) throws FlowException{
+		FlowBean f = flowMapper.selectByPrimaryKey(flow.getId());
+		if(f ==null) {
+			throw new FlowException(String.format("流程【%s】信息未查询到",flow.getId()));
+		}
+		if(f.getVersion() !=flow.getVersion()) {
+			throw new FlowException(String.format("流程【%s】信息已变更",flow.getId()));
+		}
+	}
+	
 	@Override
 	public FlowBean addFlow(FlowBean flow) throws FlowException {
 		validFlowBean(flow);
@@ -343,12 +394,27 @@ public class FlowServiceImpl implements FlowActionService,FlowQueryService,FlowS
 	@Override
 	public int updateFlow(FlowBean flow) throws FlowException {
 		validFlowBean(flow);
+		/*校验流程数据 是否存在+版本是否一致*/
+		validFlowDataBean(flow);
 		return flowMapper.updateByPrimaryKeySelective(flow);
 	}
 
 	@Override
 	public int displayFlow(FlowBean flow) throws FlowException {
+		/*校验流程数据 是否存在+版本是否一致*/
+		validFlowDataBean(flow);
 		flow.setStatus(-1);
+		return flowMapper.updateByPrimaryKeySelective(flow);
+	}
+	
+	@Override
+	public int deleteFlow(FlowBean flow) throws FlowException {
+		/*校验流程数据 是否存在+版本是否一致*/
+		validFlowDataBean(flow);
+		List<FlowNodeBean> nodes = flowNodeMapper.selectSimpleNodes(flow.getId());
+		if(!CollectionUtils.isEmpty(nodes)) {
+			throw new FlowException("流程下含有节点，无法删除");
+		}
 		return flowMapper.updateByPrimaryKeySelective(flow);
 	}
 
