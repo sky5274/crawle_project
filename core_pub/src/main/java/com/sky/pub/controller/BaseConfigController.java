@@ -29,8 +29,7 @@ public class BaseConfigController {
 		}
 		headers.set(HttpHeaders.CONTENT_TYPE,"application/javascript");    
 		headers.set("Accept-Ranges", "bytes"); 
-		String url=req.getRequestURL().toString();
-		String context=str.toString().replace("#{contextPath}", "\""+url.substring(0,url.indexOf(req.getServletPath()))+"\"");
+		String context=str.toString().replace("#{contextPath}", req.getContextPath());
 		if(level!=null && level>1) {
 			context=context.replaceAll("level:1", "level:"+level);
 		}
