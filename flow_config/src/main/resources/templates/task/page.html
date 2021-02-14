@@ -33,7 +33,6 @@ $(function(){
 			},
 			{ field : "id", title : "id"},
 			{ field : "name", title : "名称",formatter:function(value,row){
-				console.log(row)
 				return '<div>'+value+(row.inNowTaskNode?'<i class="glyphicon glyphicon-certificate"></i><i class="glyphicon glyphicon-flag task-now-node"></i>':'')+'</div>'
 			}},
 			{ field : "message", title : "信息"},
