@@ -32,7 +32,7 @@ public class WebRequestbodyConverterConfig {
          * TODO 第一个SerializerFeature.PrettyFormat可以省略，毕竟这会造成额外的内存消耗和流量，第二个是用来指定当属性值为null是是否输出：pro:null
 　　　　　 * SerializerFeature.SkipTransientField
          */
-        fastJsonConfig.setSerializerFeatures(SerializerFeature.WriteMapNullValue);
+        fastJsonConfig.setSerializerFeatures(SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect);
         //3处理中文乱码问题
         List<MediaType> fastMediaTypes = new ArrayList<>();
         fastMediaTypes.add(MediaType.APPLICATION_JSON_UTF8);
