@@ -4,12 +4,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -132,8 +134,8 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 			if(task.getDetails()!=null && !task.getDetails().isEmpty() && task.getInNowTaskNode()==null) {
 				try {
 					TaskFlowNodeBean nowNode = task.getDetails().get(task.getDetails().size()-1);
-					if(isInTaskNodeFlow(taskId,nowNode,operaterCode) && !"end".equals(nowNode.getParam().getString(TaskContants.TASK_NODE_TYPE))) {
-						task.setInNowTaskNode(true);
+					task.setInNowTaskNode(isInTaskNodeFlow(taskId,nowNode,operaterCode) );
+					if(task.getInNowTaskNode()&& !"end".equals(nowNode.getParam().getString(TaskContants.TASK_NODE_TYPE))) {
 						task.setNode(getFlowNode(nowNode.getFlowId(),nowNode.getNodeId()));
 					}
 				} catch (FlowException e) {
@@ -175,7 +177,7 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 		if(taskNode ==null || StringUtils.isEmpty(taskNode.getNodeId())) {
 			if(StringUtils.isEmpty(flow.getStartId())) {
 				List<FlowNodeContainerBean> list = flowQuerySevice.queryNodesByFLow(task.getFlowId());
-				if(list==null || list.isEmpty()) {
+				if(CollectionUtils.isEmpty(list)) {
 					throw new FlowException("开启任务对应的流程未设置流程节点");
 				}
 				if(!"start".equals(list.get(0).getType())) {
@@ -361,12 +363,18 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 	}
 
 	private FlowNodeContainerBean getFlowNode(String flowId,String nodeId) throws FlowException {
-		return flowQuerySevice.queryNodeById(flowId, nodeId);
+		FlowNodeContainerBean node = flowQuerySevice.queryNodeById(flowId, nodeId);
+		System.err.println(node);
+		System.err.println(node.getStatus());
+		if(node !=null && node.getStatus()>=0) {
+			return node;
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unused")
 	private List<FlowNodeContainerBean> getFlowNextNode(String flowId,String nodeId) throws FlowException {
-		return flowQuerySevice.queryNextNodeById(flowId, nodeId);
+		return flowQuerySevice.queryNextNodeById(flowId, nodeId).stream().filter(it->{return it !=null && it.getStatus()>=0;}).collect(Collectors.toList());
 	}
 
 	/**
@@ -387,6 +395,9 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 		if(flow==null) {
 			throw new FlowException("根据任务id："+taskId+" 关联的流程id："+task.getFlowId()+" 未找到关联的流程");
 		}
+		if(flow.getStatus()<0) {
+			throw new FlowException("根据任务id："+taskId+" 关联的流程id："+task.getFlowId()+" 流程失效");
+		}
 		return flow;
 	}
 
@@ -398,6 +409,9 @@ public class TaskFlowServiceImpl implements TaskFlowActionService,TaskFlowQueryS
 		FlowBean flow = getFlow(task.getFlowId());
 		if(flow==null) {
 			throw new FlowException("根据任务id："+taskId+" 关联的流程id："+task.getFlowId()+" 未找到关联的流程");
+		}
+		if(flow.getStatus()<0) {
+			throw new FlowException("根据任务id："+taskId+" 关联的流程id："+task.getFlowId()+" 流程失效");
 		}
 		TaskFlowInfoBean info=new TaskFlowInfoBean();
 		info.setTask(task);
