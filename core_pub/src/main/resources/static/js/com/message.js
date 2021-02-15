@@ -148,14 +148,7 @@
 						iframe.attr("src",this.settings.src)
 						//快捷调用
 						this.settings.callFrame=function(key,...param){
-<<<<<<< HEAD
-							var callfunc=dialog.find("iframe").eq(0)[0].contentWindow[key];
-							if(callfunc){
-								return callfunc.apply(null,param);
-							}
-=======
 							return callFrameEvent(dialog.find("iframe"),key,param);
->>>>>>> refs/remotes/origin/dev_base
 						}
 						_this.initModalEvn(dialog,id);
 //						$(iframe).load(function() { 
@@ -192,14 +185,7 @@
 				return this.content;
 			},
 			callFrame:function(key,...param){
-<<<<<<< HEAD
-				var callfunc=$(this.content).find("iframe")[0].contentWindow[key];
-				if(callfunc){
-					return callfunc.apply(null,param);
-				}
-=======
 				return callFrameEvent($(this.content).find("iframe"),key,param)
->>>>>>> refs/remotes/origin/dev_base
 			},
 			initEVENT:function(){
 				/**默认事件*/
@@ -327,96 +313,6 @@
 					iframe.attr("src",this.settings.src)
 					//快捷调用
 					this.settings.callFrame=function(key,...param){
-<<<<<<< HEAD
-						var callfunc=iframe.eq(0)[0].contentWindow[key];
-						if(callfunc){
-							return callfunc.apply(null,param);
-						}
-					}
-				}else{
-					this.ele.find("#modal_body_content").html(this.settings.con)
-				}
-				this.parent.append(this.ele)
-				this.initModalEvn(this.ele,this.eleId);
-				this.initModalEvent(this.ele,this.eleId);
-				$(this.ele).modal({backdrop:false,show:true});
-			},
-			hide:function(){
-				$(this.ele).modal({backdrop:false,show:false});
-			},
-			initModalEvent:function(dialog,id){
-				var _this=this;
-				$(dialog).modal({backdrop:false,show:true});
-				$(dialog).on('hide.bs.modal',function(){
-					$(this).remove()
-				})
-				if(this.settings.drag){
-					$(dialog).draggable();//为模态对话框添加拖拽
-					$(dialog).css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
-				}
-//				if(this.settings.init){
-//					window.setTimeout(function(){
-//						_this.settings.init(_this.ele)
-//					},500)
-//				}
-			},
-			initModalEvn:function(dialog,id){
-				//页面初始化事件
-				var _this=this;
-				this.parent.find("#"+id).modal('toggle')
-				var H=$(_this.parent).height()
-				window.setTimeout(function(){
-					if(self!=top){
-						$(_this.parent).children(".modal-backdrop").remove();
-					}
-					var h=$(dialog).find(".modal-body").height()
-					var con_w=$(dialog).find(".modal-content").width();
-					//$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
-				},500)
-				if(this.settings.width){
-					//根据百分比适配宽度
-					if((this.settings.width+"").indexOf('%')>-1){
-						window.setTimeout(function(){
-							$(dialog).find(".modal-dialog").css("width", parseInt(_this.settings.width)+"%")
-						},300)
-					}else{
-						$(dialog).find(".modal-dialog").css({"width":parseInt(this.settings.width)+"px"})
-					}
-				}
-				if(this.settings.height){
-					if((this.settings.height+"").indexOf('%')>-1){
-						$(dialog).find(".modal-dialog").css({"height":parseInt(this.settings.height)+'%',"overflow-y": "auto"})
-					}else{
-						$(dialog).find(".modal-dialog").css({"height":parseInt(this.settings.height)+"px","overflow-y": "auto"})
-						
-					}
-				}else{
-					$(dialog).find(".modal-dialog").css({"max-height":"500px","overflow-y": "auto"})
-				}
-				$(dialog).find(".modal-content").css({"height":'100%'})
-				$(dialog).find(".modal-body").css({"height":'calc( 100% - 33px)'})
-				
-				if(this.settings.height && (this.settings.height+"").indexOf('100%')<0){
-					$(dialog).find(".modal-content").resize(function(){
-						var H=$(_this.parent).height()
-						var h=$(this).height()
-						$(dialog).css("margin-top",(H-h)/4+"px")
-					})
-				}else{
-					$(dialog).find('.modal-dialog').css('margin','0px')
-					window.setTimeout(function(){
-						$(dialog).css('padding','0px !important')
-						$(dialog).css('padding-left','0px !important')
-						$(dialog).css('margin','0px !important')
-					},600)
-				}
-				
-				this.settings.init(dialog);
-			},
-			stop:function(){
-				this.settings.flag=false;
-			},
-=======
 						return callFrameEvent(iframe,key,param)
 					}
 				}else{
@@ -509,7 +405,6 @@
 		if(callfunc){
 			return callfunc.apply(null,param);
 		}
->>>>>>> refs/remotes/origin/dev_base
 	}
 
 	var panel=function(param){
