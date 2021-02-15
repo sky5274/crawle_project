@@ -22,6 +22,7 @@ public class RpcHttpUtil {
 			connection.setRequestMethod("POST");
 			// 设置通用的请求属性
 			connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+			connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
 			connection.setRequestProperty("Connection", "Keep-Alive");
 			connection.setUseCaches(false);
 			connection.setDoOutput(true);

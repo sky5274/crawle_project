@@ -5,7 +5,8 @@ import java.net.InetSocketAddress;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sky.rpc.base.RpcRequest;
-import com.sky.rpc.core.cilent.RpcClientHandel;
+import com.sky.rpc.core.RpcTypeContant;
+import com.sky.rpc.core.cilent.RpcClientHandle;
 import com.sky.rpc.util.RpcHttpUtil;
 
 /**
@@ -14,7 +15,7 @@ import com.sky.rpc.util.RpcHttpUtil;
  *
  * @param <T>
  */
-public class RpcHttpClientInvokeHandle<T> implements RpcClientHandel{
+public class RpcHttpClientInvokeHandle<T> implements RpcClientHandle{
 	
 	private Type returnClass;
 
@@ -34,5 +35,10 @@ public class RpcHttpClientInvokeHandle<T> implements RpcClientHandel{
 			 throw JSON.parseObject(JSON.toJSONString(obj.get("exception")),Exception.class);
 		}
 		return (T) JSON.parseObject(JSON.toJSONString(obj.get("data")),returnClass);
+	}
+
+	@Override
+	public String getRpcType() {
+		return RpcTypeContant.rpcTypeLimit.get(2);
 	}
 }

@@ -8,15 +8,23 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.sky.rpc.base.Result;
 import com.sky.rpc.base.RpcRequest;
 import com.sky.rpc.call.RpcCallBack;
-import com.sky.rpc.core.cilent.RpcClientHandel;
+import com.sky.rpc.core.RpcTypeContant;
+import com.sky.rpc.core.cilent.RpcClientHandle;
 import com.sky.rpc.provider.ProviderMethodInvoker;
 
-public class RpcSocketClientHandel implements RpcClientHandel{
+@Component
+public class RpcSocketClientHandel implements RpcClientHandle{
 	private Log logger=LogFactory.getLog(getClass());
+	
+	@Override
+	public String getRpcType() {
+		return RpcTypeContant.rpcTypeLimit.get(0);
+	}
 	@Override
 	public <T> T invoke(RpcRequest request, InetSocketAddress addr,int  timeout) throws Throwable {
 		logger.debug("rpt client proxt mentod: "+request.getClassName()+"."+request.getMethodName()+" address:"+addr);
