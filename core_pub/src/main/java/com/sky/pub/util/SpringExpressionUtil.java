@@ -59,6 +59,30 @@ public class SpringExpressionUtil {
 		return ep.parseExpression(expression);
 	}
 	
+	/**
+     * 将value 赋值到表达式中形成模板
+     * @param expression
+     * @param obj
+     * @return
+     * @author wangfan
+     * @date 2020年6月7日 下午9:06:13
+     */
+    public static Object formatData(String expression,Object obj){
+        if(obj instanceof Map) {
+            obj=new DynamicBean((Map<?, ?>)obj).getObject();
+        }
+        return ep.parseExpression(expression,parseContext).getValue(obj);
+    }
+    public static <T> T formatData(String expression,Object obj,Class<T> type){
+        Object data=null;
+        if(obj instanceof Map) {
+            data=new DynamicBean((Map<?, ?>)obj).getObject();
+        }else{
+            data=obj;
+        }
+        return ep.parseExpression(expression,parseContext).getValue(data,type);
+    }
+	
 	/**paserContext 如果是模板时，expression 结果将不参与最终的计算结果，直接赋值到公式中 */
 	public static Object parse(String expression) {
 		return getExpression(expression).getValue();
