@@ -13,7 +13,6 @@ import java.util.concurrent.ThreadFactory;
  * 2018年1月5日下午12:05:57
  */
 public class ThreadFactoryBuilder implements ThreadFactory {
-
 	private long counter;  
 	private String name;  
 	private String prefix="crwale_";  
