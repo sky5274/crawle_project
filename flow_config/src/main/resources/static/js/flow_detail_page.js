@@ -221,7 +221,6 @@ function transformNodeData(node){
 		 *   2：根据用户用户上传的节点参数进行匹配（当前任务几点的下级链接条件匹配） 
 		 */
 		var obj=analysisFlowNode(node);
-		//console.log(obj)
 		con=getActiveNodeContent(obj)
 	}
 	

@@ -184,7 +184,7 @@ function addNodeRelative(ID,func,outLimit){
 		var flag=false;
 		$(this).find("input,select").each(function(j,it){
 			var val=$(it).val();
-			if(val !='' || outLimit.indexOf($(it).attr("name"))>-1){
+			if(val !='' || (outLimit ==undefined || outLimit.indexOf($(it).attr("name"))>-1)){
 				node[$(it).attr("name")]=val;
 			}else{
 				flag=true;
@@ -276,9 +276,9 @@ function addNodeRelative(ID,func,outLimit){
 							<div class="input-con-demo hide">
 								<div class="col-sm-2"><input class="form-control" type="text" placeholder="key" name="key"/></div>
 								<div class="col-sm-2"><input class="form-control" type="text" placeholder="name" name="name"/></div>
-								<div class="col-sm-2"><input class="form-control evt-type-input" type="text" placeholder="eventType" name="type"/></div>
+								<div class="col-sm-2"><input class="form-control evt-type-input" type="text" placeholder="type 事件执行类型 :in、out、user、back..." name="type"/></div>
 								<div class="col-sm-2">
-									<select class="form-control" name="type">
+									<select class="form-control" name="eventType">
 										<option></option>
 										<option value="class">类</option>
 										<option value="method">方法</option>
