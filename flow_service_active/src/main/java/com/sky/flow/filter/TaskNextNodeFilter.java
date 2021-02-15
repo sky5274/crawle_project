@@ -240,15 +240,18 @@ public class TaskNextNodeFilter implements TaskNodeFilter{
 		if(flowNowNode==null) {
 			errs.add("流程信息未提交");
 		}
+		if(flowNowNode !=null && flowNowNode.getStatus()<0) {
+			errs.add("流程信息失效");
+		}
 		if(!errs.isEmpty()) {
 			throw new FlowException(errs);
 		}
 		for(FlowNodeContainerBean node:flowNowNode.getNext()) {
-			if(link.getDownNodeId().equals(node.getId())) {
+			if(link.getDownNodeId().equals(node.getId()) && node.getStatus()>=0) {
 				return node;
 			}
 		}
-		throw new FlowException("根据流程链接：[up:"+link.getUpNodeId()+",down:"+link.getDownNodeId()+"] 未找到对应的流程下级节点，请检查流程配置");
+		throw new FlowException("根据流程链接：[up:"+link.getUpNodeId()+",down:"+link.getDownNodeId()+"] 未找到对应的流程下级节点(或者节点失效)，请检查流程配置");
 	}
 
 }

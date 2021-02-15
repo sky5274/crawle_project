@@ -18,12 +18,12 @@ public class TaskNodeFilterUtil {
 	 */
 	public static FlowNodeContainerBean getFlowNode(FlowBean flow,String nodeId) throws FlowException {
 		for(FlowNodeContainerBean n:flow.getNodes()) {
-			if(n.getId().equals(nodeId)) {
+			if(n.getId().equals(nodeId) && n.getStatus()>=0) {
 				return n;
 			}
 			//从容器中选择节点
 			FlowNodeContainerBean node = getFlowNodeByContainer(n,nodeId);
-			if(node!=null) {
+			if(node!=null && node.getStatus()>=0) {
 				return node;
 			}
 		}
@@ -36,12 +36,12 @@ public class TaskNodeFilterUtil {
 		if(FlowContant.NODE_TYPE_CONTAINER.equals(n.getType()) || (n.getType()!=null && n.getType().length()>FlowContant.NODE_TYPE_CONTAINER.length() && FlowContant.NODE_TYPE_CONTAINER.contains(n.getType().substring(FlowContant.NODE_TYPE_CONTAINER.length())))) {
 			if(n.getContainer()!=null && !n.getContainer().isEmpty()) {
 				for(FlowNodeContainerBean cn:n.getContainer()) {
-					if(cn.getId().equals(nodeId)) {
+					if(cn.getId().equals(nodeId) && n.getStatus()>=0) {
 						return cn;
 					}
 					if(FlowContant.NODE_TYPE_CONTAINER.contains(n.getType().substring(FlowContant.NODE_TYPE_CONTAINER.length()))) {
 						FlowNodeContainerBean node = getFlowNodeByContainer(cn,nodeId);
-						if(node!=null) {
+						if(node!=null && node.getStatus()>=0) {
 							return node;
 						}
 					}

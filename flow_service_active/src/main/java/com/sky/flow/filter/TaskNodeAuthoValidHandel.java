@@ -44,7 +44,7 @@ public class TaskNodeAuthoValidHandel {
 	}
 	
 	/**
-	 * 	任务限定于流程结构限定判断
+	 * 	任务限定于流程结构限定判断,流程限制用户+流程接口权限用户编码
 	 * @param taskNode
 	 * @param node
 	 * @param userCode
@@ -60,7 +60,7 @@ public class TaskNodeAuthoValidHandel {
 		if(StringUtils.isEmpty(taskNode.getLimitUser())) {
 			return hasAutho(node, userCode);
 		}else {
-			return hasAutho(node, userCode) && Arrays.asList(taskNode.getLimitUser().split(",")).contains(userCode);
+			return hasAutho(node, userCode) || Arrays.asList(taskNode.getLimitUser().split(",")).contains(userCode);
 		}
 	}
 	
