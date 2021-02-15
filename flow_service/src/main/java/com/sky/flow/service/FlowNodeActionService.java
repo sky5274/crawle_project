@@ -41,5 +41,15 @@ public interface FlowNodeActionService {
 	 * @date 2019年5月16日 下午4:31:43
 	 */
 	public int disableFlowNode(FlowNodeBean node) throws FlowException;
+	
+	/**
+	 * 删除流程节点
+	 * @param node
+	 * @return
+	 * @throws FlowException
+	 * @author wangfan
+	 * @date 2021年2月12日 下午8:37:27
+	 */
+	public int deleteFlowNode(FlowNodeBean node) throws FlowException;
 
 }
