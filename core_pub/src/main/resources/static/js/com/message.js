@@ -1,6 +1,6 @@
 ;(function($,win,doc){
 	var Message=function(cond,parent){
-		this.parent=parent!=undefined ?$(parent):$("body",window.top.document)
+		this.parent=parent!=undefined ?$(parent):getFullParent();
 		this.settings={
 				src:'',
 				type:"alert",
@@ -63,6 +63,7 @@
 						$(dialog).modal('toggle')
 					}
 				})
+				$(dialog).modal({backdrop:false,show:true});
 				$(dialog).on('hide.bs.modal',function(){
 					$(this).remove()
 				})
@@ -74,11 +75,12 @@
 			initModalEvn:function(dialog,id){
 				//页面初始化事件
 				var _this=this;
-				this.settings.init(dialog);
 				this.parent.find("#"+id).modal('toggle')
 				var H=$(_this.parent).height()
 				window.setTimeout(function(){
-					$(_this.parent).children(".modal-backdrop").remove();
+					if(self!=top){
+						$(_this.parent).children(".modal-backdrop").remove();
+					}
 					var h=$(dialog).find(".modal-body").height()
 					var con_w=$(dialog).find(".modal-content").width();
 					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
@@ -95,11 +97,12 @@
 					}
 				}
 				$(dialog).find(".modal-body").css({"max-height":"500px","overflow-y": "auto"})
-				$(dialog).find(".modal-content").resize(function(){
+				$(dialog).find(".modal-body").on('resize',function(){
 					var H=$(_this.parent).height()
 					var h=$(this).height()
 					$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
 				})
+				this.settings.init(dialog);
 			},
 			stop:function(){
 				this.settings.flag=false;
@@ -114,7 +117,7 @@
 				'    <h4 class="modal-title" id="myModalLabel">'+this.settings.title+'</h4>'+
 				' </div>'+
 				' <div id="modal_body_content" class="modal-body"></div>'+
-				'<div class="modal-footer">';
+					'<div class="modal-footer">';
 					if(i==1){
 						con+='<button type="button" data-type="cancle" class="btn btn-default" data-dismiss="modal">'+this.settings.cancel+'</button>'
 					}
@@ -128,17 +131,26 @@
 				dialog.find("#modal_body_content").append(this.settings.con)
 				var _this=this;
 				this.parent.append(dialog);
+				if(this.parent !=$("body")){
+					setTimeout(function(){if(self!=top){$("body .modal-backdrop").remove()}},180)
+				}
 					if(this.settings.src.length>0){
 //						$.loading().show()
 						dialog.find(".modal-body").css("height",this.settings.height?this.settings.height:"500px")
 						dialog.find(".modal-body").append("<iframe id='iframe_"+id+"' frameborder='no' border='0'  style='width:100%;height:98%'></iframe>")
 						var iframe=dialog.find(".modal-body iframe")
-						iframe.attr("src",this.settings.src)
-						_this.initModalEvn(dialog,id);
-						//快捷调用
-						this.settings.callFrame=function(key,param){
-							 return dialog.find("iframe").eq(0)[0].contentWindow[key](param);
+						if(this.settings.src.indexOf("://")<0){
+							try {
+								this.settings.src=API.config.baseUrl+this.settings.src
+							} catch (e) {
+							}
 						}
+						iframe.attr("src",this.settings.src)
+						//快捷调用
+						this.settings.callFrame=function(key,...param){
+							return callFrameEvent(dialog.find("iframe"),key,param);
+						}
+						_this.initModalEvn(dialog,id);
 //						$(iframe).load(function() { 
 //							console.log("page load")
 //							$.loading().close();
@@ -172,8 +184,8 @@
 			getContent:function(){
 				return this.content;
 			},
-			callFrame:function(key,param){
-				 $(this.content).find("iframe")[0].contentWindow[key](param);
+			callFrame:function(key,...param){
+				return callFrameEvent($(this.content).find("iframe"),key,param)
 			},
 			initEVENT:function(){
 				/**默认事件*/
@@ -249,19 +261,163 @@
 				}
 			}
 	}
+	
+	var Load=function(param){
+		this.settings={
+				src:'',
+				type:"alert",
+				hidden:true,
+				drag:false,
+				closed:false,
+				top:30,
+				con:"",
+				init:function(){},  //页面初始化事件
+				func:function(){}
+		}
+		if(param!=null || cons!=""){
+			$.extend(this.settings,param)
+		}
+		this.parent=getFullParent();
+		var id=param.type+"_"+Math.round(Math.random()*100);
+		var con='<div class="dialog modal fade" id="'+id+'" tabindex="-1" role="dialog" aria-hidden="'+this.settings.hidden+'" >'+
+			'<div class="modal-backdrop" style="opacity:0.5;z-index:-1"></div>'+
+			'<div class="modal-dialog">'+
+			' <div class="modal-content">'+
+			' <div class="modal-header">'+
+			'     <button class="close" data-dismiss="modal" aria-hidden="true">&times;</button>'+
+			' </div>'+
+			' <div id="modal_body_content" class="modal-body">'+'</div>'+
+			'</div>'+
+		'</div>'
+		this.eleId=id;
+		this.ele=$(con)
+		this.ele.attr("id",id)
+		this.showLoad();
+	}
+	Load.prototype={
+			initParam:function(param){
+				if(param!=null ){
+					$.extend(this.settings,param)
+				}
+			},
+			showLoad:function(){
+				if(this.settings.src.length>0){
+					this.ele.find("#modal_body_content").html("<iframe id='iframe_"+this.eleId+"' frameborder='no' border='0'  style='width:100%;height:98%'></iframe>")
+					var iframe=this.ele.find("#modal_body_content iframe")
+					if(this.settings.src.indexOf("://")<0){
+						try {
+							this.settings.src=API.config.baseUrl+this.settings.src
+						} catch (e) {
+						}
+					}
+					iframe.attr("src",this.settings.src)
+					//快捷调用
+					this.settings.callFrame=function(key,...param){
+						return callFrameEvent(iframe,key,param)
+					}
+				}else{
+					this.ele.find("#modal_body_content").html(this.settings.con)
+				}
+				this.parent.append(this.ele)
+				this.initModalEvn(this.ele,this.eleId);
+				this.initModalEvent(this.ele,this.eleId);
+				$(this.ele).modal({backdrop:false,show:true});
+			},
+			hide:function(){
+				$(this.ele).modal({backdrop:false,show:false});
+			},
+			initModalEvent:function(dialog,id){
+				var _this=this;
+				$(dialog).modal({backdrop:false,show:true});
+				$(dialog).on('hide.bs.modal',function(){
+					$(this).remove()
+				})
+				if(this.settings.drag){
+					$(dialog).draggable();//为模态对话框添加拖拽
+					$(dialog).css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
+				}
+//				if(this.settings.init){
+//					window.setTimeout(function(){
+//						_this.settings.init(_this.ele)
+//					},500)
+//				}
+			},
+			initModalEvn:function(dialog,id){
+				//页面初始化事件
+				var _this=this;
+				this.parent.find("#"+id).modal('toggle')
+				var H=$(_this.parent).height()
+				window.setTimeout(function(){
+					if(self!=top){
+						$(_this.parent).children(".modal-backdrop").remove();
+					}
+					var h=$(dialog).find(".modal-body").height()
+					var con_w=$(dialog).find(".modal-content").width();
+					//$(dialog).find(".modal-content").css("margin-top",(H-h)/4+"px")
+				},500)
+				if(this.settings.width){
+					//根据百分比适配宽度
+					if((this.settings.width+"").indexOf('%')>-1){
+						window.setTimeout(function(){
+							$(dialog).find(".modal-dialog").css("width", parseInt(_this.settings.width)+"%")
+						},300)
+					}else{
+						$(dialog).find(".modal-dialog").css({"width":parseInt(this.settings.width)+"px"})
+					}
+				}
+				if(this.settings.height){
+					if((this.settings.height+"").indexOf('%')>-1){
+						$(dialog).find(".modal-dialog").css({"height":parseInt(this.settings.height)+'%',"overflow-y": "auto"})
+					}else{
+						$(dialog).find(".modal-dialog").css({"height":parseInt(this.settings.height)+"px","overflow-y": "auto"})
+						
+					}
+				}else{
+					$(dialog).find(".modal-dialog").css({"max-height":"500px","overflow-y": "auto"})
+				}
+				$(dialog).find(".modal-content").css({"height":'100%'})
+				$(dialog).find(".modal-body").css({"height":'calc( 100% - 33px)'})
+				
+				if(this.settings.height && (this.settings.height+"").indexOf('100%')<0){
+					$(dialog).find(".modal-content").resize(function(){
+						var H=$(_this.parent).height()
+						var h=$(this).height()
+						$(dialog).css("margin-top",(H-h)/4+"px")
+					})
+				}else{
+					$(dialog).find('.modal-dialog').css('margin','0px')
+					window.setTimeout(function(){
+						$(dialog).css('padding','0px !important')
+						$(dialog).css('padding-left','0px !important')
+						$(dialog).css('margin','0px !important')
+					},600)
+				}
+				
+				this.settings.init(dialog);
+			},
+			stop:function(){
+				this.settings.flag=false;
+			},
+	}
+	
+	function callFrameEvent(frame,key,param){
+		var callfunc=frame.eq(0)[0].contentWindow[key];
+		if(callfunc){
+			return callfunc.apply(null,param);
+		}
+	}
 
-	var panel=function(con){
-		 var contetn='<div class="modal-header">'+
-						'     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>'+
-						' </div>'+
-						'<div class="modal-content">'+con+'</div>';
+	var panel=function(param){
 		var option={
-				width:800,
+				width:'800',
 				height:500,
 				bg_color:"white",
-				con:contetn,
+				con:'',
 				hidden:false,
 				type:"panel"
+		}
+		if(param!=null || cons!=""){
+			$.extend(option,param)
 		}
 		$(".modal_panel").remove();
 		this.panel=new Load(option);
@@ -278,8 +434,11 @@
 			hide:function(){
 				this.panel.hide();
 			},
-			reload:function(con){
-				$(this.panel.LOAD).find(".modal-content").html(con).fadeIn()
+			reload:function(param){
+				$(this.panel.parent).find("#"+this.panel.eleId).html(param.con).fadeIn()
+				this.panel.initParam(param)
+				this.panel.parent=getFullParent();
+				this.show();
 			}
 	}
 	var showImg=function(img){
@@ -394,6 +553,7 @@
 		}
 	});  
 
+	/*获取最顶层的iframe parent*/
 	function getInitParent(parent){
 		if(parent==undefined){
 			parent=window.parent;
@@ -403,6 +563,16 @@
 		}else{
 			return getInitParent(parent.parent)
 		}
+	}
+	
+	/*考虑全屏上级元素*/
+	function getFullParent(){
+		var ele;
+		try {
+			ele=eval('FullScreenEle()')
+		} catch (e) {
+		}
+		return ele?$(ele):$(getInitParent().document.body)
 	}
 	
 	
@@ -431,7 +601,7 @@
 		loading:function(tar){
 			var parent;
 			var body= tar==undefined || $(tar).length==0 ?'body':$(tar)
-			if(tar==undefined || self!=top){
+			if(tar==undefined || self!=top || eval('FullScreenEle()') !=undefined){
 				parent=$(body,window.top.document)
 			}else{
 				parent=$(body)
@@ -446,15 +616,15 @@
 				console.error("could not find parent")
 			}
 		},
-		panel:function(con){
+		panel:function(param){
 			var p;
 			var body=$("body",window.top.document)
 			if($(body).data("panel")==undefined){
-				p=new panel(con)
+				p=new panel(param)
 				$(body).data("panel",p)
 			}else{
 				p=$(body).data("panel")
-				p.reload(con)
+				p.reload(param)
 			}
 			return p;
 		},
@@ -472,4 +642,81 @@
 		}
 
 	})
-})(jQuery,window,document)
+})(jQuery,window,document);
+
+(function ($, window, undefined) {
+    var elems = $([]),
+        jq_resize = $.resize = $.extend($.resize, {}),
+        timeout_id,
+        str_setTimeout = 'setTimeout',
+        str_resize = 'resize',
+        str_data = str_resize + '-special-event',
+        str_delay = 'delay',
+        str_throttle = 'throttleWindow';
+    jq_resize[str_delay] = 250;
+    jq_resize[str_throttle] = true;
+    $.event.special[str_resize] = {
+        setup: function () {
+            if (!jq_resize[str_throttle] && this[str_setTimeout]) {
+                return false;
+            }
+            var elem = $(this);
+            elems = elems.add(elem);
+            $.data(this, str_data, {
+                w: elem.width(),
+                h: elem.height()
+            });
+            if (elems.length === 1) {
+                loopy();
+            }
+        },
+        teardown: function () {
+            if (!jq_resize[str_throttle] && this[str_setTimeout]) {
+                return false;
+            }
+            var elem = $(this);
+            elems = elems.not(elem);
+            elem.removeData(str_data);
+            if (!elems.length) {
+                clearTimeout(timeout_id);
+            }
+        },
+        add: function (handleObj) {
+            if (!jq_resize[str_throttle] && this[str_setTimeout]) {
+                return false;
+            }
+            var old_handler;
+
+            function new_handler(e, w, h) {
+                var elem = $(this),
+                    data = $.data(this, str_data);
+                data.w = w !== undefined ? w : elem.width();
+                data.h = h !== undefined ? h : elem.height();
+                old_handler.apply(this, arguments);
+            }
+
+            if ($.isFunction(handleObj)) {
+                old_handler = handleObj;
+                return new_handler;
+            } else {
+                old_handler = handleObj.handler;
+                handleObj.handler = new_handler;
+            }
+        }
+    };
+
+    function loopy() {
+        timeout_id = window[str_setTimeout](function () {
+            elems.each(function () {
+                var elem = $(this),
+                    width = elem.width(),
+                    height = elem.height(),
+                    data = $.data(this, str_data);
+                if (width !== data.w || height !== data.h) {
+                    elem.trigger(str_resize, [data.w = width, data.h = height]);
+                }
+            });
+            loopy();
+        }, jq_resize[str_delay]);
+    }
+})(jQuery, this);

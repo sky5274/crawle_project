@@ -12,9 +12,42 @@
 				data:{},
 				type:'GET',
 				async:true,
-				dataType:"text",	
+				dataType:"json",	
 		}
 		obj=$.extend(obj,option)
+		if(obj.prepare){
+			//前置准备函数
+			obj.prepare(obj.data,function(d){
+				if(d){
+					obj.data$.extend(obj.data,d);
+				}
+				ajaxFunc(obj,option)
+			})
+		}else{
+			ajaxFunc(obj,option)
+		}
+	}
+	
+	/*解析url 前缀*/
+	function parseUrl(url){
+		var protocol=window.location.protocol
+		if(url && url.indexOf("://")<0){
+			try {
+				url=API.config.baseUrl+url
+				if(url.indexOf("http:")==0 && protocol !='http:'){
+					url=protocol+url.substr(url.indexOf('://')+1);
+				}
+			} catch (e) {
+			}
+		}
+		if(url && url.indexOf('://')==0){
+			url=protocol+url.substr(1);
+		}
+		return url
+	}
+	
+	/*ajax 函数*/
+	function ajaxFunc(obj,option){
 		if(obj.loadding){
 			obj.beforeSend=function(){
 				if(option.beforeSend){
@@ -29,15 +62,9 @@
 				$.loading(obj.loadtarget).close()
 			}
 		}
-		var url;
-		if(obj.url.indexOf("://")<0){
-			try {
-				url=API.config.baseUrl+obj.url
-			} catch (e) {
-				url=obj.url
-			}
-		}else{
-			url=obj.url
+		var url=parseUrl(obj.url);
+		if(url==undefined){
+			return;
 		}
 		$.ajax({
 			url:url,
@@ -61,10 +88,10 @@
 				}
 			},
 			success:function(data,textStatus){
-				if(data==null || data.code==undefined || data.code=="0"|| data.code=="-1" || obj.ignore==true || data.success){
-						if(obj.success){
-								obj.success(data,textStatus)
-						}
+				if(data==null || data.code==undefined || data.code=="0"|| obj.ignore==true || data.success){
+					if(obj.success || obj.ignore==true){
+						obj.success(data,textStatus)
+					}
 				}else if(data.code=="-2"){
 					getInitParent(parent).location.href=basePath+"/login";
 				}else{
@@ -75,7 +102,20 @@
 							console.log(obj.url+'>>>'+data.message)
 							$.diaLog({con:data.message,closed:true})
 						}else{
-							$.diaLog({con:obj.url+'>>>'+data.message,closed:true})
+							if(data.exception){
+								$.diaLog({
+									con:obj.url+'>>>'+data.message,
+									init:function(dialog){
+										$(dialog).find(".modal-footer").prepend("<button class='down-exception btn btn-default' >下载</button>")
+										$(dialog).find(".down-exception").on("click",function(){
+											download("log.txt",data.exception)
+										})
+									}
+								})
+							}else{
+								$.diaLog({con:obj.url+'>>>'+data.message,closed:true})
+							}
+							
 						}
 					}
 				}
@@ -96,13 +136,13 @@
 				if(obj.error){
 					obj.error()
 				}else{
-					console.log(url)
 					if(e.responseJSON){
 						if(e.responseJSON.message){
 							$.diaLog({con: e.responseJSON.message,closed:true})
 						}
 					}
 				}
+				this.complete()
 			}
 		})
 	}
@@ -139,17 +179,23 @@
 			doAjax(obj)
 	}
 	function doPostJsonAjax(obj){
-		obj.type="POST";
+		if(obj.type !=undefined){
+			if("POST,post,PUT,put,Detelet,detelet".indexOf(obj.type)<0){
+				obj.type="POST";
+			}
+		}else{
+			obj.type="POST";
+		}
 		obj.contentType='application/json'
 		if(typeof(obj.data)!="string"){
 			obj.data=JSON.stringify(obj.data)
 		}
 		doJsonAjax(obj)
 	}
+	
 	function jTable(tar,obj){
 		var param ={
 				method: 'get',
-			    url: "",
 				cache: false,
 				striped: true,
 				dataField: "list",
@@ -169,11 +215,15 @@
 					}else{
 						params=param;
 					}
-					params.current=param.offset;
+					
+					params.current=(param.offset/param.limit)+1;
 					params.pageSize=param.limit;
 					return params;
 				},
 				responseHandler:function(res){
+					if(res.total !=undefined){
+						return res;
+					}
 					if(res.success && res.data){
 						return res.data;
 					}else{
@@ -185,7 +235,6 @@
 				search: false,
 				showColumns: false,
 				showRefresh: false,
-				minimumCountColumns: 2,
 				clickToSelect: true,
 				onLoadError:function(){
 					if(obj.error){
@@ -199,6 +248,9 @@
 			param.contentType='application/json';
 		}
 		param=$.extend(param,obj)
+		
+		//解析url
+		param.url=parseUrl(param.url)
 		$(tar).bootstrapTable(param)
 	}
 	var cartPage=function(param){
@@ -223,14 +275,18 @@
 				$(this.cart_panel).css({"width":"100%","height":"100%","margin-bottom": "0"})
 				$(this.cart_panel).find(".cart-back").css({"height":"30px","width":"100%"})
 				$(this.cart_panel).find("iframe").css({"height":"calc(100% - 30px)","width":"100%"})
-//				$(this.cart_panel).find(".cart-back").css({"height":"30px","width":"100%","position": "absolute","top": "0px","z-index": 2})
-//				$(this.cart_panel).find("iframe").css({"height":"100%","width":"100%","position": "absolute","top": "0px"})
+				if(obj.showback==false){
+					$(this.cart_panel).find(".cart-back").hide();
+				}
 				$(this.cart_panel).find(".cart-back").on('click',function(){
 					$(_this.cart_panel).fadeOut();
 					$(obj.parent).fadeIn();
 				})
+//				$(this.cart_panel).find(".cart-back").css({"height":"30px","width":"100%","position": "absolute","top": "0px","z-index": 2})
+//				$(this.cart_panel).find("iframe").css({"height":"100%","width":"100%","position": "absolute","top": "0px"})
 			}
-			this.cart_panel.find("iframe").attr("src",obj.src)
+			
+			this.cart_panel.find("iframe").attr("src",parseUrl(obj.src))
 			this.cart_panel.fadeIn();
 		},
 		showPanel:function(){
@@ -240,7 +296,8 @@
 		back:function(func){
 			var cart_panel=$(".cart-panel", window.parent.document);
 			if(!cart_panel.is(':hidden')){
-				top.cartBack();
+				//获取上级回调方法
+				window.parent.cartBack();
 				if(func){
 					func()
 				}
@@ -258,6 +315,7 @@
 	
 	/*input  输入选择*/
 	function inputSelect(ele,obj){
+		$(".input-tip").remove();
 		var save_key="_value"
 		var zindex=$(ele).css('z-index')
 		if(zindex==undefined || zindex=='' || zindex=='auto'){
@@ -265,58 +323,148 @@
 		}
 		var sel_id='sel_'+parseInt(Math.random()*1000);
 		var targetKey=obj.target?obj.target:'name'
-		var sel=$('<div id="'+sel_id+'" class="form-control hidden"></div>')
-		$.each(obj.data,function(i,d){
-			if(obj.getOption){
-				d=obj.getOption(d)
-			}
-			if(Array.isArray(d)){
-				$.each(d,function(i,el){
-					sel.append(getOptionEle(save_key,el))
-				})
-			}else{
-				sel.append(getOptionEle(save_key,d))
-			}
-		})
+		var sel=$('<div id="'+sel_id+'" class="input-tip form-control hidden" style="border: 1px solid gray; display: inline-table;position: absolute;z-index: 999;"></div>')
 		window.setTimeout(function(){
-			if($(ele).length==0){
-				$.alert({type:"warn",content:"input select  has not found the target input-element"})
-			}
-			$(ele).parent().append(sel)
-			$(ele).parent().append('<style>.opt_hover{background-color: #E6E6E6; border: 1px solid #BDBDBD; box-shadow: 0 0 5px #A9E2F3;  border-radius: 5px}</style>')
-			$(ele).parent().mouseleave(function(){
-				$(sel).addClass('hidden')
-			})
-		},500)
-		var isSelect=false;
-		$(ele).bind('input propertychange',function(){
-			var val=$(this).val();
-			var flag=false;
-			var select=$(ele).parent().find("div#"+sel_id)
-			select.children().each(function(){
-				var optd=$(this).data(save_key);
-				var targetVal=optd[targetKey];
-				try{
-					isSelect=val==targetVal
-					if(targetVal.indexOf(val)<0){
-						$(this).addClass("hidden")
-					}else{
-						$(this).removeClass("hidden")
-						flag=true;
-					}
-				}catch (e) {
-					$(this).removeClass("hidden")
+				if($(ele).length==0){
+					$.alert({type:"warn",content:"input select  has not found the target input-element"})
+				}
+				var left=0
+				var h=$(ele).outerHeight()
+				var w=$(ele).outerWidth()
+				sel.css({"left":left+'px',top:h+'px','width':w+"px"})
+				if(obj.init){
+					obj.init(ele,sel)
+				}
+				$(ele).parent().css("position",'relative')
+				$(ele).parent().append(sel)
+				if($("#input-tip-style").length==0){
+					$(ele).parent().append('<style id="input-tip-style">.opt_hover{background-color: #E6E6E6; border: 1px solid #BDBDBD; box-shadow: 0 0 5px #A9E2F3;  border-radius: 5px}</style>')
+				}
+			},500)
+			
+		var initSelectBody=function(data){
+			sel.html("")
+			$.each(data,function(i,d){
+				
+				if(obj.getOption){
+					d=obj.getOption(d)
+				}
+				if(Array.isArray(d)){
+					$.each(d,function(i,el){
+						sel.append(getOptionEle(save_key,el))
+					})
+				}else{
+					sel.append(getOptionEle(save_key,d))
 				}
 			})
-			if(flag || isSelect){
-				$(select).css({	position: 'absolute','cursor': 'pointer','height':'auto','max-height':'150px','overflow-y': 'auto','top': $(ele).parent().height()+"px",'width': $(ele).parent().width()+'px','z-index': zindex+1})
-				$(select).removeClass('hidden')
-			}else{
-				$(select).addClass('hidden')
+			if($(sel).find(".hidden").length>0){
+				$(sel).removeClass("hidden")
+				$(sel).find(".hidden").removeClass("hidden")
 			}
+		}
+		if(obj.ajax){
+			//异步加载
+			$(ele).bind('input propertychange',function(){
+				var val=$(this).val();
+				var ajax=obj.ajax;
+				if(obj.getData){
+					ajax.data=obj.getData(val)
+				}
+				ajax.success=function(res){
+					var data=obj.success?obj.success(res):res.data
+					initSelectBody(data)
+				}
+				if(obj.type=='postjson'){
+					doPostJsonAjax(ajax)
+				}else{
+					doAjax(ajax)
+				}
+				
+			})
+		}else if(obj.data){
+			initSelectBody(obj.data)
+			var isSelect=false;
+			if(obj.dataType !='server'){
+				$(ele).bind('input propertychange',function(){
+					var val=$(this).val();
+					var flag=false;
+					var select=$(ele).parent().find("div#"+sel_id)
+					select.children().each(function(){
+						var optd=$(this).data(save_key);
+						var targetVal=optd[targetKey];
+						try{
+							isSelect=val==targetVal
+							if(targetVal.indexOf(val)<0){
+								$(this).addClass("hidden")
+							}else{
+								$(this).removeClass("hidden")
+								flag=true;
+							}
+						}catch (e) {
+							$(this).removeClass("hidden")
+						}
+					})
+					if(flag || isSelect){
+						$(select).css({	position: 'absolute','cursor': 'pointer','height':'auto','max-height':'150px','overflow-y': 'auto','top': $(ele).parent().height()+"px",'width': $(ele).parent().width()+'px','z-index': zindex+1})
+						$(select).removeClass('hidden')
+					}else{
+						$(select).addClass('hidden')
+					}
+				})
+			}
+		}
+		
+		//键盘上下+确认键事件
+		var keyDownFunc=function(kcode){
+			var nopt=$(sel).find(".opt_hover")
+			var isSelect=nopt.length>0
+			if(!isSelect){
+				nopt=$(sel).children().eq(0);
+				nopt.addClass("opt_hover")
+			}
+			if(kcode==40){
+				//向下
+				if(isSelect){
+					nopt.removeClass("opt_hover")
+					var nxopt=nopt.next()
+					if(nxopt.length==0){
+						nxopt=$(sel).children().eq(0);
+					}
+					nxopt.addClass("opt_hover")
+				}
+			}else if(kcode==38){
+				//向上
+				nopt.removeClass("opt_hover")
+				var preopt=nopt.prev()
+				if(preopt.length==0){
+					preopt=$(sel).children().eq($(sel).children().length-1);
+				}
+				preopt.addClass("opt_hover")
+			}else if(kcode==13){
+				//确认
+				nopt.click()
+			}
+		}
+		
+		$(ele).on('focus',function(){
+			if($(sel).find('p').length>0){
+				$(sel).removeClass("hidden")
+			}
+			$(ele).on('keydown',function(e){
+				keyDownFunc(e.keyCode);
+			})
+		})
+		$(ele).on('keydown',function(e){
+			keyDownFunc(e.keyCode);
+		})
+		
+		$(ele).on('blur',function(){
+			window.setTimeout(function(){
+				$(ele).off('keydown')
+				$(sel).addClass('hidden')
+			},300)
 		})
 		$(sel).on('click','p',function(){
-			$(this).parent().addClass('hidden')
 			var opt=$(this);
 			var optd=opt.data(save_key)
 			$(ele).val(optd[targetKey])
@@ -324,12 +472,52 @@
 			if(obj.change){
 				obj.change(ele,optd)
 			}
+			$(this).parent().addClass('hidden')
+			window.setTimeout(function(){
+				$("#"+sel_id).remove()
+			},500)
 		})
 		$(sel).children().hover(function(){
+			$(sel).find(".opt_hover").removeClass("opt_hover")
 			$(this).addClass("opt_hover")
 		},function(){
 			$(this).removeClass('opt_hover')
 		})
+	}
+	
+	function parseEle(tar,obj){
+		$(tar).find("input,textArea").each(function(i,e){
+			var n=$(this).attr("name")
+			if(n!=undefined && n !=''){
+				var v=obj[n];
+				if(v !=undefined){
+					$(this).val(v);
+				}
+			}
+		})
+		$(tar).find("select").each(function(i,e){
+			var n=$(this).attr("name")
+			if(n!=undefined && n !=''){
+				var v=obj[n];
+				if(v){
+					$(this).children().prop("selected", false);
+					$(this).children('[value="'+v+'"]').prop("selected", true);
+				}
+			}
+		})
+	}
+	function parseObj(tar){
+		var obj={}
+		$(tar).find("input,textArea,select").each(function(i,e){
+			var n=$(this).attr("name")
+			if(n!=undefined && n !=''){
+				var v=$(this).val()
+				if(v !=''){
+					obj[n]=v
+				}
+			}
+		})
+		return obj;
 	}
 	
 	
@@ -342,6 +530,12 @@
 		},
 		inputSelect:function(param){
 			return new inputSelect($(this),param)
+		},
+		parseEle:function(param){
+			return new parseEle($(this),param)
+		},
+		parseObj:function(){
+			return new parseObj($(this))
 		},
 		
 	})
@@ -567,7 +761,6 @@ function date(format, timestamp){
             // nothing special 
             ret = s; 
         } 
-        console.log(ret)
         return ret; 
     }); 
 }
@@ -587,4 +780,139 @@ function sprintf(str) {
         return arg;
     });
     return flag ? str : '';
+};
+
+/**
+ * 创建文件
+ * @param filename
+ * @param text
+ * @returns
+ */
+function download(filename, text) {
+	  var element = document.createElement('a');
+	  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+	  element.setAttribute('download', filename);
+	  
+	  element.style.display = 'none';
+	  document.body.appendChild(element);
+	  element.click();
+	  document.body.removeChild(element);
+	}
+
+/*元素全局显示*/
+$(function(){
+	listenFullScreenEvent();
+})
+/*全屏事件监听*/
+function listenFullScreenEvent(){
+	document.addEventListener('fullscreenchange', 		function() { FullScreenChangeEvent(document.fullscreen)},false);
+	document.addEventListener('mozfullscreenchange',	function() { FullScreenChangeEvent(document.mozFullScreen)},false);
+	document.addEventListener('webkitfullscreenchange',	function() { FullScreenChangeEvent(document.webkitIsFullScreen)},false);
+	document.addEventListener('msfullscreenchange',		function() { FullScreenChangeEvent(document.msFullscreenElement)},false);
+}
+
+function FullScreenChangeEvent(flag){
+	if(FULLFUC){FULLFUC(flag)}
+	if(!flag){
+		FULLELE=undefined;
+	}
+}
+
+var FULLELE;
+var FULLFUC;
+/*加载全屏元素，以及全局过程事件*/
+function launchIntoFullscreen(element,func) {
+	FULLELE=element;
+	FULLFUC=func;
+    if(element.requestFullscreen){
+        element.requestFullscreen();
+    } else if(element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+    } else if(element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+    }else if(element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+    }
+}
+/*退出全屏*/
+function exitFullscreen() {
+    if(document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if(document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if(document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    }
+}
+/*全屏元素*/
+function FullScreenEle(){
+	return FULLELE;
+}
+
+/*执行iframe 内函数方法*/
+function invokeFrameEvent(frame,key,...param){
+	var callfunc=frame.eq(0)[0].contentWindow[key];
+	if(callfunc){
+		return callfunc.apply(null,param);
+	}
+}
+
+/**json fromate (json 格式化)*/
+var formatJson = function (json, options) {
+    var reg = null,
+        formatted = '',
+        pad = 0,
+        PADDING = '    ';
+    options = options || {};
+    options.newlineAfterColonIfBeforeBraceOrBracket = (options.newlineAfterColonIfBeforeBraceOrBracket === true) ? true : false;
+    options.spaceAfterColon = (options.spaceAfterColon === false) ? false : true;
+    if (typeof json !== 'string') {
+        json = JSON.stringify(json);
+    } else {
+        json = JSON.parse(json);
+        json = JSON.stringify(json);
+    }
+    reg = /([\{\}])/g;
+    json = json.replace(reg, '\r\n$1\r\n');
+    reg = /([\[\]])/g;
+    json = json.replace(reg, '\r\n$1\r\n');
+    reg = /(\,)/g;
+    json = json.replace(reg, '$1\r\n');
+    reg = /(\r\n\r\n)/g;
+    json = json.replace(reg, '\r\n');
+    reg = /\r\n\,/g;
+    json = json.replace(reg, ',');
+    if (!options.newlineAfterColonIfBeforeBraceOrBracket) {
+        reg = /\:\r\n\{/g;
+        json = json.replace(reg, ':{');
+        reg = /\:\r\n\[/g;
+        json = json.replace(reg, ':[');
+    }
+    if (options.spaceAfterColon) {
+        reg = /\:/g;
+        json = json.replace(reg, ':');
+    }
+    (json.split('\r\n')).forEach(function (node, index) {
+            var i = 0,
+                indent = 0,
+                padding = '';
+            if (node.match(/\{$/) || node.match(/\[$/)) {
+                indent = 1;
+            } else if (node.match(/\}/) || node.match(/\]/)) {
+                if (pad !== 0) {
+                    pad -= 1;
+                }
+            } else {
+                indent = 0;
+            }
+            for (i = 0; i < pad; i++) {
+                padding += PADDING;
+            }
+            if(node != "") {
+                formatted += padding + node + '\r\n';
+            }
+            pad += indent;
+        }
+    );
+    return formatted;
 };

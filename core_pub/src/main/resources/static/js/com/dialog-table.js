@@ -11,7 +11,7 @@
 			if(param.columns==undefined || !Array.isArray(param.columns)){
 				return;
 			}
-			var isChange=false
+			var isChange=false || param.type==obj.type
 			$.each(param.columns,function(i,cl){
 				if(cl.Exact){
 					isChange=true;
@@ -21,7 +21,9 @@
 			param=$.extend(true,obj,param)
 			if(isChange){
 				param.columns.push({on:'精准',off:"模糊",clazz:Exact_like_switch,checked:false,type:"switch",change:function(ele,data){
-					
+					if(param.exactFunc){
+						param.exactFunc(data,$(_this))
+					}
 				}})
 			}
 			if(param.clear){
@@ -42,16 +44,17 @@
 			if(el_switch.length>0){
 				isExcat=$(el_switch).data("value")
 			}
-			$(this).find("input").each(function(){
+			$(this).find("input,select,textArea").each(function(){
 				var nameKey=isExcat?'exact':'name'
 				var key=$(this).attr(nameKey);
-				if(key && key == '' ){
+				if(key==undefined || key == '' ){
 					key=$(this).attr("name")
 				}
 				if(key && key !='' && key !='undefined'){
+					var val=$(this).val();
 					if($(this).attr("type")=='checkbox' || $(this).attr("type")=='radio'){
 						data[key]=$(this).prop("checked")
-					}else if($(this).val()!=''){
+					}else if(val!='' && val !='undefined'){
 						data[key]=$(this).val()
 					}
 				}
@@ -70,29 +73,30 @@ function getTableContent(list){
 }
 
 /**form item 封装1*/
-function addFromTable(content,list){
+function addFromTable(content,list,def){
 	if(list){
 		$.each(list,function(i,e){
 			if(e.hide){
 				content.append('<input type="hidden" name="'+getNotNullText(e.name)+'" value="'+getNotNullText(e.value)+'"/>')
 			}else{
-				var size=e.size?e.size:10
-				var item=$('<div class="item-lable form-group clearfix"><lable class="col-sm-2 control-label">'+getNotNullText(e.title)+':</lable><div class="col-sm-'+size+' form-item"></div></div>')
+				var size=e.size?e.size:(def?def:10)
+				var item=$('<div class="item-lable form-group clearfix"><lable class="col-sm-'+(12-size)+' control-label">'+getNotNullText(e.title)+':</lable><div class="col-sm-'+size+' form-item"></div></div>')
 				$(item).find("div.form-item").append(getElement(e));;
+				$(item).find("lable").css("padding", "7px 10px")
 				content.append(item)
 			}
 		})
 	}
 }
 function getNotNullText(txt){
-	return txt?txt:''
+	return txt && txt!='undefined' && txt!='null' ?txt:''
 }
 
 /**form item 封装2*/
 function addFromItem(content,list){
 	$.each(list,function(i,e){
 		if(e.hide){
-			content.append('<input type="hidden" name="'+e.name+'" value="'+e.value+'"/>')
+			content.append('<input type="hidden" name="'+e.name+'" value="'+getNotNullText(e.value)+'"/>')
 		}else if(e.ele && e.ele=='button'){
 			var btn=$('<button class="btn btn-primary '+(e.clazz?e.clazz:'')+'" '+(e.id?'id="'+e.id+'"':'')+'>'+getNotNullText(e.title)+'</button>')
 			initEleEvent(e,btn)
@@ -116,18 +120,28 @@ function getElement(e){
 		attr+=e.require?"require=true":""
 	var ele
 	if(e.ele == 'select'){
-		ele=$('<select class="pull-left  form-control" '+attr+' name="'+e.name+'" value="'+(e.value==undefined || e.value==null?'':e.value)+'"></select>"=')
+		ele=$('<select class="pull-left  form-control" '+attr+' name="'+e.name+'" value="'+(getNotNullText(e.value))+'"></select>"=')
 		if(e.data){
 			$.each(e.data,function(i,d){
-				ele.append('<option data="'+JSON.stringify(d)+'" value="'+d.value+'">'+d.name+'</option>')
+				ele.append("<option data='"+JSON.stringify(d)+"' value='"+d.value+"'>"+d.name+"</option>")
 			})
 		}
+		$(ele).find("option[value='"+e.value+"']").attr("selected",true);
+	}else if(e.ele =='textArea'){
+		ele= $('<textArea class="pull-left  form-control" '+attr+'  name="'+e.name+'">'+(getNotNullText(e.value))+'</textArea>')
+	}else if(e.ele =='button'){
+		ele=$('<button class="btn btn-primary '+(e.clazz?e.clazz:'')+'" '+(e.id?'id="'+e.id+'"':'')+'>'+getNotNullText(e.title)+'</button>')
 	}else {
 		if(e.type!=undefined && e.type=='switch'){
 			if(e.on){attr+='data-on-label="'+e.on+'"'}
 			if(e.off){attr+='data-off-label="'+e.off+'"'}
-			ele=$('<div class="switch '+(e.clazz?e.clazz:'')+'" '+attr+'> <input type="checkbox" name="'+getNotNullText(e.name)+'" /></div>')
+			ele=$('<div class="switch input-group '+(e.clazz?e.clazz:'')+'" '+attr+'> <input type="checkbox" name="'+getNotNullText(e.name)+'" /></div>')
 			ele.bootstrapSwitch()
+			ele.css( "height", "35px")
+			ele.find("span,label").css({
+				'height': '33px',
+				'padding': '6px',
+			})	
 			$(ele).on('switch-change', function (ev, data) {
 			    $(this).data('value',data.value)
 			    $(this).data('data',data)
@@ -136,7 +150,7 @@ function getElement(e){
 			    }
 			});
 		}else{
-			ele= $('<input class="pull-left  form-control" type="'+(e.type?e.type:'text')+'" '+attr+' placeholder="'+(e.placeholder?e.placeholder:'')+'"  name="'+e.name+'" value="'+(e.value==undefined || e.value==null?'':e.value)+'"/>')
+			ele= $('<input class="pull-left  form-control" type="'+(e.type?e.type:'text')+'" '+attr+' placeholder="'+(e.placeholder?e.placeholder:'')+'"  name="'+e.name+'" value="'+(getNotNullText(e.value))+'"/>')
 		}
 		
 	}
@@ -183,10 +197,10 @@ function initEleEvent(e,ele){
 
 /**form 封装对象输入结果封装*/
 function getTableData(content,func){
-	$(content).find('input').parent().css("border",'')
+	$(content).find('input,select,textArea').parent().css("border",'')
 	var data={}
 	var flag=true;
-	var code=$(content).find("input,select").each(function(i,ele){
+	var code=$(content).find("input,select,textArea").each(function(i,ele){
 		var val=$(this).val();
 		if(func){
 			data=func(ele,data);
