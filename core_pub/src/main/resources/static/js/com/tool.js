@@ -63,6 +63,12 @@
 			}
 		}
 		var url=parseUrl(obj.url);
+<<<<<<< HEAD
+=======
+		if(url==undefined){
+			return;
+		}
+>>>>>>> refs/remotes/origin/dev_base
 		$.ajax({
 			url:url,
 			data:obj.data,
@@ -85,8 +91,13 @@
 				}
 			},
 			success:function(data,textStatus){
+<<<<<<< HEAD
 				if(data==null || data.code==undefined || data.code=="0"|| data.code=="-1" || obj.ignore==true || data.success){
 					if(obj.success){
+=======
+				if(data==null || data.code==undefined || data.code=="0"|| obj.ignore==true || data.success){
+					if(obj.success || obj.ignore==true){
+>>>>>>> refs/remotes/origin/dev_base
 						obj.success(data,textStatus)
 					}
 				}else if(data.code=="-2"){
@@ -176,13 +187,20 @@
 			doAjax(obj)
 	}
 	function doPostJsonAjax(obj){
-		obj.type="POST";
+		if(obj.type !=undefined){
+			if("POST,post,PUT,put,Detelet,detelet".indexOf(obj.type)<0){
+				obj.type="POST";
+			}
+		}else{
+			obj.type="POST";
+		}
 		obj.contentType='application/json'
 		if(typeof(obj.data)!="string"){
 			obj.data=JSON.stringify(obj.data)
 		}
 		doJsonAjax(obj)
 	}
+	
 	function jTable(tar,obj){
 		var param ={
 				method: 'get',
@@ -205,11 +223,18 @@
 					}else{
 						params=param;
 					}
+<<<<<<< HEAD
+=======
+					
+>>>>>>> refs/remotes/origin/dev_base
 					params.current=(param.offset/param.limit)+1;
 					params.pageSize=param.limit;
 					return params;
 				},
 				responseHandler:function(res){
+					if(res.total !=undefined){
+						return res;
+					}
 					if(res.success && res.data){
 						return res.data;
 					}else{
@@ -263,12 +288,20 @@
 				$(this.cart_panel).find("iframe").css({"height":"calc(100% - 30px)","width":"100%"})
 				if(obj.showback==false){
 					$(this.cart_panel).find(".cart-back").hide();
+<<<<<<< HEAD
 				}else{
 					$(this.cart_panel).find(".cart-back").on('click',function(){
 						$(_this.cart_panel).fadeOut();
 						$(obj.parent).fadeIn();
 					})
 				}
+=======
+				}
+				$(this.cart_panel).find(".cart-back").on('click',function(){
+					$(_this.cart_panel).fadeOut();
+					$(obj.parent).fadeIn();
+				})
+>>>>>>> refs/remotes/origin/dev_base
 //				$(this.cart_panel).find(".cart-back").css({"height":"30px","width":"100%","position": "absolute","top": "0px","z-index": 2})
 //				$(this.cart_panel).find("iframe").css({"height":"100%","width":"100%","position": "absolute","top": "0px"})
 			}
@@ -283,7 +316,8 @@
 		back:function(func){
 			var cart_panel=$(".cart-panel", window.parent.document);
 			if(!cart_panel.is(':hidden')){
-				top.cartBack();
+				//获取上级回调方法
+				window.parent.cartBack();
 				if(func){
 					func()
 				}
@@ -301,6 +335,7 @@
 	
 	/*input  输入选择*/
 	function inputSelect(ele,obj){
+		$(".input-tip").remove();
 		var save_key="_value"
 		var zindex=$(ele).css('z-index')
 		if(zindex==undefined || zindex=='' || zindex=='auto'){
@@ -308,58 +343,148 @@
 		}
 		var sel_id='sel_'+parseInt(Math.random()*1000);
 		var targetKey=obj.target?obj.target:'name'
-		var sel=$('<div id="'+sel_id+'" class="form-control hidden"></div>')
-		$.each(obj.data,function(i,d){
-			if(obj.getOption){
-				d=obj.getOption(d)
-			}
-			if(Array.isArray(d)){
-				$.each(d,function(i,el){
-					sel.append(getOptionEle(save_key,el))
-				})
-			}else{
-				sel.append(getOptionEle(save_key,d))
-			}
-		})
+		var sel=$('<div id="'+sel_id+'" class="input-tip form-control hidden" style="border: 1px solid gray; display: inline-table;position: absolute;z-index: 999;"></div>')
 		window.setTimeout(function(){
-			if($(ele).length==0){
-				$.alert({type:"warn",content:"input select  has not found the target input-element"})
-			}
-			$(ele).parent().append(sel)
-			$(ele).parent().append('<style>.opt_hover{background-color: #E6E6E6; border: 1px solid #BDBDBD; box-shadow: 0 0 5px #A9E2F3;  border-radius: 5px}</style>')
-			$(ele).parent().mouseleave(function(){
-				$(sel).addClass('hidden')
-			})
-		},500)
-		var isSelect=false;
-		$(ele).bind('input propertychange',function(){
-			var val=$(this).val();
-			var flag=false;
-			var select=$(ele).parent().find("div#"+sel_id)
-			select.children().each(function(){
-				var optd=$(this).data(save_key);
-				var targetVal=optd[targetKey];
-				try{
-					isSelect=val==targetVal
-					if(targetVal.indexOf(val)<0){
-						$(this).addClass("hidden")
-					}else{
-						$(this).removeClass("hidden")
-						flag=true;
-					}
-				}catch (e) {
-					$(this).removeClass("hidden")
+				if($(ele).length==0){
+					$.alert({type:"warn",content:"input select  has not found the target input-element"})
+				}
+				var left=0
+				var h=$(ele).outerHeight()
+				var w=$(ele).outerWidth()
+				sel.css({"left":left+'px',top:h+'px','width':w+"px"})
+				if(obj.init){
+					obj.init(ele,sel)
+				}
+				$(ele).parent().css("position",'relative')
+				$(ele).parent().append(sel)
+				if($("#input-tip-style").length==0){
+					$(ele).parent().append('<style id="input-tip-style">.opt_hover{background-color: #E6E6E6; border: 1px solid #BDBDBD; box-shadow: 0 0 5px #A9E2F3;  border-radius: 5px}</style>')
+				}
+			},500)
+			
+		var initSelectBody=function(data){
+			sel.html("")
+			$.each(data,function(i,d){
+				
+				if(obj.getOption){
+					d=obj.getOption(d)
+				}
+				if(Array.isArray(d)){
+					$.each(d,function(i,el){
+						sel.append(getOptionEle(save_key,el))
+					})
+				}else{
+					sel.append(getOptionEle(save_key,d))
 				}
 			})
-			if(flag || isSelect){
-				$(select).css({	position: 'absolute','cursor': 'pointer','height':'auto','max-height':'150px','overflow-y': 'auto','top': $(ele).parent().height()+"px",'width': $(ele).parent().width()+'px','z-index': zindex+1})
-				$(select).removeClass('hidden')
-			}else{
-				$(select).addClass('hidden')
+			if($(sel).find(".hidden").length>0){
+				$(sel).removeClass("hidden")
+				$(sel).find(".hidden").removeClass("hidden")
 			}
+		}
+		if(obj.ajax){
+			//异步加载
+			$(ele).bind('input propertychange',function(){
+				var val=$(this).val();
+				var ajax=obj.ajax;
+				if(obj.getData){
+					ajax.data=obj.getData(val)
+				}
+				ajax.success=function(res){
+					var data=obj.success?obj.success(res):res.data
+					initSelectBody(data)
+				}
+				if(obj.type=='postjson'){
+					doPostJsonAjax(ajax)
+				}else{
+					doAjax(ajax)
+				}
+				
+			})
+		}else if(obj.data){
+			initSelectBody(obj.data)
+			var isSelect=false;
+			if(obj.dataType !='server'){
+				$(ele).bind('input propertychange',function(){
+					var val=$(this).val();
+					var flag=false;
+					var select=$(ele).parent().find("div#"+sel_id)
+					select.children().each(function(){
+						var optd=$(this).data(save_key);
+						var targetVal=optd[targetKey];
+						try{
+							isSelect=val==targetVal
+							if(targetVal.indexOf(val)<0){
+								$(this).addClass("hidden")
+							}else{
+								$(this).removeClass("hidden")
+								flag=true;
+							}
+						}catch (e) {
+							$(this).removeClass("hidden")
+						}
+					})
+					if(flag || isSelect){
+						$(select).css({	position: 'absolute','cursor': 'pointer','height':'auto','max-height':'150px','overflow-y': 'auto','top': $(ele).parent().height()+"px",'width': $(ele).parent().width()+'px','z-index': zindex+1})
+						$(select).removeClass('hidden')
+					}else{
+						$(select).addClass('hidden')
+					}
+				})
+			}
+		}
+		
+		//键盘上下+确认键事件
+		var keyDownFunc=function(kcode){
+			var nopt=$(sel).find(".opt_hover")
+			var isSelect=nopt.length>0
+			if(!isSelect){
+				nopt=$(sel).children().eq(0);
+				nopt.addClass("opt_hover")
+			}
+			if(kcode==40){
+				//向下
+				if(isSelect){
+					nopt.removeClass("opt_hover")
+					var nxopt=nopt.next()
+					if(nxopt.length==0){
+						nxopt=$(sel).children().eq(0);
+					}
+					nxopt.addClass("opt_hover")
+				}
+			}else if(kcode==38){
+				//向上
+				nopt.removeClass("opt_hover")
+				var preopt=nopt.prev()
+				if(preopt.length==0){
+					preopt=$(sel).children().eq($(sel).children().length-1);
+				}
+				preopt.addClass("opt_hover")
+			}else if(kcode==13){
+				//确认
+				nopt.click()
+			}
+		}
+		
+		$(ele).on('focus',function(){
+			if($(sel).find('p').length>0){
+				$(sel).removeClass("hidden")
+			}
+			$(ele).on('keydown',function(e){
+				keyDownFunc(e.keyCode);
+			})
+		})
+		$(ele).on('keydown',function(e){
+			keyDownFunc(e.keyCode);
+		})
+		
+		$(ele).on('blur',function(){
+			window.setTimeout(function(){
+				$(ele).off('keydown')
+				$(sel).addClass('hidden')
+			},300)
 		})
 		$(sel).on('click','p',function(){
-			$(this).parent().addClass('hidden')
 			var opt=$(this);
 			var optd=opt.data(save_key)
 			$(ele).val(optd[targetKey])
@@ -367,8 +492,13 @@
 			if(obj.change){
 				obj.change(ele,optd)
 			}
+			$(this).parent().addClass('hidden')
+			window.setTimeout(function(){
+				$("#"+sel_id).remove()
+			},500)
 		})
 		$(sel).children().hover(function(){
+			$(sel).find(".opt_hover").removeClass("opt_hover")
 			$(this).addClass("opt_hover")
 		},function(){
 			$(this).removeClass('opt_hover')
@@ -739,6 +869,17 @@ function FullScreenEle(){
 	return FULLELE;
 }
 
+<<<<<<< HEAD
+=======
+/*执行iframe 内函数方法*/
+function invokeFrameEvent(frame,key,...param){
+	var callfunc=frame.eq(0)[0].contentWindow[key];
+	if(callfunc){
+		return callfunc.apply(null,param);
+	}
+}
+
+>>>>>>> refs/remotes/origin/dev_base
 /**json fromate (json 格式化)*/
 var formatJson = function (json, options) {
     var reg = null,

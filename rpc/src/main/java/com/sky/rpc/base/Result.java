@@ -21,7 +21,6 @@ public class Result <T> extends RpcBaseBean{
 		this.hasExp=true;
 		this.exp=e;
 		this.setThrowClazz(e.getClass());
-		
 	}
 	
 	public boolean hasException() {

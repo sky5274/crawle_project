@@ -62,14 +62,24 @@ public class FlowController extends BaseController{
 		return ResultUtil.getOk(flowGroupActionService.updateGroup(group));
 	}
 	
-	@RequestMapping("/info/add")
-	public Result<FlowBean> addFlow(FlowBean bean) throws FlowException{
+	@PostMapping("/info/add")
+	public Result<FlowBean> addFlow(@RequestBody FlowBean bean) throws FlowException{
 		return ResultUtil.getOk(flowActionService.addFlow(bean));
 	}
 	
-	@RequestMapping("info/update")
-	public Result<Integer> updateFlow(FlowBean bean) throws FlowException{
+	@PostMapping("info/update")
+	public Result<Integer> updateFlow(@RequestBody FlowBean bean) throws FlowException{
 		return ResultUtil.getOk(flowActionService.updateFlow(bean));
+	}
+	
+	@PostMapping("info/disable")
+	public Result<Integer> disableFlow(@RequestBody FlowBean bean) throws FlowException{
+		return ResultUtil.getOk(flowActionService.displayFlow(bean));
+	}
+	
+	@PostMapping("info/delete")
+	public Result<Integer> deleteFlow(@RequestBody FlowBean bean) throws FlowException{
+		return ResultUtil.getOk(flowActionService.deleteFlow(bean));
 	}
 	
 	
@@ -104,9 +114,14 @@ public class FlowController extends BaseController{
 		return ResultUtil.getOk(flowNodeActionService.updateFlowNode(node));
 	}
 	
-	@RequestMapping("node/disable")
+	@PostMapping("node/disable")
 	public Result<Integer> disableNode(FlowNodeBean node) throws FlowException {
 		return ResultUtil.getOk(flowNodeActionService.disableFlowNode(node));
+	}
+	
+	@PostMapping("node/delete")
+	public Result<Integer> deleteNode(FlowNodeBean node) throws FlowException {
+		return ResultUtil.getOk(flowNodeActionService.deleteFlowNode(node));
 	}
 	
 	

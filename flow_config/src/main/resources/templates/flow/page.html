@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="common/header::head('流程主页','/bootstrap/css/bootstrap-table.css,/bootstrap/menu/bootstrap_contextmenu.css','/bootstrap/js/bootstrap-table.js,/bootstrap/js/bootstrap-table-zh-CN.min.js,/js/com/dialog-table.js,/js/com/page-dialog-action.js,/bootstrap/menu/bootStrap_contextmenu.js,/js/flow_page.js')"></head>
 <script type="text/javascript">
+
+var nowRow=undefined;
 $(function(){
 	initEvent();
 	
@@ -39,6 +41,14 @@ $(function(){
 		],
 		onExpandRow: function (index, row, $detail) {
 			extendTable(index, row, $detail)
+		},
+		onCheck:function(row,el){
+			nowRow={type:'flow',table:$("#flow-table"),detail:row}
+			$(".btn-status").removeAttr("disabled")
+		},
+		onUnCheck:function(row,el){
+			nowRow=undefined
+			$(".btn-status").attr("disabled",'disabled')
 		}
 	})
 	
@@ -55,9 +65,9 @@ $(function(){
 				<div class="page-tool pull-right">
 						<button class="btn btn-primary" id="btn_flow_add">添加</button>
 						<button class="btn btn-primary" id="btn_flow_update">修改</button>
-						<button class="btn btn-primary btn-status" status="Y" url="/permission/flow/disable" id="btn_flow_disable">作废</button>
-						<button class="btn btn-primary btn-status" status="N" url="/permission/flow/active" id="btn_flow_active">生效</button>
-						<button class="btn btn-primary btn-status" status="N" url="/permission/flow/delete" id="btn_flow_del">删除</button>
+						<button class="btn btn-primary btn-status" disabled="disabled" url="disable" id="btn_flow_node_disable">作废</button>
+						<button class="btn btn-primary btn-status" disabled="disabled" url="active" id="btn_flow_node_active">生效</button>
+						<button class="btn btn-primary btn-status" disabled="disabled" url="delete" id="btn_flow_node_del">删除</button>
 				</div> 
 			</div>
 			<div id="page-contain" class="panel-body">

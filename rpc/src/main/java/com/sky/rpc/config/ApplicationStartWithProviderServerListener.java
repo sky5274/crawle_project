@@ -88,11 +88,12 @@ public class ApplicationStartWithProviderServerListener  implements ApplicationL
 	 * @date 2020年1月21日 上午10:41:24
 	 */
 	private void registProviderNode(Class<?> clazz, RpcElement ele) {
+		int port = ProviderServer.getPort();
 		//rpc provider class interface info regist into zookeeper
 		Class<?>[] interfaces = clazz.getInterfaces();
 		if(interfaces !=null) {
 			for(Class<?> intf:interfaces) {
-				registProviderClassNode(ele,intf,clazz);
+				registProviderClassNode(ele,intf,clazz,port);
 			}
 		}
 		
@@ -101,7 +102,7 @@ public class ApplicationStartWithProviderServerListener  implements ApplicationL
 		if(!CollectionUtils.isEmpty(superClasses)) {
 			for(Class<?> intf:superClasses) {
 				if(!Object.class.getName().equals(intf.getName())) {
-					registProviderClassNode(ele,intf,clazz);
+					registProviderClassNode(ele,intf,clazz,port);
 				}
 			}
 		}
@@ -118,6 +119,17 @@ public class ApplicationStartWithProviderServerListener  implements ApplicationL
 	 * @param port
 	 */
 	private void registProviderClassNode(RpcElement ele, Class<?> intf, Class<?> clazz) {
+		registProviderClassNode(ele,clazz,clazz);
+	}
+	
+	/**
+	 *	具体执行注册服务提供节点事件
+	 * @param ele
+	 * @param intf
+	 * @param clazz
+	 * @param port
+	 */
+	private void registProviderClassNode(RpcElement ele, Class<?> intf, Class<?> clazz, int port) {
 		try {
 			RpcConfig.regist(ele.writeUrl(), intf.getName(),clazz.getName());
 		} catch (Exception e) {

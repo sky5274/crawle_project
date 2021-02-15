@@ -3,6 +3,7 @@ package com.sky.flow.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.sky.flow.bean.FlowNodeBean;
 import com.sky.flow.bean.FlowNodeEventBean;
@@ -47,6 +48,6 @@ public interface FlowNodeEventBeanMapper {
 	 * @author 王帆
 	 * @date 2019年5月27日 上午10:22:44
 	 */
-	int deleteByNode(String flowId, String nodeId);
+	int deleteByNode(@Param("flowId")String flowId, @Param("nodeId")String nodeId);
     
 }

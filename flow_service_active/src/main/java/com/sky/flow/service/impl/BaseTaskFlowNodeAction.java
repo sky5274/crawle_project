@@ -194,6 +194,15 @@ public class BaseTaskFlowNodeAction  extends AbstratTaskFlowNodeAction {
 		return node; 
 	}
 	
+	/**
+	 * 添加任务节点
+	 * @param info
+	 * @param node
+	 * @return
+	 * @throws FlowException
+	 * @author wangfan
+	 * @date 2021年2月12日 下午8:53:43
+	 */
 	public TaskFlowNodeBean addNode(TaskFlowInfoBean info,TaskFlowNodeBean node)throws FlowException {
 		node=initAndGetNextNode(info,node);
 		return addNode(node);

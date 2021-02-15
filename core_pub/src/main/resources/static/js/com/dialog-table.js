@@ -44,7 +44,7 @@
 			if(el_switch.length>0){
 				isExcat=$(el_switch).data("value")
 			}
-			$(this).find("input").each(function(){
+			$(this).find("input,select,textArea").each(function(){
 				var nameKey=isExcat?'exact':'name'
 				var key=$(this).attr(nameKey);
 				if(key==undefined || key == '' ){
@@ -73,13 +73,13 @@ function getTableContent(list){
 }
 
 /**form item 封装1*/
-function addFromTable(content,list){
+function addFromTable(content,list,def){
 	if(list){
 		$.each(list,function(i,e){
 			if(e.hide){
 				content.append('<input type="hidden" name="'+getNotNullText(e.name)+'" value="'+getNotNullText(e.value)+'"/>')
 			}else{
-				var size=e.size?e.size:10
+				var size=e.size?e.size:(def?def:10)
 				var item=$('<div class="item-lable form-group clearfix"><lable class="col-sm-'+(12-size)+' control-label">'+getNotNullText(e.title)+':</lable><div class="col-sm-'+size+' form-item"></div></div>')
 				$(item).find("div.form-item").append(getElement(e));;
 				$(item).find("lable").css("padding", "7px 10px")
@@ -123,7 +123,7 @@ function getElement(e){
 		ele=$('<select class="pull-left  form-control" '+attr+' name="'+e.name+'" value="'+(getNotNullText(e.value))+'"></select>"=')
 		if(e.data){
 			$.each(e.data,function(i,d){
-				ele.append('<option data="'+JSON.stringify(d)+'" value="'+d.value+'">'+d.name+'</option>')
+				ele.append("<option data='"+JSON.stringify(d)+"' value='"+d.value+"'>"+d.name+"</option>")
 			})
 		}
 		$(ele).find("option[value='"+e.value+"']").attr("selected",true);
@@ -197,7 +197,7 @@ function initEleEvent(e,ele){
 
 /**form 封装对象输入结果封装*/
 function getTableData(content,func){
-	$(content).find('input').parent().css("border",'')
+	$(content).find('input,select,textArea').parent().css("border",'')
 	var data={}
 	var flag=true;
 	var code=$(content).find("input,select,textArea").each(function(i,ele){

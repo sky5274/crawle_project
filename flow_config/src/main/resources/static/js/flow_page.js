@@ -26,7 +26,7 @@ function initEvent(){
 		windowAction({
 			title:"新建流程配置",
 			table:"#flow-table",
-			isPost:false,
+			isPost:true,
 			columns:col,
 			actionUrl:'/flow/info/add',
 		})
@@ -38,11 +38,43 @@ function initEvent(){
 			windowAction({
 				title:"修改流程配置",
 				table:"#flow-table",
-				isPost:false,
+				isPost:true,
 				columns:cols,
 				actionUrl:'/flow/info/update',
 			})
+			
 		}
+	})
+	
+	$("body").on("click",'.btn-status',function(){
+		var _this=this;
+		if(nowRow){
+			$.diaLog({
+				con:  "<p style='text-align: center;'>是否"+$(_this).text()+ (nowRow.type=='flow'?"流程":"流程节点"+"</p>"),
+				type:"confrim",
+				func:function(type,content){
+					if(type=="sure"){
+						var u="/flow"+(nowRow.type=='flow'?"/info/":"/node/")
+						var ut=$(_this).attr("url")
+						if("active"==ut){
+							nowRow.detail.status=0
+							u+='update'
+						}else{
+							u+=ut;
+						}
+						
+						$.doPostJsonAjax({
+							url:u,data:nowRow.detail,
+							success:function(res){
+								nowRow.table.jmTable("refresh")
+							}
+						})
+					}
+				}
+			})
+		}
+		
+	
 	})
 	
 	$.contextMenu({
@@ -147,7 +179,6 @@ function getContent(id){
 }
 
 function initNodeContent($detail,node){
-	console.log(node)
 	var id=node.id;
 	$detail.html(getContent(id))
 	$detail.find("#f_node-data_"+id).find("input").each(function(){
@@ -212,6 +243,14 @@ function extendTable(index, row, $detail){
 			}else{
 				extendTableContainer( row, $detail)
 			}
+		},
+		onCheck:function(row,el){
+			nowRow={type:'node',table:$(cur_table),detail:row}
+			$(".btn-status").removeAttr("disabled")
+		},
+		onUnCheck:function(row,el){
+			nowRow=undefined
+			$(".btn-status").attr("disabled",'disabled')
 		}
 	})
 	initMenuContext("#"+cur_table.attr("id"))

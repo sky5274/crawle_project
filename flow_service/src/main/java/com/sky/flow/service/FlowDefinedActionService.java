@@ -41,5 +41,15 @@ public interface FlowDefinedActionService {
 	 */
 	public int displayFlow(FlowBean flow) throws FlowException;
 	
+	/**
+	 * 删除流程
+	 * @param flow
+	 * @return
+	 * @throws FlowException
+	 * @author wangfan
+	 * @date 2021年2月12日 下午8:32:53
+	 */
+	public int deleteFlow(FlowBean flow) throws FlowException;
+	
 	
 }
