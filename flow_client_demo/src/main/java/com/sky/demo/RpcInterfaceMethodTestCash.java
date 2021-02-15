@@ -4,7 +4,7 @@ package com.sky.demo;
 import java.net.InetSocketAddress;
 import com.sky.demo.test.MethodInterFace;
 import com.sky.rpc.base.RpcRequest;
-import com.sky.rpc.core.cilent.RpcClientHandel;
+import com.sky.rpc.core.cilent.RpcClientHandle;
 import com.sky.rpc.core.cilent.http.RpcHttpClientInvokeHandle;
 
 /**
@@ -14,7 +14,7 @@ import com.sky.rpc.core.cilent.http.RpcHttpClientInvokeHandle;
  */
 public class RpcInterfaceMethodTestCash {
 	public static void main(String[] args) {
-		RpcClientHandel rpcClientHandel=new RpcHttpClientInvokeHandle<Object>(null);
+		RpcClientHandle rpcClientHandel=new RpcHttpClientInvokeHandle<Object>(null);
 		Class<MethodInterFace> clazz = MethodInterFace.class;
 		RpcRequest request = new RpcRequest(clazz.getName(),clazz.getMethods()[0],new Object[] {232});
 		InetSocketAddress addr=new InetSocketAddress("127.0.0.1", 8970);
