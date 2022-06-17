@@ -20,7 +20,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<zookeeper.version>3.4.8</zookeeper.version>
-		<fastjson.version>1.2.32</fastjson.version>
+		<fastjson.version>1.2.83</fastjson.version>
 	</properties>
 
 	<dependencies>
